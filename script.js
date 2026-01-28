@@ -1,5 +1,4 @@
-//TODO reveal map on unlock door
-//TODO auto-drink potions
+//todo remap WASD 
 
 /*
   NOTE: Fix for ReferenceError: MAX_SIZE is not defined
@@ -634,6 +633,33 @@ function revealNeighbors(pos) {
   }
 }
 
+function revealMap(){
+	for (let r = 0; r < level.rows; r++){
+		for (let c = 0; c < level.cols; c++){
+    
+	let pos = toPos(r, c);
+	if (visited.has(pos) || revealedByBump.has(pos) || revealedSpecial.has(pos) || revealedNeighbors.has(pos)){continue;}
+    // If it's a wall, reveal via bump set so wall rendering rules apply.
+    if (hasWall(pos)) {revealedByBump.add(pos); continue;}
+    // Reveal the neighbor tile so it becomes visible on the map.
+    revealedNeighbors.add(pos);
+    // If neighbor contains a special icon, mark it discovered so its icon shows.
+    if (hasKey(pos)) revealedSpecial.set(pos, "key");
+    else if (hasTreasure(pos)){ revealedSpecial.set(pos, "treasure");}
+	else if (hasStairs(pos)){ revealedSpecial.set(pos, "stairs")}
+    else if (hasMonster(pos)){ revealedSpecial.set(pos, "monster")}
+    else if (hasVoid(pos)) {revealedSpecial.set(pos, "void")}
+    else if (hasPotion(pos)) {revealedSpecial.set(pos, "potion")}
+    else if (hasVillager(pos)) {revealedSpecial.set(pos, "villager")}
+    else if (hasWeaponShop(pos)) {revealedSpecial.set(pos, "weapon_shop")}
+    else if (hasArmorShop(pos)) {revealedSpecial.set(pos, "armor_shop")}
+    else if (hasInn(pos)) {revealedSpecial.set(pos, "inn")}
+    else if (hasExit(pos)) {revealedSpecial.set(pos, "exit")}
+	if(revealedSpecial.has(pos)){ announce("revealed " + revealedSpecial.get(pos) + " at " + pos) }
+	
+	}}
+}
+
 function mapTouch(pos){
 	
 	//if touched spot is one spot away, go straight to tryMove
@@ -1253,7 +1279,8 @@ function enterCell(prefix) {
   if (hasPotion(pos)) {
     // Do NOT auto-consume potions. Prompt the player and leave the potion until they Press <kbd>Space</kbd>.
     revealedSpecial.set(pos, "potion");
-    discoveryMsgs.push("A potion is here. Press <kbd>Space</kbd> to drink. ");
+	activateCell(pos);
+    //discoveryMsgs.push("A potion is here. Press <kbd>Space</kbd> to drink. ");
   }
   
   if (hasStairs(pos)) {
@@ -1300,7 +1327,7 @@ function enterCell(prefix) {
       // consume the key and complete the level (player stands on the door square)
       //	stats.key = false;
       completed = true;
-      
+      revealMap();
       discoveryMsgs.push("You unlock and open the door. press <kbd>enter</kbd> to continue. ");
     } else {
       // No key: inform the player and treat as a blocked/bumped tile in messages.
@@ -1394,12 +1421,7 @@ function enterCell(prefix) {
 function tryMove(dr, dc) {
 	speechSynthesis.cancel();
 	if(live.innerHTML != ""){announce("");}
-  if (completed) {
-    // Stage complete: only Enter should advance.
-    announce("You found the exit. press <kbd>enter</kbd> to continue. ");
-    return;
-  }
-
+ 
   const nr = player.row + dr;
   const nc = player.col + dc;
 
@@ -1579,7 +1601,7 @@ function tryMove(dr, dc) {
 	else if(hasArmorShop(nextPos)){playSoundUnlock();}
 	else if(hasInn(nextPos)){playSoundUnlock();}
 	else if(hasVoid(nextPos)){playSoundFall();}
-	else if(hasPotion(nextPos)){playSoundPotion()}
+	//else if(hasPotion(nextPos)){playSoundPotion()}
 	else if(hasTreasure(nextPos)){playSoundTreasure()}
 	else if(hasVillager(nextPos)){playSoundTreasure()}
 	else{playSoundStep();}

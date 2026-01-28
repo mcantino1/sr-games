@@ -1,10 +1,8 @@
 //TODO
-//auto sort level list by next level id
 //add monster custom icon options
 //combine wall tools
 //combine shops into single tool
 //complicate villagers
-
         var rows = 6;
         var cols = 6;
         var items = [];
@@ -64,7 +62,9 @@
 				}
 				
 			}
+			sortLevelList();
 		}
+		
 		function updateID(){
 			newId = document.getElementById('inputLevelId').value
 			LEVELS[currentId].id = newId;
@@ -101,12 +101,53 @@
 					l = myList.length;
 				}
 			}
+
 		}
+		
+		function sortLevelList(){
+			//TODO
+			let myLevels = {}
+			let levelNames = []
+			let levelList = document.getElementById("levelSelect");
+			let listItems = document.getElementById("levelSelect").children;
+			for (l = 0; l < listItems.length; l++){
+				levelName = listItems[l].getAttribute("value")
+				myLevels[levelName] = listItems[l];
+				if(LEVELS[levelName].nextLevelId != "null"){
+					levelNames.push(listItems[l].getAttribute("value"))
+				};
+			}
+			let myKeys = Object.keys(LEVELS)
+			for (l = 0; l < myKeys.length; l++){
+				myNext = LEVELS[myKeys[l]].nextLevelId;
+				if (levelNames.includes(myNext)){
+					levelNames.splice(levelNames.indexOf(myNext), 1);
+				}
+			}
+			for(thisLevel of levelNames){
+				if(LEVELS[thisLevel].nextLevelId == "null"){
+					levelNames.splice(levelNames.indexOf(thisLevel), 1);
+				}
+			}
+			let firstLevel = levelNames[0];
+			let nextLevel = firstLevel;
+			console.log(nextLevel);
+			while (nextLevel != "null"){
+				levelList.append(myLevels[nextLevel]);
+				nextLevel = LEVELS[nextLevel].nextLevelId;
+				console.log(nextLevel);
+			}
+			while (levelList.children[0].getAttribute("value") != firstLevel){
+				levelList.append(levelList.children[0]);
+				
+			}
+		}
+			
+		
 
 		function updateNext(){
 			newNext = document.getElementById('nextLevelSelect').value
 			LEVELS[currentId].nextLevelId = newNext;
-			
 		}
 
 		function monsterExists(monsterName){
@@ -131,6 +172,7 @@
 			addOption(stairLevelSelect, newId, newId);
 			addOption(keyLevelSelect, newId, newId);
 			myKeys = Object.keys(LEVELS);
+		
 		}
 		
 		function levelCopy(){
@@ -143,6 +185,7 @@
 			addOption(document.getElementById("keyLevelSelect"), newId, newId);
 			
 			myKeys = Object.keys(LEVELS);
+			
 		}
 		
 		function addOption(myList, myValue, myText){
@@ -159,8 +202,8 @@
 			deleteOption(myNextLevels, currentId)
 			deleteOption(keyLevelSelect, currentId)
 			deleteOption(stairLevelSelect, currentId)
-		
 			delete LEVELS[deleteMe]
+			
 		}
 		
 		function deleteOption(myList, myValue){
