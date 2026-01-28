@@ -1,0 +1,79 @@
+:root{color-scheme: light dark;}
+.cell { width: 50px; height: 50px; border: 1px solid light-dark(#666, #E6E6E6); align-items: center; justify-content: center; cursor: pointer; background: light-dark(#fff, #000); font-weight: bold; transition: background 0.2s; }
+.cell:focus { outline: 3px solid light-dark(#4A90E2, #0B2646); outline-offset: 2px; background: light-dark(#e0f7ff, #00759E); }
+.cell:hover { background: light-dark(#e8e8e8, #696969); }
+.cell.player { color: light-dark(#231f20, #938589); }
+.cell.selected { background: light-dark(#ffcccc, #B30000); border: 3px solid light-dark(#c41e3a, #FADCE1); color: light-dark(#000, #fff); }
+.container { margin: 0 auto; background: light-dark(#fff, #000); padding: 20px; border-radius: 8px; transition: background 0.3s, color 0.3s; }
+.gen-btn { background: light-dark(#ff9800, #613A00); border-color: light-dark(#cc6600, #1A0D00); }
+.gen-btn:hover { background: light-dark(#e68900, #472B00); }
+.grid-section { text-align: center; margin: 20px 0; }
+.grid-section h2 { margin-top: 0; font-size: 20px; }
+.item-btn { padding: 8px 12px; margin: 3px; background: light-dark(#d3d3d3, #595959); color: light-dark(#000, #fff); border: 2px solid light-dark(#999, #262626); font-weight: 500; }
+.item-btn:focus { outline: 3px solid light-dark(#4A90E2, #0B2646); outline-offset: 2px; }
+.item-btn.active, .item-btn[aria-pressed="true"] { background: #2196F3; color: light-dark(#fff, #000); border-color: #0d47a1; }
+.item-label { font-weight: 600; font-size: 15px; }
+
+#monsterParent { 
+	padding:6px; 
+	border-radius:4px;
+	border:3px solid; 
+	}
+
+
+#monsterParent{
+	max-height:200px; 
+	overflow:auto; 
+}
+
+
+#monsterParent thead th{ position: sticky; top: 0; background: light-dark(#fff, #000)}
+
+.monster-list tr:hover{ background: light-dark(#45A048, #2D672F);}
+.monster-list tr.selected{ background: light-dark(#2D672F, #76AD78); color: light-dark(#fff, #000);}
+.monster-list td, .monster-list th{
+	border: 1px solid;
+	margin: 0;
+	padding: 0.5em;
+	text-align: center;
+}
+
+
+
+.monster-list td li{text-align: left;}
+.row { display: flex; gap: 15px; flex-wrap: wrap; align-items: center; margin: 10px 0; }
+.sr-only { position: absolute; left: -10000px; top: auto; width: 1px; height: 1px; overflow: hidden; }
+.top-section { margin: 0 0 20px 0; padding: 15px; border: 1px solid light-dark(#999, #262626); border-radius: 4px; transition: background 0.3s, border-color 0.3s; }
+@media (prefers-reduced-motion: reduce) {* { transition: none; }}
+* { box-sizing: border-box; }
+#grid {margin: auto; background: light-dark(#fff, #000); border: 2px solid light-dark(#333, #A6A6A6); border-radius: 4px; transition: background 0.3s; }
+#gridAnnouncer { position: absolute; left: -10000px; top: auto; width: 1px; height: 1px; overflow: hidden; }
+#output { width: 100%; height: 300px; padding: 10px; border: 2px solid light-dark(#999, #262626); font-family: monospace; font-size: 11px; border-radius: 4px; transition: background 0.3s, color 0.3s, border-color 0.3s; }
+#output:focus { outline: 3px solid light-dark(#4A90E2, #0B2646); outline-offset: 2px; border-color: light-dark(#4A90E2, #0B2646); }
+body { font-family: Arial, sans-serif; margin: 20px; background: light-dark(#f0f0f0, #666); transition: background 0.3s; color: light-dark(#000, #fff); }
+button { padding: 10px 20px; background: light-dark(#4CAF50, #173518); color: light-dark(#000, #fff); border: 2px solid #2d7a2d; cursor: pointer; border-radius: 4px; font-size: 14px; transition: background 0.2s; font-weight: 500; }
+button:active { transform: scale(0.98); }
+button:focus { outline: 3px solid light-dark(#4A90E2, #0B2646); outline-offset: 2px; }
+button:hover { background: light-dark(#45a049, #0F2410); }
+h1 { color: light-dark(#000, #fff); margin: 0 0 20px 0; display: flex; justify-content: space-between; align-items: center; font-size: 28px; }
+input { padding: 8px; font-size: 14px; border: 2px solid light-dark(#999, #262626); border-radius: 4px; transition: background 0.3s, color 0.3s, border-color 0.2s; }
+input:focus { outline: 3px solid light-dark(#4A90E2, #0B2646); outline-offset: 2px; border-color: light-dark(#4A90E2, #0B2646); }
+label { display: flex; align-items: center; gap: 8px; font-weight: 500; }
+
+
+.gridParent{
+	display: grid;
+	grid-template-columns: 100px auto auto;
+}
+.spinbox{
+	width: 4em;
+}
+.leftPanel{
+#levelSelect{ width: 90%;}
+#levelSelect option{padding:0.5em;}
+	
+}
+
+.mainBody{
+	
+}

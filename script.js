@@ -1,3 +1,6 @@
+//TODO reveal map on unlock door
+//TODO auto-drink potions
+
 /*
   NOTE: Fix for ReferenceError: MAX_SIZE is not defined
   - MAX_SIZE is defined early and used for grid scaling and clamping.
@@ -10,6 +13,26 @@ const MAX_LIFE = 100; // global maximum life cap for players
 // Audio setup for footstep sounds
 let footstepAudio = null;
 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+var levels;
+ function initGame(){
+	 LEVELS = getLevels();
+	 levels = []
+	 myKeys = Object.keys(LEVELS);
+	 
+	 //level = JSON.parse(JSON.stringify(LEVELS[id]));
+	 for (let k = 0; k < myKeys.length; k ++){
+		 levels[myKeys[k]] = JSON.parse(JSON.stringify(LEVELS[myKeys[k]]));
+		 levels[myKeys[k]].foundKey = false;
+	 }
+	 try {
+	  window.__campaignStartup = true;
+	  loadLevel(myKeys[0]);
+	} catch (e) {
+	  console.error('Failed to start campaign level:', e);
+	  document.getElementById('currentText').textContent = 'Failed to start campaign.';
+	}
+	 
+ }
  
 function playSoundStep() {
   const duration = 0.05; // 100ms
@@ -417,6 +440,8 @@ const ICONS = {
       '</g>' +
     '</svg>'
   ),
+  stairs: () => ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 88.2 88.2" style="width: 100%; height: 100%; display: block;" aria-hidden="true" focusable="false"> <polyline fill="none" stroke="currentColor" stroke-width="4" points="88.1 24 68 24 68 40 52 40 52 56 36 56 36 72 18 72 18 88.1"/> </svg>'
+   ),
   villager: () => (
     '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 88.2 88.2" aria-hidden="true" focusable="false" style="width:100%;height:100%;display:block;">' +
       '<g stroke="currentColor" stroke-miterlimit="10" stroke-width="3" fill="currentColor">' +
@@ -526,6 +551,7 @@ function hasDoor(pos){ return itemsAt(pos).some(it => it.type === "door"); }
 function hasExit(pos){ return itemsAt(pos).some(it => it.type === "exit"); }
 function hasOpenExit(pos){ return itemsAt(pos).some(it => it.type === "exit_open"); }
 function hasKey(pos){ return itemsAt(pos).some(it => it.type === "key"); }
+function hasStairs(pos){ return itemsAt(pos).some(it => it.type === "stairs"); }
 function hasTreasure(pos){ return itemsAt(pos).some(it => it.type === "treasure"); }
 function hasPotion(pos){ return itemsAt(pos).some(it => it.type === "potion"); }
 function hasVoid(pos){ return itemsAt(pos).some(it => it.type === "void"); }
@@ -544,15 +570,22 @@ function initMonsters(){
       let attack = 2;
       let def = 0;
       let name = 'monster';
+	  let rD = "";
+	  let rV = 5;
+	  let rK = "gold";
+	  
       if (it.meta) {
         if (typeof it.meta.hp !== 'undefined') hp = Number(it.meta.hp) || hp;
         if (typeof it.meta.atk !== 'undefined') attack = Number(it.meta.atk) || attack;
         if (typeof it.meta.def !== 'undefined') def = Number(it.meta.def) || def;
         if (typeof it.meta.name !== 'undefined') name = String(it.meta.name) || name;
+		if (typeof it.meta.rDesc !== 'undefined') rD = String(it.meta.rDesc) || rD;
+		if (typeof it.meta.rVal !== 'undefined') rV = Number(it.meta.rVal) || rV;
+		if (typeof it.meta.rKind !== 'undefined') rK = String(it.meta.rKind) || rK;
       }
       var descs = [];
       if (it.meta && Array.isArray(it.meta.descriptions)) descs = it.meta.descriptions.slice();
-      monsters.set(it.pos, { hp: hp, attack: attack, defense: def, name: name, descriptions: descs, nextDescIndex: 0 });
+		monsters.set(it.pos, { hp: hp, attack: attack, defense: def, name: name, rDesc: rD, rKind: rK, rVal: rV, descriptions: descs, nextDescIndex: 0 });
     }
   }
 }
@@ -589,6 +622,7 @@ function revealNeighbors(pos) {
     // If neighbor contains a special icon, mark it discovered so its icon shows.
     if (hasKey(npos)) revealedSpecial.set(npos, "key");
     else if (hasTreasure(npos)) revealedSpecial.set(npos, "treasure");
+	else if (hasStairs(npos)) revealedSpecial.set(npos, "stairs");
     else if (hasMonster(npos)) revealedSpecial.set(npos, "monster");
     else if (hasVoid(npos)) revealedSpecial.set(npos, "void");
     else if (hasPotion(npos)) revealedSpecial.set(npos, "potion");
@@ -600,6 +634,96 @@ function revealNeighbors(pos) {
   }
 }
 
+function mapTouch(pos){
+	
+	//if touched spot is one spot away, go straight to tryMove
+	tcol = pos.charCodeAt(0) - 65
+	trow = (pos[1] - 1)
+	player.row
+	player.col
+	dcol = tcol - player.col
+	drow = trow - player.row
+	let distance = (Math.abs(player.col - tcol) + Math.abs(player.row - trow))
+	
+	if(distance == 0){
+		//clicked current cell - activate thing at location
+		activateCell(pos)
+		  if (completed) {
+			if (level.nextLevelId != 'null' && level.nextLevelId != null) {
+			  preserveStatsOnNextLoad = true;
+			  loadLevel(level.nextLevelId);
+			} else {
+				speechSynthesis.cancel();
+				announce("You have completed the final level. Congratulations!");
+			}
+			}
+	}
+	else if(distance == 1){
+		//cell is adjacent, try to move to it
+		tryMove(drow, dcol);
+	}
+	else {
+		//cell is more than one cell away and is revealed
+		//function tryMove(dr, dc)
+		let dr = 0;
+		let dc = 0;
+		let move = true;
+		
+		max = 5;
+		steps = 0
+		while(move){
+			move = false;
+			startRow = player.row
+			startCol = player.col		
+			dcol = tcol - player.col
+			drow = trow - player.row		
+			dr = 0;
+			dc = 0;
+			if(drow < 0) {dr = -1}
+			else if (drow > 0){dr = 1}
+			if(dcol < 0) {dc = -1}
+			else if (dcol > 0){dc = 1}
+
+			rwall = hasWall(toPos(player.row + dr, player.col)) || hasMonster(toPos(player.row + dr, player.col)) || hasVoid(toPos(player.row + dr, player.col)) || hasDoor(toPos(player.row + dr, player.col))
+			cwall = hasWall(toPos(player.row, player.col + dc)) || hasMonster(toPos(player.row, player.col + dc)) || hasVoid(toPos(player.row, player.col + dc)) || hasDoor(toPos(player.row, player.col + dc))
+			
+			if (rwall || cwall){
+				
+				if (rwall){
+					
+					tryMove(0, dc)
+				}
+				else{
+					
+					tryMove(dr, 0)
+				}
+			}
+			else{
+				if (Math.abs(drow) > Math.abs(dcol)){
+					//try to move vertically
+
+					if(drow < 0){tryMove(-1, 0)}
+					else{tryMove(1, 0)}
+				}
+				else{
+					//try to move horizontally
+
+					if(dcol < 0){tryMove(0, -1)}
+					else{tryMove(0, 1)}
+				}
+			
+		}
+		steps ++;
+		if (startRow != player.row || startCol != player.col){ 
+			distance = (Math.abs(player.col - tcol) + Math.abs(player.row - trow))
+			if (steps < max && distance > 0){
+				move = true
+		}
+		}}
+		
+	}
+		
+}
 
 /* ---------------- Rendering ---------------- */
 function renderMap() {
@@ -607,6 +731,7 @@ function renderMap() {
   mapEl.style.gridTemplateColumns = `repeat(${level.cols}, 1fr)`;
   mapEl.style.gridTemplateRows    = `repeat(${level.rows}, 1fr)`;
   let focusSquare;
+  
   for (let r = 0; r < level.rows; r++) {
     for (let c = 0; c < level.cols; c++) {
       const pos = toPos(r, c);
@@ -617,9 +742,8 @@ function renderMap() {
       const isRevealedWall = revealedByBump.has(pos) && hasWall(pos);
       const isRevealedSpecial = revealedSpecial.has(pos);
       const show = isVisited || isRevealedWall || isRevealedSpecial || revealedNeighbors.has(pos);
-
       el.classList.add(show ? "visited" : "unknown");
-
+	  el.setAttribute("onclick", "mapTouch('" + pos + "\')")
       if (show) {
         const items = itemsAt(pos);
         if (items.some(i => i.type === "wall" || i.type === "bush" || i.type === "flower" || i.type === "custom_wall")) {
@@ -633,6 +757,8 @@ function renderMap() {
           el.innerHTML = ICONS.monster();
         } else if (items.some(i => i.type === "treasure")) {
           el.innerHTML = ICONS.treasure();
+        } else if (items.some(i => i.type === "stairs")) {
+          el.innerHTML = ICONS.stairs();
         } else if (items.some(i => i.type === "potion")) {
           el.innerHTML = ICONS.potion();
         } else if (items.some(i => i.type === "exit")) {
@@ -653,6 +779,7 @@ function renderMap() {
           const t = revealedSpecial.get(pos);
           if (t === "key") el.innerHTML = ICONS.key();
           else if (t === "treasure") el.innerHTML = ICONS.treasure();
+		  else if (t === "stairs") el.innerHTML = ICONS.stairs();
           else if (t === "monster") el.innerHTML = ICONS.monster();
           else if (t === "void") el.innerHTML = ICONS.void();
           else if (t === "weapon_shop") el.innerHTML = ICONS.weapon_shop();
@@ -674,6 +801,7 @@ function renderMap() {
       mapEl.appendChild(el);
     }
   }
+
   focusSquare.scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
 }
 
@@ -697,9 +825,9 @@ function updateLogUI(){
 }
 
 function updateUI(){
-  posText.textContent = toPos(player.row, player.col);
+  posText.textContent = toPos(player.row, player.col) + " " + currentLevelId;
   locStat = document.getElementById("locText");
-  locStat.innerHTML = level.id + " " + posText.textContent;
+  
   updateStatsUI();
   renderMap();
 }
@@ -806,7 +934,7 @@ function contentsAt(r, c) {
 	  return "growling sound";}
   if (items.some(i=>i.type==="potion")) return "small pouch";
   if (items.some(i=>i.type==="treasure")) return "hidden passage";
-
+	if (items.some(i=>i.type==="stairs")) return "stairs";
   return null;
 }
 
@@ -843,12 +971,11 @@ function groupedSurroundingsText() {
       openDirs.push(d.name);
     }
   }
-
   const parts = [];
 
   // Add cue lines FIRST in priority order: door, void, key, monster, potion, treasure
   // Include Inn so it's described when adjacent. We'll insert 'Inn' after armor shop.
-  const cueOrderWithInn = ["you see the exit", "mysterious fog", "faint glow", "weapon shop", "armor shop", "Inn", "Villager", "growling sound", "small pouch", "hidden passage"];
+  const cueOrderWithInn = ["You see the exit", "mysterious fog", "faint glow", "weapon shop", "armor shop", "Inn", "Villager", "growling sound", "small pouch", "hidden passage"];
   for (const cue of cueOrderWithInn) {
     const dirs = cueDirs.get(cue);
     if (dirs && dirs.length) parts.push(`${cue}: ${dirs.join(", ")}. `);
@@ -1032,12 +1159,14 @@ function enterCell(prefix) {
   const discoveryMsgs = [];
 
   if (hasKey(pos) && !stats.key) {
-    
-    stats.key = true;
+	  let keyLevel;
+	if (itemsAt(pos)[0].meta){keyLevel = itemsAt(pos)[0].meta.level;}
+		else {keyLevel = currentLevelId}
+	levels[keyLevel].foundKey = true;
+	stats.key = true;
     removeItem("key", pos);
     revealedSpecial.delete(pos);
-	updateUI();
-	
+	updateUI();	
     discoveryMsgs.push("You found a key. ");
   }
 
@@ -1126,6 +1255,13 @@ function enterCell(prefix) {
     revealedSpecial.set(pos, "potion");
     discoveryMsgs.push("A potion is here. Press <kbd>Space</kbd> to drink. ");
   }
+  
+  if (hasStairs(pos)) {
+
+    revealedSpecial.set(pos, "stairs");
+    discoveryMsgs.push("A staircase is here. Press <kbd>Space</kbd> to take them. ");
+  }
+
 
   if (hasWeaponShop(pos)) {
     // Do NOT auto-purchase. Prompt the player and leave the shop available until they Press <kbd>Space</kbd>.
@@ -1162,9 +1298,9 @@ function enterCell(prefix) {
     // If the player steps onto a door tile and has a key, unlock and mark completed.
     if (stats.key) {
       // consume the key and complete the level (player stands on the door square)
-      stats.key = false;
+      //	stats.key = false;
       completed = true;
-      continueBtn.hidden = true;
+      
       discoveryMsgs.push("You unlock and open the door. press <kbd>enter</kbd> to continue. ");
     } else {
       // No key: inform the player and treat as a blocked/bumped tile in messages.
@@ -1181,6 +1317,9 @@ function enterCell(prefix) {
 	// announce(voidMsg);
     // Preserve most stats across the restart, but reset the key flag.
     const preserved = { life: stats.life, strength: stats.strength, defense: stats.defense, gold: stats.gold };
+	//reload level from file
+    levels[currentLevelId] = JSON.parse(JSON.stringify(LEVELS[currentLevelId]));
+	levels[currentLevelId].foundKey = false;
     loadLevel(currentLevelId);
     stats.life = preserved.life;
     stats.strength = preserved.strength;
@@ -1368,7 +1507,8 @@ function tryMove(dr, dc) {
         //announce(msg);
         // Reset life to default and remove any held key, but preserve other stats.
         stats.life = 10;
-        stats.key = false;
+		
+        stats.key = levels[currentLevelId].foundKey;
         // Tell loadLevel to preserve the current stats object when reloading.
         preserveStatsOnNextLoad = true;
         loadLevel(currentLevelId);
@@ -1406,12 +1546,22 @@ function tryMove(dr, dc) {
 
     // Monster defeated
 	playSoundSlay();
+	//get rewards
     removeMonster(nextPos);
     // Once defeated, the monster icon should disappear from the map.
     revealedSpecial.delete(nextPos);
     // Append concise defeat notice immediately after the attack message.
     msg += `${monsterName} is defeated. `;
-
+	//get rewards
+	if (monster.rDesc != "") {
+		msg += monster.rDesc 
+	}
+	if (monster.rVal > 0){
+		msg += " You gain " + monster.rVal + " " + monster.rKind + ". "
+		stats[monster.rKind] += monster.rVal;
+		
+	}
+	
     // Do NOT move the player — they remain in their current square after
     // defeating the monster. Include the player's current position in the
     // defeat message so they stay oriented.
@@ -1436,7 +1586,6 @@ function tryMove(dr, dc) {
   // Normal movement
   player.row = nr;
   player.col = nc;
-  
   enterCell();
 }
 
@@ -1448,20 +1597,13 @@ function speakStatus() {
 	  myStuff += myItems[i].innerText + "<br>";
   }
   announce(myStuff)
+  announce(toPos(player.row, player.col) + " " + currentLevelId  );
+  
+  
 }
 
-/* ---------------- Controls ---------------- */
-gameEl.addEventListener("keydown", (e) => {
-  // Press S to hear current location + full stats.
-  if (e.key === "s" || e.key === "S") {
-    e.preventDefault();
-    speakStatus();
-    return;
-  }
-  // Spacebar: drink potion if present on current square
-  if (e.key === ' ' || e.key === 'Spacebar' || e.code === 'Space') {
-    e.preventDefault();
-    const pos = toPos(player.row, player.col);
+
+function activateCell(pos){
     if (hasPotion(pos)) {
       // consume potion and remove its icon
       const potionMsg = consumePotion();
@@ -1471,6 +1613,20 @@ gameEl.addEventListener("keydown", (e) => {
       // Announce result and repeating location description
       announce("You drink the potion. " + potionMsg);
     }
+	if (hasStairs(pos)) {
+		//take stairs
+		preserveStatsOnNextLoad = true;
+		targetLevel = itemsAt(pos)[0].meta.level;
+		targetCell = itemsAt(pos)[0].meta.cell;
+		
+	if (targetLevel == currentLevelId){
+		player.col = targetCell.charCodeAt(0) - 65;
+		player.row = targetCell.substring(1) - 1;
+		enterCell();
+	}
+	else{
+		loadLevel(targetLevel, targetCell);
+	} }
     else if (hasWeaponShop(pos)) {
       // Attempt to purchase strength upgrade: cost 18 gold, +2 strength
       const cost = 18;
@@ -1542,17 +1698,33 @@ gameEl.addEventListener("keydown", (e) => {
         // Doors are not opened with Space here; Space only opens `exit` tiles.
       }
     }
+}	
+
+
+/* ---------------- Controls ---------------- */
+gameEl.addEventListener("keydown", (e) => {
+  // Press S to hear current location + full stats.
+  if (e.key === "s" || e.key === "S") {
+    e.preventDefault();
+    speakStatus();
+    return;
+  }
+  // Spacebar: drink potion if present on current square
+  if (e.key === ' ' || e.key === 'Spacebar' || e.code === 'Space') {
+    e.preventDefault();
+    const pos = toPos(player.row, player.col);
+	activateCell(pos);
     return;
   }
   // If the level is complete, Enter advances to the next stage.
   if (completed && e.key === "Enter") {
     e.preventDefault();
-    if (level.nextLevelId) {
+    if (level.nextLevelId != 'null' && level.nextLevelId != null) {
       preserveStatsOnNextLoad = true;
       loadLevel(level.nextLevelId);
-      announce("Next level loaded with your stats carried over. ");
     } else {
-      announce("You have completed the final level. Congratulations!");
+		speechSynthesis.cancel();
+		announce("You have completed the final level. Congratulations!");
     }
     return;
   }
@@ -1572,42 +1744,24 @@ toggleLogBtn.addEventListener("click", () => {
   toggleLogBtn.textContent = open ? "View exploration log" : "Hide exploration log";
 });
 
-/* Guide dialog */
-guideBtn.addEventListener("click", () => {
-  guideDialog.showModal();
-  closeGuideBtn.focus();
-});
-closeGuideBtn.addEventListener("click", () => {
-  guideDialog.close();
-  guideBtn.focus();
-});
-guideDialog.addEventListener("close", () => guideBtn.focus());
 
 /* Restart / Continue */
-restartBtn.addEventListener("click", () => {
-  loadLevel(currentLevelId);
-  announce("Level restarted. ");
-  gameEl.focus();
-});
+
 // Continue button is no longer used; Enter advances after finding the exit.
-continueBtn.addEventListener("click", () => {
-  // Kept for compatibility if the button is ever shown again.
-  if (!level.nextLevelId) {
-    announce("No next level. ");
-    return;
-  }
-  preserveStatsOnNextLoad = true;
-  loadLevel(level.nextLevelId);
-  announce("Next level loaded with your stats carried over. ");
-  gameEl.focus();
-});
+
 
 
 /* ---------------- Load level ---------------- */
 let preserveStatsOnNextLoad = false;
-function loadLevel(id) {
-  level = JSON.parse(JSON.stringify(LEVELS[id]));
+
+
+
+function loadLevel(id, cell = "A1") {
+  
+  speechSynthesis.cancel();
+  level = levels[id];
   currentLevelId = id;
+  stats.key = level.foundKey;
   // If the level creator saved an opening description in localStorage, prefer a per-level value.
   try {
     var perKey = 'creatorOpeningDesc_' + id;
@@ -1618,7 +1772,10 @@ function loadLevel(id) {
       level.scenes['A1'] = creatorOpening;
     }
   } catch (e) { /* ignore storage errors */ }
-  player = { row: 0, col: 0 };
+  //player = { row: 0, col: 0 };
+  player.col = cell.charCodeAt(0) - 65;
+  player.row = cell.substring(1) - 1;
+  
   visited = new Set();
   revealedByBump = new Set();
   revealedSpecial = new Map();
@@ -1630,10 +1787,15 @@ function loadLevel(id) {
   }
   preserveStatsOnNextLoad = false;
   discoveryLog = [];
+  
   initMonsters();
+  
   updateUI();
+  
   updateLogUI();
-  continueBtn.hidden = true;
+  
+  
+  
   enterCell();
   gameEl.focus();
 }
@@ -1643,9 +1805,30 @@ function speechSay(message) {
 	mySelect = document.getElementById("voiceSelector")
 	myVoice = voices[mySelect.selectedIndex];
 	utterance.voice = myVoice
+	utterance.pitch = voicePitch;
+	utterance.rate = voiceSpeed;
 	speechSynthesis.speak(utterance);
 	
 	
+}
+
+var speedBox = document.getElementById("voiceSpeed")
+var pitchBox = document.getElementById("voicePitch")
+
+var voiceSpeed = speedBox.value * 0.2 ;
+var voicePitch = pitchBox.value * 0.2;
+
+function updateSpeed(){
+	speechSynthesis.cancel();
+	voiceSpeed = speedBox.value  * 0.2;
+	let msg = "Speed " + speedBox.value
+	speechSay(msg)
+}
+function updatePitch(){
+	speechSynthesis.cancel();
+	voicePitch = (pitchBox.value/10) * 2;
+	let msg = "Pitch " + pitchBox.value
+	speechSay(msg)
 }
 
 // Note: pages should call `loadLevel(...)` themselves. The automatic
@@ -1663,10 +1846,9 @@ function toggleSpeech(){
 	mySelect = document.getElementById("voiceSelector")
 	myVoice = voices[mySelect.selectedIndex];
 	utterance.voice = myVoice
-	console.log(utterance)
+	
 	speechSynthesis.cancel();
 	speechSynthesis.speak(utterance);
-
 }
 }
 
@@ -1682,17 +1864,14 @@ function populateVoiceList() {
   voices = synth.getVoices();
 
   for (const voice of voices) {
+	  //TODO - LOCALIZATION
+	if (voice.lang.substring(0,2) == "en") {
     const option = document.createElement("option");
-    option.textContent = `${voice.name} (${voice.lang})`;
-
-    if (voice.default) {
-      option.textContent += " — DEFAULT";
-    }
-
+    option.textContent = `${voice.name}`;
     option.setAttribute("data-lang", voice.lang);
     option.setAttribute("data-name", voice.name);
     voiceSelect.appendChild(option);
-  }
+  }}
 }
 
 populateVoiceList();
