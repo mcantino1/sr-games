@@ -1,4 +1,4 @@
-//todo remap WASD 
+//todo what should A do
 
 /*
   NOTE: Fix for ReferenceError: MAX_SIZE is not defined
@@ -840,15 +840,6 @@ function updateStatsUI(){
   keyText.textContent = stats.key ? "Yes" : "No";
 }
 
-function updateLogUI(){
-  logList.innerHTML = "";
-  // Most recent to least recent
-  for (const entry of [...discoveryLog].reverse()){
-    const p = document.createElement("p");
-    p.innerHTML = `<strong>${entry.pos}:</strong> ${entry.text}`;
-    logList.appendChild(p);
-  }
-}
 
 function updateUI(){
   posText.textContent = toPos(player.row, player.col) + " " + currentLevelId;
@@ -1130,17 +1121,6 @@ function describeCurrentLocation() {
 }
 
 /* ---------------- Discovery + entering a cell ---------------- */
-function logDiscovery(pos, text){
-  if (discoveryLog.some(e => e.pos === pos)) return;
-  discoveryLog.push({pos, text});
-  updateLogUI();
-}
-
-function appendLog(pos, text) {
-  // Always append an entry to the exploration log (allow duplicates).
-  discoveryLog.push({ pos, text });
-  updateLogUI();
-}
 
 function enterCell(prefix) {
   const pos = toPos(player.row, player.col);
@@ -1167,11 +1147,11 @@ function enterCell(prefix) {
 		 myText = document.getElementById('currentText')
         myText.innerHTML = fullText;
 		if (speechOn){speechSay(myText.textContent)}
-        appendLog(toPos(player.row, player.col), fullText);
+        
       }
       // Mark startup handled and record discovery if first visit
       window.__campaignStartup = false;
-      if (firstVisit) logDiscovery(toPos(player.row, player.col), fullText);
+      
       return;
     }
   } catch (e) {
@@ -1340,7 +1320,7 @@ function enterCell(prefix) {
     var voidMsg = "You've fallen into the void. Game restarts. ";
 	voidMsg = trimText(voidMsg)
     announce(voidMsg);
-    appendLog(pos, voidMsg);
+    
 	// announce(voidMsg);
     // Preserve most stats across the restart, but reset the key flag.
     const preserved = { life: stats.life, strength: stats.strength, defense: stats.defense, gold: stats.gold };
@@ -1406,13 +1386,13 @@ function enterCell(prefix) {
   fullSpoken = trimText(fullSpoken)
   currentText.innerHTML = fullSpoken;
   if (speechOn){speechSay(currentText.textContent)}
-  appendLog(pos, fullSpoken);
+  
   
 
   // Announce everything in order.
 //  announceSequence(spoken);
 
-  if (firstVisit) logDiscovery(pos, text);
+  
 
   updateUI();
 }
@@ -1525,7 +1505,7 @@ function tryMove(dr, dc) {
 		msg = trimText(msg)
         currentText.innerHTML = msg;
 		if (speechOn){speechSay(currentText.textContent)}
-        appendLog(curPos, msg);
+        
         //announce(msg);
         // Reset life to default and remove any held key, but preserve other stats.
         stats.life = 10;
@@ -1560,7 +1540,7 @@ function tryMove(dr, dc) {
       displayFull = trimText(displayFull)
 	  currentText.innerHTML = displayFull;
 	  if (speechOn){speechSay(currentText.textContent)}
-      appendLog(curPos, displayFull);
+      
       updateUI();
       //announceSequence(spokenSeq);
       return;
@@ -1612,11 +1592,12 @@ function tryMove(dr, dc) {
 }
 
 function speakStatus() {
+  speechSynthesis.cancel();
   const pos = toPos(player.row, player.col);
   myItems = document.getElementById("statsList").children;
   myStuff = ""
   for(let i = 0; i < myItems.length; i++){
-	  myStuff += myItems[i].innerText + "<br>";
+	  myStuff += myItems[i].innerText + ", <br>";
   }
   announce(myStuff)
   announce(toPos(player.row, player.col) + " " + currentLevelId  );
@@ -1722,8 +1703,46 @@ function activateCell(pos){
     }
 }	
 
+function speakMapContents(){
+	speechSynthesis.cancel();
+	//tell user about currently visible map contents
+	let myText = "";
+	
+	for (key of revealedSpecial){
+		if(myText.length > 0){myText += ", \n"}
+		myText += String(key).replace(",", " ")
+		
+		
+	}
+	announce(myText)
+}
 
+function  speakLocDesc(){
+	speechSynthesis.cancel();
+	//rewrite the current location description so it announces again. 
+	let myText = currentText.innerHTML;
+	currentText.innerHTML = "";
+	currentText.innerHTML = myText;
+	if (speechOn){speechSay(currentText.textContent)}
+}
+
+const spSettings = document.getElementById("spSettings");
+function toggleSpeechSettings(){
+	if (spSettings.classList.contains("enabled")) {
+		spSettings.classList.remove("enabled")
+	}
+	else{spSettings.classList.add("enabled")}
+}
 /* ---------------- Controls ---------------- */
+
+//WASD shortcuts
+//W - Where are the things
+//A - AAAAAAAH (I don't know what to use this one for)
+//S - Status
+//D - Describe current location
+
+// Re-read location description
+// List visible objects
 gameEl.addEventListener("keydown", (e) => {
   // Press S to hear current location + full stats.
   if (e.key === "s" || e.key === "S") {
@@ -1731,6 +1750,20 @@ gameEl.addEventListener("keydown", (e) => {
     speakStatus();
     return;
   }
+  if (e.key === "w" || e.key === "W") {
+    e.preventDefault();
+	
+    speakMapContents();
+    return;
+  }
+
+    if (e.key === "d" || e.key === "D") {
+    e.preventDefault();
+    speakLocDesc();
+    return;
+  }
+  
+  
   // Spacebar: drink potion if present on current square
   if (e.key === ' ' || e.key === 'Spacebar' || e.code === 'Space') {
     e.preventDefault();
@@ -1759,17 +1792,6 @@ gameEl.addEventListener("keydown", (e) => {
   if (e.key === "ArrowRight") tryMove(0, 1);
 });
 
-toggleLogBtn.addEventListener("click", () => {
-  const open = !logArea.hidden;
-  logArea.hidden = open;
-  toggleLogBtn.setAttribute("aria-expanded", String(!open));
-  toggleLogBtn.textContent = open ? "View exploration log" : "Hide exploration log";
-});
-
-
-/* Restart / Continue */
-
-// Continue button is no longer used; Enter advances after finding the exit.
 
 
 
@@ -1814,7 +1836,7 @@ function loadLevel(id, cell = "A1") {
   
   updateUI();
   
-  updateLogUI();
+  
   
   
   
@@ -1889,7 +1911,7 @@ function populateVoiceList() {
 	  //TODO - LOCALIZATION
 	if (voice.lang.substring(0,2) == "en") {
     const option = document.createElement("option");
-    option.textContent = `${voice.name}`;
+    option.textContent = (`${voice.name}`).split("-")[0].split("(")[0];
     option.setAttribute("data-lang", voice.lang);
     option.setAttribute("data-name", voice.name);
     voiceSelect.appendChild(option);

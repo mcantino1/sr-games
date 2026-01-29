@@ -44,7 +44,7 @@
 
 span.splab {
     float: left;
-    margin: 0.5em 1em 0 0;
+    margin-right: 0.5em;
 }
 
 
@@ -87,12 +87,10 @@ h1 strong{font-size: 1.75em; margin-left: 0.25em}
     gap: 10px;
     min-height: 0;
   }
-  .spSettings {
-    margin-top: 0.5em;
-}
 
 .spSettings input {
-    width: 3em;
+    width: 2em;
+	font-size: 1em;
 }
 
   .mapShell {
@@ -140,18 +138,21 @@ h1 strong{font-size: 1.75em; margin-left: 0.25em}
     gap: 12px;
     min-height: 0;
   }
-
+	select{font-size: 1em;}
   .panel {
     border: 1px solid light-dark(var(--panelBorder), var(--panelBorderDark));
     border-radius: 14px;
     padding: 12px;
     flex: 0 0 auto;
   }
+  #spSettingsButton{display: none; float: left; padding: 0em 0.4em 0.25em 0.4em; margin-right: 0.25em;}
+  
 
   .panel.locationPanel {
     flex: 1 1 auto;
     min-height: 0;
     display: flex;
+	overflow-y: auto;
     flex-direction: column;
   }
 
@@ -247,6 +248,12 @@ h1 strong{font-size: 1.75em; margin-left: 0.25em}
   }
 @media (max-width: 600px) {
 	.baseDirections{display: none;}
+	:root{font-size: 20px;}
+	h1 strong{font-size: 1.25em;}
+}
+#speechDiv{margin-top: 1em;}
+@media (max-width: 800px) {
+	#speechDiv{margin-top: 0.25em;}
 	
 }
   @media (max-width: 900px) {
@@ -254,10 +261,22 @@ h1 strong{font-size: 1.75em; margin-left: 0.25em}
     .leftPane { border-right: none; border-bottom: 1px solid light-dark(var(--border), var(--borderDark)); }
 	  #map {}
 	.statsList li, .foot button {width: 25%}
+	
+	
   }
+ 
 
-
-
+@media (max-width: 1000px) {
+	:root{font-size: 26px;}
+} 
+  
+@media (max-width: 1700px) {
+	#spSettingsButton{display: block;}
+	.spSettings{display: none;}
+	#spSettings.enabled{display: block;}
+	#speechDiv{margin-left: 0.25em;}
+	header {display: block;}
+}
 
 header h1{width: 100%;}
 header div{float: left;}
@@ -268,9 +287,10 @@ header div{float: left;}
   width: 60px;
   height: 34px;
   margin-right: 0.5em;
+  margin-top: 0.25em;
 }
 
-header form div {margin-top: 0.25em;}
+
 
 /* Hide default HTML checkbox */
 .switch input {

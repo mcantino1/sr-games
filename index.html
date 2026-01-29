@@ -13,7 +13,7 @@
 	<div>
 		<h1>Welcome to <strong>Super Dungeon</strong></h1>
 	</div>
-	<div>
+	<div id="speechDiv">
 		<form>
 			<div class="switch" onclick="document.getElementById('speechToggle').click()">
 			<input id="speechToggle" onclick="toggleSpeech()" type="checkbox">
@@ -22,7 +22,8 @@
 			<label for="speechToggle">
 			<span class="splab">Speech</span>
 			</label>
-			<div class="spSettings">
+			<button id="spSettingsButton" type="button" onclick="toggleSpeechSettings()" title="Speech Settings">≡</button>
+			<div id="spSettings" class="spSettings">
 				<select id="voiceSelector"></select>
 				<label for="voiceSpeed">Speed</label>
 				<input onchange="updateSpeed()" type="number" id="voiceSpeed" min="1" max="10" value="5" >
@@ -46,11 +47,6 @@
       </div>
       <p id="currentText" aria-live="polite">Use arrow keys to explore.</p>
 	  <div id="live" aria-live="polite"></div>
-      <button id="toggleLogBtn" aria-expanded="false" aria-controls="logArea" style="margin-top:10px;">View exploration log</button>
-      <div id="logArea" hidden>
-        <strong>Discovered locations:</strong>
-        <div id="logList"></div>
-      </div>
     </div>
 	 </section>
 </main>
