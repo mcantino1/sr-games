@@ -1672,7 +1672,7 @@ function activateCell(pos){
     else if (hasExit(pos)) {
       // Pressing Space on an Exit marks the stage complete (like a door).
       completed = true;
-      continueBtn.hidden = true;
+      
       // Announce completion but do not immediately load next level; Enter will advance.
       announce("You exit and return to the dungeon. <br> press <kbd>enter</kbd> to continue. ");
       return;
