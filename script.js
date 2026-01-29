@@ -1600,11 +1600,14 @@ function speakStatus() {
 	  myStuff += myItems[i].innerText + ", <br>";
   }
   announce(myStuff)
-  announce(toPos(player.row, player.col) + " " + currentLevelId  );
   
   
 }
-
+function speakLoc() {
+	speechSynthesis.cancel();
+	announce(toPos(player.row, player.col) + " " + currentLevelId  );	
+	
+}
 
 function activateCell(pos){
     if (hasPotion(pos)) {
@@ -1752,7 +1755,6 @@ gameEl.addEventListener("keydown", (e) => {
   }
   if (e.key === "w" || e.key === "W") {
     e.preventDefault();
-	
     speakMapContents();
     return;
   }
@@ -1763,6 +1765,12 @@ gameEl.addEventListener("keydown", (e) => {
     return;
   }
   
+    if (e.key === "a" || e.key === "A") {
+    e.preventDefault();
+    speakLoc();
+    return;
+  }
+
   
   // Spacebar: drink potion if present on current square
   if (e.key === ' ' || e.key === 'Spacebar' || e.code === 'Space') {
