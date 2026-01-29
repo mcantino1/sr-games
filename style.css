@@ -138,7 +138,8 @@ h1 strong{font-size: 1.75em; margin-left: 0.25em}
     gap: 12px;
     min-height: 0;
   }
-	select{font-size: 1em;}
+	select{font-size: 1em; width: 10em;}
+	
   .panel {
     border: 1px solid light-dark(var(--panelBorder), var(--panelBorderDark));
     border-radius: 14px;
@@ -270,7 +271,7 @@ h1 strong{font-size: 1.75em; margin-left: 0.25em}
 	:root{font-size: 26px;}
 } 
   
-@media (max-width: 1700px) {
+@media (max-width: 1600px) {
 	#spSettingsButton{display: block;}
 	.spSettings{display: none;}
 	#spSettings.enabled{display: block;}
