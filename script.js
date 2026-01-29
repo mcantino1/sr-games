@@ -15,6 +15,7 @@ const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 var levels;
  function initGame(){
 	 LEVELS = getLevels();
+	 getLevelIcons();
 	 levels = []
 	 myKeys = Object.keys(LEVELS);
 	 
@@ -32,6 +33,18 @@ var levels;
 	}
 	 
  }
+ 
+ function getLevelIcons(){
+	console.log(ICONS);
+	try{
+		newIcons = getIcons()
+		iconNames = Object.keys(newIcons);
+		for(icon of iconNames){
+			ICONS[icon] = newIcons[icon];
+	}}
+	catch(e){console.log(e)}
+ }
+ 
  
 function playSoundStep() {
   const duration = 0.05; // 100ms
@@ -321,8 +334,8 @@ let monsters = new Map(); // pos -> { hp, attack }
 function svgWrap(inner) {
   return `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">${inner}</svg>`;
 }
-const ICONS = {
-  player: () => (
+var ICONS = {
+  player: 
     '<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 88.2 88.2" aria-hidden="true" focusable="false">' +
     '<defs><style>.cls-1{fill:currentColor}.cls-1,.cls-2{stroke:currentColor;stroke-miterlimit:10;stroke-width:4px}.cls-2{fill:none}</style></defs>' +
     '<g><g id="Layer_1"><rect class="cls-2" x="32.6" y="38.8" width="2.4" height="31.2" transform="translate(-28.5 39.8) rotate(-45)"/>' +
@@ -330,8 +343,8 @@ const ICONS = {
     '<polygon class="cls-2" points="79.2 18.2 42.3 55.1 33.1 45.8 70 9 83.6 4.6 79.2 18.2"/>' +
     '<path class="cls-2" d="M44.8-.6"/>' +
     '</g></g></svg>'
-  ),
-  wall: () => `<svg viewBox="0 0 88.19 88.19" aria-hidden="true" focusable="false">
+  ,
+  wall:  `<svg viewBox="0 0 88.19 88.19" aria-hidden="true" focusable="false">
     <rect x="1" y="1" width="86.19" height="86.19" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="2"/>
     <line x1="1" y1="65.64" x2="87.19" y2="65.64" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="2"/>
     <line x1="1" y1="44.09" x2="87.19" y2="44.09" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="2"/>
@@ -352,7 +365,7 @@ const ICONS = {
     <path d="M12.4,1.37c.52,2.3-.47,5.69-2.26,7.23" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="2"/>
     <path d="M10.89,5.91l3.37,2.03c.17.69.68,1.3,1.33,1.59" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="2"/>
   </svg>`,
-  monster: () => (
+  monster: 
     '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 88.2 88.2" aria-hidden="true" focusable="false">' +
     '<g stroke="currentColor" stroke-miterlimit="10" stroke-width="4" fill="none">' +
       '<path d="M77.9,37.4c0,11.5-5.7,21.7-14.5,27.8v18.2H24.8v-18.2c-8.8-6.1-14.5-16.3-14.5-27.8C10.3,18.7,25.4,3.6,44.1,3.6s33.8,15.1,33.8,33.8Z"/>' +
@@ -366,9 +379,8 @@ const ICONS = {
       '<path d="M62.3,31.9c0-2.4-2.1-5.3-4.3-4.3s-3.1,2.2-4.3,4.3,1.9,4.3,4.3,4.3,4.3-1.9,4.3-4.3Z"/>' +
       '<path d="M42.7,43.5l-1.5,2.6c-.6,1.1.2,2.5,1.4,2.5h3c1.3,0,2-1.4,1.4-2.5l-1.5-2.6c-.6-1.1-2.2-1.1-2.8,0Z"/>' +
     '</g>' +
-    '</svg>'
-  ),
-  treasure: () => (
+    '</svg>',
+  treasure: 
     '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 88.2 88.2" aria-hidden="true" focusable="false">' +
 
       '<path d="M52,34.7c-.5.9-1.3,1.3-2.3,2.1l4.1,11.4h-19.6,0c0,0,4.1-11.4,4.1-11.4-.7-.6-1.3-1.3-1.8-2.1H3.5v46.1h81.2v-46.1h-32.7Z"' +
@@ -377,78 +389,61 @@ const ICONS = {
       '<path d="M44,21.3c4.9,0,8.8,3.9,8.8,8.8s0,1.6-.1,2.2h31.9v-9.9c0-8.3-6.7-15-15-15H18.5c-8.3,0-15,6.7-15,15v9.9h32c-.2-.7-.3-1.4-.3-2.2,0-4.9,3.9-8.8,8.8-8.8Z"' +
         ' fill="currentColor" stroke="currentColor" stroke-width="2" stroke-miterlimit="10"/>' +
 
-    '</svg>'
-  ),
-  door: () => svgWrap(`
-    <rect x="7" y="4" width="10" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="2"/>
-    <circle cx="14" cy="12" r="1" fill="currentColor"/>
-    <path d="M10 4 v16" fill="none" stroke="currentColor" stroke-width="1.5"/>
-  `),
-  door: () => (
-    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 88.2 88.2" aria-hidden="true" focusable="false">' +
-      '<g fill="none" stroke="currentColor" stroke-width="4" stroke-miterlimit="10">' +
-        '<rect x="15.8" y="3.2" width="56.7" height="81.8"/>' +
-        '<circle cx="62.1" cy="46.9" r="4.6"/>' +
-      '</g>' +
-    '</svg>'
-  ),
-  key: () => (
+    '</svg>',
+  door: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 88.2 88.2" style="width: 100%; height: 100%; display: block;" aria-hidden="true" focusable="false">' +
+							 '<g fill="none" stroke="currentColor" stroke-width="4" stroke-miterlimit="10">' +
+								 '<rect x="15.8" y="3.2" width="56.7" height="81.8"/>' +
+								 '<circle cx="62.1" cy="46.9" r="4.6"/>' +
+							 '</g>' +
+						 '</svg>',
+  key:
     '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 88.2 88.2" aria-hidden="true" focusable="false">' +
       '<path d="M31,15.9c-.7,3.4-2.7,7.4-5.6,10.9-6.1,7.4-13.2,9.5-15.4,7.7-2.2-1.8-1.5-9.2,4.7-16.6,6.1-7.4,13.2-9.5,15.4-7.7,1.1.9,1.4,3,.9,5.7Z" fill="none"/>' +
       '<path d="M85,69.1L34,26.9c2-3.2,3.3-6.5,3.9-9.7,1-5.4-.1-9.8-3.3-12.4-1.9-1.5-4.1-2.3-6.7-2.3-5.8,0-12.8,3.9-18.6,10.9C1.1,23.4-.5,34.8,5.6,39.9c1.9,1.5,4.1,2.3,6.7,2.3,4.6,0,10-2.5,14.9-7l38.6,31.9-6.1,7.4c-.5.6-.4,1.4.2,1.9l1.7,1.4c.6.5,1.4.4,1.9-.2l6.1-7.4,6.6,5.5-6.1,7.4c-.4.5-.4,1.3.2,1.8l1.3,1.1c.5.4,1.3.4,1.8-.2l11.9-14.4c.6-.7.5-1.7-.2-2.2ZM14.7,17.9c6.1-7.4,13.2-9.5,15.4-7.7,1.1.9,1.4,3,.9,5.7-.7,3.4-2.7,7.4-5.6,10.9-6.1,7.4-13.2,9.5-15.4,7.7-2.2-1.8-1.5-9.2,4.7-16.6Z"' +
         ' fill="currentColor" stroke="currentColor" stroke-width="2" stroke-miterlimit="10"/>' +
-    '</svg>'
-  ),
+    '</svg>',
   
-  potion: () => (
-    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 88.2 88.2" aria-hidden="true" focusable="false">' +
+  potion: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 88.2 88.2" aria-hidden="true" focusable="false">' +
       '<path d="M68.2,65c0,10.8-10.8,19.5-24.1,19.5s-24.1-8.7-24.1-19.5c0-8.7,7-16.1,16.7-18.6V5.7h14.8v40.8c9.7,2.5,16.7,9.9,16.7,18.6Z"' +
         ' fill="currentColor" stroke="currentColor" stroke-width="2" stroke-miterlimit="10"/>' +
       '<path d="M44.1,5.7c-5.1,0-9.2-.5-9.2-1s4.1-1,9.2-1,9.2.5,9.2,1-4.1,1-9.2,1Z"' +
         ' fill="none" stroke="currentColor" stroke-width="2" stroke-miterlimit="10"/>' +
-    '</svg>'
-  ),
-  void: () => (
+    '</svg>',
+  void:
     '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 88.2 88.2" aria-hidden="true" focusable="false" style="width:100%;height:100%;display:block;">' +
       '<g fill="none" stroke="currentColor" stroke-width="4" stroke-miterlimit="10">' +
         '<circle cx="44.1" cy="44.1" r="30" />' +
         '<circle cx="44.1" cy="44.1" r="12" />' +
       '</g>' +
-    '</svg>'
-  ),
-  weapon_shop: () => (
+    '</svg>',
+  weapon_shop: 
     '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 88.2 88.2" aria-hidden="true" focusable="false" style="width:100%;height:100%;display:block;">' +
       '<g stroke="currentColor" stroke-miterlimit="10" stroke-width="4" fill="none">' +
         '<path d="M20 68 L68 20"/>' +
         '<path d="M54 14 L70 30 L56 44"/>' +
       '</g>' +
-    '</svg>'
-  ),
-  armor_shop: () => (
-    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 88.2 88.2" aria-hidden="true" focusable="false" style="width:100%;height:100%;display:block;">' +
+    '</svg>',
+  armor_shop:     '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 88.2 88.2" aria-hidden="true" focusable="false" style="width:100%;height:100%;display:block;">' +
       '<g fill="none" stroke="currentColor" stroke-width="4" stroke-miterlimit="10">' +
         '<path d="M44 6 L20 18 L20 42 C20 62 44 74 44 74 C44 74 68 62 68 42 L68 18 Z"/>' +
       '</g>' +
-    '</svg>'
-  ),
-  inn: () => (
+    '</svg>',
+  inn:
     '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 88.2 88.2" aria-hidden="true" focusable="false" style="width:100%;height:100%;display:block;">' +
       '<g fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">' +
         '<line x1="44.1" y1="20" x2="44.1" y2="68.2" />' +
         '<line x1="20" y1="44.1" x2="68.2" y2="44.1" />' +
       '</g>' +
-    '</svg>'
-  ),
-  stairs: () => ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 88.2 88.2" style="width: 100%; height: 100%; display: block;" aria-hidden="true" focusable="false"> <polyline fill="none" stroke="currentColor" stroke-width="4" points="88.1 24 68 24 68 40 52 40 52 56 36 56 36 72 18 72 18 88.1"/> </svg>'
-   ),
-  villager: () => (
+    '</svg>',
+  stairs: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 88.2 88.2" style="width: 100%; height: 100%; display: block;" aria-hidden="true" focusable="false"> <polyline fill="none" stroke="currentColor" stroke-width="4" points="88.1 24 68 24 68 40 52 40 52 56 36 56 36 72 18 72 18 88.1"/> </svg>'
+   ,
+  villager:
     '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 88.2 88.2" aria-hidden="true" focusable="false" style="width:100%;height:100%;display:block;">' +
       '<g stroke="currentColor" stroke-miterlimit="10" stroke-width="3" fill="currentColor">' +
         '<circle cx="44" cy="28" r="10"/>' +
         '<path d="M24 66 C24 54 64 54 64 66 C64 74 44 80 44 80 C44 80 24 74 24 66 Z"/>' +
       '</g>' +
     '</svg>'
-  )
 };
 
 /* ---------------- DEMO LEVELS ---------------- */
@@ -772,55 +767,58 @@ function renderMap() {
 	  el.setAttribute("onclick", "mapTouch('" + pos + "\')")
       if (show) {
         const items = itemsAt(pos);
+		item = items[0]
+		
         if (items.some(i => i.type === "wall" || i.type === "bush" || i.type === "flower" || i.type === "custom_wall")) {
           el.classList.add("wall");
-          el.innerHTML = ICONS.wall();
+          el.innerHTML = ICONS.wall;
         } else if (items.some(i => i.type === "door")) {
-          el.innerHTML = ICONS.door();
+          el.innerHTML = ICONS.door;
         } else if (items.some(i => i.type === "key")) {
-          el.innerHTML = ICONS.key();
+          el.innerHTML = ICONS.key;
         } else if (items.some(i => i.type === "monster")) {
-          el.innerHTML = ICONS.monster();
+          el.innerHTML = ICONS.monster;
         } else if (items.some(i => i.type === "treasure")) {
-          el.innerHTML = ICONS.treasure();
+          el.innerHTML = ICONS.treasure;
         } else if (items.some(i => i.type === "stairs")) {
-          el.innerHTML = ICONS.stairs();
+          el.innerHTML = ICONS.stairs;
         } else if (items.some(i => i.type === "potion")) {
-          el.innerHTML = ICONS.potion();
+          el.innerHTML = ICONS.potion;
         } else if (items.some(i => i.type === "exit")) {
-          el.innerHTML = ICONS.exit ? ICONS.exit() : ICONS.door();
+          el.innerHTML = ICONS.exit ? ICONS.exit : ICONS.door;
         } else if (items.some(i => i.type === "exit_open")) {
-          el.innerHTML = ICONS.door();
+          el.innerHTML = ICONS.door;
         } else if (items.some(i => i.type === "void")) {
-          el.innerHTML = ICONS.void();
+          el.innerHTML = ICONS.void;
         } else if (items.some(i => i.type === "weapon_shop")) {
-          el.innerHTML = ICONS.weapon_shop();
+          el.innerHTML = ICONS.weapon_shop;
         } else if (items.some(i => i.type === "armor_shop")) {
-          el.innerHTML = ICONS.armor_shop();
+          el.innerHTML = ICONS.armor_shop;
         } else if (items.some(i => i.type === "inn")) {
-          el.innerHTML = ICONS.inn();
+          el.innerHTML = ICONS.inn;
         } else if (items.some(i => i.type === "villager")) {
-          el.innerHTML = ICONS.villager();
+          el.innerHTML = ICONS.villager;
         } else if (revealedSpecial.has(pos)) {
           const t = revealedSpecial.get(pos);
-          if (t === "key") el.innerHTML = ICONS.key();
-          else if (t === "treasure") el.innerHTML = ICONS.treasure();
-		  else if (t === "stairs") el.innerHTML = ICONS.stairs();
-          else if (t === "monster") el.innerHTML = ICONS.monster();
-          else if (t === "void") el.innerHTML = ICONS.void();
-          else if (t === "weapon_shop") el.innerHTML = ICONS.weapon_shop();
-          else if (t === "armor_shop") el.innerHTML = ICONS.armor_shop();
-          else if (t === "inn") el.innerHTML = ICONS.inn();
-          else if (t === "exit") el.innerHTML = ICONS.exit ? ICONS.exit() : ICONS.door();
-          else if (t === "villager") el.innerHTML = ICONS.villager();
+          if (t === "key") el.innerHTML = ICONS.key;
+          else if (t === "treasure") el.innerHTML = ICONS.treasure;
+		  else if (t === "stairs") el.innerHTML = ICONS.stairs;
+          else if (t === "monster") el.innerHTML = ICONS.monster;
+          else if (t === "void") el.innerHTML = ICONS.void;
+          else if (t === "weapon_shop") el.innerHTML = ICONS.weapon_shop;
+          else if (t === "armor_shop") el.innerHTML = ICONS.armor_shop;
+          else if (t === "inn") el.innerHTML = ICONS.inn;
+          else if (t === "exit") el.innerHTML = ICONS.exit ? ICONS.exit : ICONS.door;
+          else if (t === "villager") el.innerHTML = ICONS.villager;
         } else if (level.scenes[pos]) {
           el.innerHTML = `<span aria-hidden="true">•</span>`;
         }
+		if(item){if(item.meta){if(item.meta.icon){el.innerHTML = ICONS[item.meta.icon]}}}
       }
 
       if (player.row === r && player.col === c) {
         el.classList.add("player");
-        el.innerHTML = ICONS.player();
+        el.innerHTML = ICONS.player;
 		focusSquare = el;
       }
 
@@ -948,7 +946,9 @@ function contentsAt(r, c) {
   if (items.some(i=>i.type==="key")) return "faint glow";
   if (items.some(i=>i.type==="monster")) {
 	  playSoundGrowl();
-	  return "growling sound";}
+	  var monSound = "growling"
+	 if(items[0].meta){if(items[0].meta.sound){monSound = items[0].meta.sound}};
+	  return monSound + " sound";}
   if (items.some(i=>i.type==="potion")) return "small pouch";
   if (items.some(i=>i.type==="treasure")) return "hidden passage";
 	if (items.some(i=>i.type==="stairs")) return "stairs";
@@ -1710,7 +1710,7 @@ function speakMapContents(){
 	
 	for (key of revealedSpecial){
 		if(myText.length > 0){myText += ", \n"}
-		myText += String(key).replace(",", " ")
+		myText += String(key).replace(",", " ").replace("_", " ")
 		
 		
 	}

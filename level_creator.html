@@ -11,11 +11,8 @@
 <body>
     <div class="container">
         <h1>Level Creator</h1>
-		<div style="display:inline-flex; gap:8px; align-items:center;">           
-			<input type="file" id="importMonstersFile" accept="text/csv" style="display:none" />			
-            <button id="btnImportMonsters" style="padding:6px 8px; font-size:12px; border-radius:6px;">Import Monsters</button>
-            <button id="btnExportMonsters" style="padding:6px 8px; font-size:12px; border-radius:6px;">Export Monsters</button>
-           <button id="btnSave" onclick="saveSet()" >save</button> 
+		<div>    
+	       <button id="btnSave" onclick="saveSet()" >save</button> 
         </div>
 <div class="gridParent">
 <div class="leftPanel">
@@ -27,25 +24,32 @@
 <button id="btnSort" onclick="sortLevelList()">Sort</button>
 </div>
 <div class="mainBody">
-        <div class="top-section" title="Level creation controls">
+	<div>
 		<h2>Level Settings</h2>
-			<div class="row">
+		<div>
+			<div class="floatGroup">
 				<label for="inputLevelId">Level ID:</label>
-                <input type="text" onchange="updateID()" id="inputLevelId" placeholder="uniqueIdentifier" style="flex: 1; max-width: 200px;">
+                <input type="text" onchange="updateID()" id="inputLevelId" placeholder="uniqueIdentifier" >
+			</div>
+			<div class="floatGroup">
 				<label for="nextLevelSelect">Next level:</label>
-				<select name="nextLevelId" onchange="updateNext()" style="flex: 1;" id="nextLevelSelect"></select>
-            </div>
-
-            <div class="row">
+				<select name="nextLevelId" id="nextLevelSelect"  onchange="updateNext()" ></select>
+			</div>
+			<div class="floatGroup">
                 <label for="inputRows">Rows:</label>
                 <input type="number" id="inputRows" min="1" max="12" value="6" aria-describedby="rowsHelp">
-                <label for="inputCols">Cols:</label>
-                <input type="number" id="inputCols" min="1" max="12" value="6" aria-describedby="colsHelp">
-                <button id="btnCreateGrid">Create Grid</button>
             </div>
-			
-			<div class="row">
-                <h2 class="item-label" id="itemTypeLabel">Tools</h2>
+			<div class="floatGroup">
+			<label for="inputCols">Cols:</label>
+                <input type="number" id="inputCols" min="1" max="12" value="6" aria-describedby="colsHelp">
+            </div>
+			<div class="floatGroup">
+			<button id="btnCreateGrid">Create Grid</button>
+			</div>
+		</div>
+		</div>
+		<div>
+         <h2>Tools</h2>
 				<button class="item-btn" id="btnSelect" data-item="select">Select (I)</button>
                 <button class="item-btn" data-item="eraser" >Eraser (E)</button>
                 <button class="item-btn" data-item="wall" >Wall (W)</button>
@@ -62,49 +66,50 @@
                 <button class="item-btn" data-item="armor_shop" >Armor Shop (A)</button>
                 <button class="item-btn" data-item="inn" >Inn (N)</button>
                 <button class="item-btn" data-item="villager" >Villager (L)</button>
-            </div>
+         </div>
+		<div>		 
 			<h2>Cell Properties</h2>
-            <div class="row" id="monsterLibraryContainer" style="margin-top:8px; border-top:1px dashed #ccc; padding-top:8px;">
-                <div style="flex:1;>
-                    <div style="font-weight:600; margin-bottom:6px;">Monster Library</div>
-                    <div style="display:flex; flex-wrap: wrap;  gap:8px; align-items:center; margin-bottom:6px;">
-					    
-                        <label for="monsterName" style="display:flex;flex-wrap: wrap; flex-direction:column;font-size:12px;flex:1;">
+            <div id="monsterLibraryContainer" >
+				
+                    <div class="floatGroup">
+                        <label for="monsterName" >
 						monster Name: 
                         </label>
                             <input id="monsterName" placeholder="Name" />
-                       <div>
-                        <label for="monsterHP" style="display:flex;flex-direction:column;font-size:12px;">
+					</div>
+                    <div class="floatGroup">
+                        <label for="monsterHP" >
                             <span >HP</span></label>
                             <input class="spinbox" id="monsterHP" type="number" min="1" value="6"  />
-                       </div><div> 
-                        <label for="monsterATK" style="display:flex;flex-direction:column;font-size:12px;">
+                    </div>
+					<div class="floatGroup">
+                        <label for="monsterATK" >
                             <span >ATK</span></label>
                             <input class="spinbox" id="monsterATK" type="number" min="0" value="2" />
-                        </div><div> 
-                        <label for="monsterDEF" style="display:flex;flex-direction:column;font-size:12px;">
+                    </div>
+					
+					<div class="floatGroup">
+                        <label for="monsterDEF" >
                             <span >DEF</span></label>
                             <input id="monsterDEF"  class="spinbox" type="number" min="0" value="0" />
-                        </div>
-                        <button id="btnAddMonster">Add Monster</button>
-                        <button id="btnCancelEdit" style="display:none; margin-left:6px;">New monster</button>
                     </div>
-                    <div style="display:flex; gap:8px; margin-top:6px;">
-						<div>
-						<label for="monsterDesc1">Attack description 1</label>
-                        <input id="monsterDesc1" placeholder="Description 1 (attacked)" style="flex:1;" />
+					
+                    <div class="floatGroup">
+						<div class="floatGroup">
+							<label for="monsterDesc1">Attack description 1</label>
+							<input id="monsterDesc1" placeholder="Description 1 (attacked)" />
 						</div>
-						<div>
-						<label for="monsterDesc2">Description 2</label>
-                        <input id="monsterDesc2" placeholder="Description 2 (attacked)" style="flex:1;" />
+						<div class="floatGroup">
+							<label for="monsterDesc2">Description 2</label>
+							<input id="monsterDesc2" placeholder="Description 2 (attacked)"  />
 						</div>
-						<div>
-						<label for="monsterDesc3">Description 3</label>
-                        <input id="monsterDesc3" placeholder="Description 3 (attacked)" style="flex:1;" />
+						<div class="floatGroup">
+							<label for="monsterDesc3">Description 3</label>
+							<input id="monsterDesc3" placeholder="Description 3 (attacked)"  />
 						</div>
-                    </div>
-					<div style="display:flex; gap:8px; margin-top:6px;">
-						
+                    </div>	
+					<div class="floatGroup">
+						<div class="floatGroup">
 						<label for="monRewKind">Reward type:</label>
 						<select id="monRewKind">
 							<option value="gold">Gold</option>
@@ -112,20 +117,47 @@
 							<option value="defense">Defense</option>
 							<option value="life">Life</option>
 						</select>
+						</div>
+						<div class="floatGroup">
 						<label for="monRewValue">Value:</label>
-						<input  id="monRewValue" type="number" min="1" value="25" />
+						<input  id="monRewValue" type="number" min="1" class="number" value="25" />
+						</div>
+						<div class="floatGroup">
 						<label for="monRewDesc">Reward description: </label>
-						     <input id="monRewDesc"/>
-				</div>
+						<input id="monRewDesc"/>
+					</div></div>
+					<div class="floatGroup">
+						<div class="floatGroup">
+						<label for="monSound">sound clue</label>
+						<input id="monSound" value="growling"></input>
+						</div>
+						
+						<div class="floatGroup">
+						
+						<label for="monIcon">Icon</label>
+						<select onChange="updateMonIcon()"  id="monIcon" >
+						<option  value="monster">monster</option>
+						</select>
+						<div id="monIconDisplay"></div>
+						<input type="file" onchange="addMonIcon()" style="width: 10em; height: 3em;" id="monAddIcon" accept=".svg" />
+						</div>
+						
+					</div>
+					<div style="clear: both;">
+                        <button id="btnAddMonster">Add Monster</button>
+                        <button id="btnCancelEdit" >New monster</button>
+					</div>
+				<div class="floatGroup">
 				<div id="monsterParent">
                     <table id="monsterList" class="monster-list">
 						
 					</table>
-                </div></div>
+                </div>
+				</div>
             </div>
 
 
-            <div class="row" id="treasureConfig" style="display:none; align-items:center;">
+            <div id="treasureConfig">
                 <label onchange="treasureUpdate()" for="treasureKind">Treasure type:</label>
                 <select  onchange="treasureUpdate()"  id="treasureKind">
                     <option value="gold">Gold</option>
@@ -134,33 +166,33 @@
                 </select>
                 <label for="treasureValue">Value:</label>
                 <input  onchange="treasureUpdate()" id="treasureValue" type="number" min="1" value="25" />
-                <span style="font-size:12px;">Set the amount of gold or the buff amount.</span>
+                <span >Set the amount of gold or the buff amount.</span>
             </div>
 
-            <div class="row" id="stairConfig" style="display:none; align-items:center;">
+            <div id="stairConfig" >
                 <label for="stairLevelSelect">Target Level:</label>
                 <select  onchange="stairUpdate()"  id="stairLevelSelect">
                 </select>
                 <label for="stairCellSelect">Target Cell:</label>
                 <select  onchange="stairUpdate()" id="stairCellSelect"/></select>
-            </div>
+          </div>
 
-            <div class="row" id="keyConfig" style="display:none; align-items:center;">
+            <div id="keyConfig" >
                 <label for="keyLevelSelect">Key Level:</label>
                 <select  onchange="keyUpdate()"  id="keyLevelSelect">
                 </select>
             </div>
 
 
-            <div class="row" id="potionConfig" style="display:none; align-items:center;">
+            <div  id="potionConfig" >
                 <label for="potionHeal">Potion heal:</label>
                 <input id="potionHeal" type="number" min="1" value="10" />
-                <span style="font-size:12px;">Amount of life restored when drinking this potion.</span>
+                <span >Amount of life restored when drinking this potion.</span>
             </div>
 
-            <div class="row" id="villagerConfig" style="display:none; align-items:center; gap:8px;">
+            <div  id="villagerConfig" >
                 <label for="villagerText">Villager text:</label>
-                <input id="villagerText" onchange="villagerUpdate()" type="text" placeholder="Villager says..." style="flex:1; max-width:400px;" />
+                <input id="villagerText" onchange="villagerUpdate()" type="text" placeholder="Villager says..."  />
                 <label for="villagerKind">Reward type:</label>
                 <select id="villagerKind" onchange="villagerUpdate()" >
                     <option value="gold">Gold</option>
@@ -169,23 +201,22 @@
                 </select>
                 <label for="villagerValue">Value:</label>
                 <input onchange="villagerUpdate()" id="villagerValue" type="number" min="1" value="25" />
-                <span style="font-size:12px;">Villager spoken text and an optional reward amount.</span>
+                <span >Villager spoken text and an optional reward amount.</span>
             </div>
 
-            <div class="row" id="customWallConfig" style="display:none; align-items:center; gap:8px;">
+            <div  id="customWallConfig" >
                 <label for="customWallName">Custom wall name:</label>
-                <input id="customWallName" type="text" placeholder="e.g. Stone Hedge" style="flex:1; max-width:300px;" />
-                <span style="font-size:12px;">Optional name shown in the editor and exports.</span>
+                <input id="customWallName" type="text" placeholder="e.g. Stone Hedge"  />
+                <span >Optional name shown in the editor and exports.</span>
             </div>
-
-            <div class="row">
+			<div class="floatGroup">
                 <label for="inputDesc">Cell description:</label>
-                <input type="text" id="inputDesc" placeholder="Enter description for selected cell" style="flex: 1; max-width: 400px;" aria-describedby="descHelp">
+                <input type="text" id="inputDesc" placeholder="Enter description for selected cell"  aria-describedby="descHelp">
                 <button id="btnSetDesc">Set Description</button>
             </div>
-			
         </div>
-<div>
+</div>
+<div class="rightPanel">
         <div class="grid-section">
            <H2>Level Grid</H2>
             <table id="grid" title="game grid"  ></table>
@@ -193,10 +224,10 @@
      
 </div>
         <div>
-            <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center; justify-content:center; margin-bottom:10px;">
+            <div >
        
-                <button id="btnGenerateSVG" class="gen-btn" style="flex:0 1 32%; min-width:140px; padding:8px 10px; font-size:13px;" aria-label="Generate an SVG map file of your level. The file will be downloaded to your computer.">Download SVG Map</button>
-                <button id="btnGenerateWallsSVG" class="gen-btn" style="flex:0 1 32%; min-width:140px; padding:8px 10px; font-size:13px;" aria-label="Generate an SVG map file showing only walls. The file will be downloaded to your computer.">Download Wall Only Map</button>
+                <button id="btnGenerateSVG" class="gen-btn" >Download SVG Map</button>
+                <button id="btnGenerateWallsSVG" class="gen-btn" >Download Wall Only Map</button>
             </div>
             
         </div>
