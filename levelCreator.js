@@ -58,7 +58,7 @@ function initLevelSet(){
 			else if(item.type == "weapon_shop"){
 				//Welcome to the weapon shop! Press Space to upgrade your strength 2 points for 18 gold.
 				item.type = "shop";
-				var myMeta = {name: "weapon shop", value: 2, kind: "power", cost: 18 , currency: "gold", icon: "weapon_shop"}
+				var myMeta = {name: "weapon shop", value: 2, kind: "strength", cost: 18 , currency: "gold", icon: "weapon_shop"}
 				item.meta = myMeta;
 			}
 			else if(item.type == "armor_shop"){
@@ -1085,7 +1085,7 @@ treasureKindEl.addEventListener('change', function() {
 	treasureKind = this.value;
 	// Apply sensible defaults per treasure kind
 	if (treasureKind === 'gold') treasureValue = 25;
-	else if (treasureKind === 'power') treasureValue = 2;
+	else if (treasureKind === 'strength') treasureValue = 2;
 	else if (treasureKind === 'defense') treasureValue = 1;
 	treasureValueEl.value = treasureValue;
 });
@@ -1111,7 +1111,7 @@ if (villagerKindEl) {
 		villagerKind = this.value || 'gold';
 		// Apply sensible defaults per villager reward kind
 		if (villagerKind === 'gold') villagerValue = 10;
-		else if (villagerKind === 'power') villagerValue = 1;
+		else if (villagerKind === 'strength') villagerValue = 1;
 		else if (villagerKind === 'defense') villagerValue = 1;
 		if (villagerValueEl) villagerValueEl.value = villagerValue;
 	});

@@ -866,9 +866,9 @@ function rollTreasureReward(meta) {
       stats.gold += v;
       return `You collect ${v} gold. `;
     }
-    if (k === 'power') {
+    if (k === 'strength') {
       stats.strength += v;
-      return `You gain a power upgrade. Strength increased by ${v}. `;
+      return `You gain a strength upgrade. Strength increased by ${v}. `;
     }
     if (k === 'defense') {
       stats.defense += v;
@@ -884,7 +884,7 @@ function rollTreasureReward(meta) {
   }
   if (roll < 0.85) {
     stats.strength += 1;
-    return `You gain a power upgrade. Strength increased by 1. `;
+    return `You gain a strength upgrade. Strength increased by 1. `;
   }
   stats.defense += 1;
   return `You gain a defense upgrade. Defense increased by 1. `;
@@ -1224,9 +1224,9 @@ function enterCell(prefix) {
       if (kind === 'gold') {
         stats.gold = (stats.gold || 0) + val;
         discoveryMsgs.push(`The villager gives you ${val} gold. `);
-      } else if (kind === 'power') {
+      } else if (kind === 'strength') {
         stats.strength = (stats.strength || 0) + val;
-        discoveryMsgs.push(`The villager gives you a power upgrade. Strength increased by ${val}. `);
+        discoveryMsgs.push(`The villager gives you a strength upgrade. Strength increased by ${val}. `);
       } else if (kind === 'defense') {
         stats.defense = (stats.defense || 0) + val;
         discoveryMsgs.push(`The villager gives you a defense upgrade. Defense increased by ${val}. `);
@@ -1235,9 +1235,9 @@ function enterCell(prefix) {
         const raw = rollTreasureReward(meta) || '';
         const mGold = raw.match(/You collect (\d+) gold\./);
         if (mGold) discoveryMsgs.push(`The villager gives you ${mGold[1]} gold. `);
-        else if (/You gain a power upgrade/.test(raw)) {
+        else if (/You gain a strength upgrade/.test(raw)) {
           const m = raw.match(/Strength increased by (\d+)/);
-          discoveryMsgs.push(m ? `The villager gives you a power upgrade. Strength increased by ${m[1]}. ` : `The villager gives you a power upgrade. `);
+          discoveryMsgs.push(m ? `The villager gives you a strength upgrade. Strength increased by ${m[1]}. ` : `The villager gives you a strength upgrade. `);
         } else if (/You gain a defense upgrade/.test(raw)) {
           const m = raw.match(/Defense increased by (\d+)/);
           discoveryMsgs.push(m ? `The villager gives you a defense upgrade. Defense increased by ${m[1]}. ` : `The villager gives you a defense upgrade. `);
@@ -1257,9 +1257,9 @@ function enterCell(prefix) {
         const raw = rollTreasureReward(null) || '';
         const mGold = raw.match(/You collect (\d+) gold\./);
         if (mGold) discoveryMsgs.push(`The villager gives you ${mGold[1]} gold. `);
-        else if (/You gain a power upgrade/.test(raw)) {
+        else if (/You gain a strength upgrade/.test(raw)) {
           const m = raw.match(/Strength increased by (\d+)/);
-          discoveryMsgs.push(m ? `The villager gives you a power upgrade. Strength increased by ${m[1]}. ` : `The villager gives you a power upgrade. `);
+          discoveryMsgs.push(m ? `The villager gives you a strength upgrade. Strength increased by ${m[1]}. ` : `The villager gives you a strength upgrade. `);
         } else if (/You gain a defense upgrade/.test(raw)) {
           const m = raw.match(/Defense increased by (\d+)/);
           discoveryMsgs.push(m ? `The villager gives you a defense upgrade. Defense increased by ${m[1]}. ` : `The villager gives you a defense upgrade. `);
