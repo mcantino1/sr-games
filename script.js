@@ -8,6 +8,7 @@
 /* ---------------- Constants / Game State ---------------- */
 const MAX_SIZE = 12; // maximum grid size used for consistent scaling
 const MAX_LIFE = 100; // global maximum life cap for players
+var baseLife = 20;
 
 // Audio setup for footstep sounds
 let footstepAudio = null;
@@ -323,7 +324,7 @@ let revealedNeighbors = new Set();
 // Map of pos -> type ("key" | "treasure" | "monster").
 let revealedSpecial = new Map();
 let completed = false;
-let stats = { life: 10, strength: 2, defense: 0, gold: 0, key: false };
+let stats = { life: baseLife, strength: 2, defense: 0, gold: 0, key: false };
 let discoveryLog = [];
 
 // Monsters are tracked separately so they can have HP and be defeated.
@@ -551,6 +552,7 @@ function hasPotion(pos){ return itemsAt(pos).some(it => it.type === "potion"); }
 function hasVoid(pos){ return itemsAt(pos).some(it => it.type === "void"); }
 function hasMonster(pos){ return itemsAt(pos).some(it => it.type === "monster"); }
 function hasWeaponShop(pos){ return itemsAt(pos).some(it => it.type === "weapon_shop"); }
+function hasShop(pos){ return itemsAt(pos).some(it => it.type === "shop"); }
 function hasArmorShop(pos){ return itemsAt(pos).some(it => it.type === "armor_shop"); }
 function hasInn(pos){ return itemsAt(pos).some(it => it.type === "inn"); }
 function hasVillager(pos){ return itemsAt(pos).some(it => it.type === "villager"); }
@@ -622,6 +624,7 @@ function revealNeighbors(pos) {
     else if (hasPotion(npos)) revealedSpecial.set(npos, "potion");
     else if (hasVillager(npos)) revealedSpecial.set(npos, "villager");
     else if (hasWeaponShop(npos)) revealedSpecial.set(npos, "weapon_shop");
+	else if (hasShop(npos)) revealedSpecial.set(npos, "shop");
     else if (hasArmorShop(npos)) revealedSpecial.set(npos, "armor_shop");
     else if (hasInn(npos)) revealedSpecial.set(npos, "inn");
     else if (hasExit(npos)) revealedSpecial.set(npos, "exit");
@@ -647,6 +650,7 @@ function revealMap(){
     else if (hasPotion(pos)) {revealedSpecial.set(pos, "potion")}
     else if (hasVillager(pos)) {revealedSpecial.set(pos, "villager")}
     else if (hasWeaponShop(pos)) {revealedSpecial.set(pos, "weapon_shop")}
+	else if (hasShop(pos)) {revealedSpecial.set(pos, "shop")}
     else if (hasArmorShop(pos)) {revealedSpecial.set(pos, "armor_shop")}
     else if (hasInn(pos)) {revealedSpecial.set(pos, "inn")}
     else if (hasExit(pos)) {revealedSpecial.set(pos, "exit")}
@@ -658,12 +662,14 @@ function revealMap(){
 function mapTouch(pos){
 	
 	//if touched spot is one spot away, go straight to tryMove
-	tcol = pos.charCodeAt(0) - 65
-	trow = (pos[1] - 1)
+	
+	tcol = posToRC(pos).col
+	trow = posToRC(pos).row
+	
 	player.row
 	player.col
-	dcol = tcol - player.col
-	drow = trow - player.row
+	dcol = parseInt(tcol) - parseInt(player.col)
+	drow = parseInt(trow) - parseInt(player.row)
 	let distance = (Math.abs(player.col - tcol) + Math.abs(player.row - trow))
 	
 	if(distance == 0){
@@ -696,8 +702,10 @@ function mapTouch(pos){
 			move = false;
 			startRow = player.row
 			startCol = player.col		
-			dcol = tcol - player.col
-			drow = trow - player.row		
+			dcol = parseInt(tcol) - parseInt(player.col)
+			drow = parseInt(trow) - parseInt(player.row)	
+			console.log(dcol)			
+			console.log(drow)
 			dr = 0;
 			dc = 0;
 			if(drow < 0) {dr = -1}
@@ -928,18 +936,24 @@ function contentsAt(r, c) {
   // If a custom wall is present, prefer its configured name as the sensory cue.
   const items = itemsAt(pos);
   const customWall = items.find(i => i.type === 'custom_wall');
-  if (customWall) {
+if (customWall) {
     if (customWall.meta && customWall.meta.name) return String(customWall.meta.name);
     return 'wall';
   }
 
-  if (hasWall(pos)) return null;
-
+  if (hasWall(pos)){
+	  if(items[0].meta && items[0].meta.name){
+		  return items[0].meta.name;
+	  } else{
+		return null;
+	  }
+	}
   if (items.some(i=>i.type==="door")) return "You see the exit";
   if (items.some(i=>i.type==="door")) return "You see the exit";
   if (items.some(i=>i.type==="exit")) return "You see the exit";
   if (items.some(i=>i.type==="void")) return "mysterious fog";
   if (items.some(i=>i.type==="weapon_shop")) return "weapon shop";
+    if (items.some(i=>i.type==="shop")) return "shop";
   if (items.some(i=>i.type==="armor_shop")) return "armor shop";
   if (items.some(i=>i.type==="inn")) return "Inn";
   if (items.some(i=>i.type==="villager")) return "Villager";
@@ -1268,7 +1282,11 @@ function enterCell(prefix) {
     revealedSpecial.set(pos, "stairs");
     discoveryMsgs.push("A staircase is here. Press <kbd>Space</kbd> to take them. ");
   }
-
+	if (hasShop(pos)){
+		revealedSpecial.set(pos, "shop");
+		shop = itemsAt(pos)[0].meta
+		discoveryMsgs.push("Welcome to the " + shop.name + "! Press <kbd>Space</kbd> to gain " + shop.value + " " + shop.kind + " for " + shop.cost + " " + shop.currency + ".");
+	}
 
   if (hasWeaponShop(pos)) {
     // Do NOT auto-purchase. Prompt the player and leave the shop available until they Press <kbd>Space</kbd>.
@@ -1428,8 +1446,13 @@ function tryMove(dr, dc) {
 
   // Wall bump
   if (hasWall(nextPos)) {
+	  wallName = "wall"
     revealedByBump.add(nextPos);
-    announce("A wall blocks your way. ");
+	
+	wall = itemsAt(nextPos)[0]
+	console.log(wall);
+	if(wall.meta && wall.meta.name && wall.meta.name.length > 0){ wallName = wall.meta.name}
+    announce("A " + wallName + " blocks your way. ");
     playSoundWall();
     renderMap();
     return;
@@ -1508,7 +1531,7 @@ function tryMove(dr, dc) {
         
         //announce(msg);
         // Reset life to default and remove any held key, but preserve other stats.
-        stats.life = 10;
+        stats.life = baseLife;
 		
         stats.key = levels[currentLevelId].foundKey;
         // Tell loadLevel to preserve the current stats object when reloading.
@@ -1633,6 +1656,32 @@ function activateCell(pos){
 	else{
 		loadLevel(targetLevel, targetCell);
 	} }
+	else if (hasShop(pos)){
+		shop = itemsAt(pos)[0].meta;
+		
+		if (stats[shop.currency] >= shop.cost){
+			if(shop.kind == "life"){
+				stats[shop.currency] -= shop.cost;
+				let before = stats.life;
+				stats.life = Math.min(MAX_LIFE, stats.life + shop.value);
+				let gained = stats.life - before;
+				announce("You lose " + shop.cost  + " " + shop.currency + " and gain " + gained + " " + shop.kind + ".");	
+			}
+			
+			else {
+				stats[shop.currency] -= shop.cost;
+				stats[shop.kind] += shop.value;
+				
+			announce("You lose " + shop.cost  + " " + shop.currency + " and gain " + shop.value + " " + shop.kind + ".");	
+			}
+			
+			
+		}
+		else {
+			announce("You don't have enough " + shop.currency + ".");
+		}
+		updateUI();
+	}
     else if (hasWeaponShop(pos)) {
       // Attempt to purchase strength upgrade: cost 18 gold, +2 strength
       const cost = 18;
@@ -1835,7 +1884,7 @@ function loadLevel(id, cell = "A1") {
   completed = false;
   // Only reset stats if not preserving from previous level
   if (!preserveStatsOnNextLoad) {
-    stats = { life: 10, strength: 2, defense: 0, gold: 0, key: false };
+    stats = { life: baseLife, strength: 2, defense: 0, gold: 0, key: false };
   }
   preserveStatsOnNextLoad = false;
   discoveryLog = [];

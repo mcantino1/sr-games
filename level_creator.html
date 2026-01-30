@@ -53,7 +53,6 @@
 				<button class="item-btn" id="btnSelect" data-item="select">Select (I)</button>
                 <button class="item-btn" data-item="eraser" >Eraser (E)</button>
                 <button class="item-btn" data-item="wall" >Wall (W)</button>
-                <button class="item-btn" data-item="custom_wall" >Custom Wall (C)</button>
                 <button class="item-btn" data-item="monster" >Monster (M)</button>
                 <button class="item-btn" data-item="treasure" >Treasure (T)</button>
                 <button class="item-btn" data-item="key" >Key (K)</button>
@@ -62,9 +61,7 @@
 				<button class="item-btn" data-item="stairs" >Stairs (U)</button>
                 <button class="item-btn" data-item="potion" >Potion (P)</button>
                 <button class="item-btn" data-item="void" aria-label="Place voids on the grid">Void (V)</button>
-                <button class="item-btn" data-item="weapon_shop" ">Weapon Shop (S)</button>
-                <button class="item-btn" data-item="armor_shop" >Armor Shop (A)</button>
-                <button class="item-btn" data-item="inn" >Inn (N)</button>
+                <button class="item-btn" data-item="shop" >Shop (S)</button>
                 <button class="item-btn" data-item="villager" >Villager (L)</button>
          </div>
 		<div>		 
@@ -72,9 +69,7 @@
             <div id="monsterLibraryContainer" >
 				
                     <div class="floatGroup">
-                        <label for="monsterName" >
-						monster Name: 
-                        </label>
+                        <label for="monsterName" > monster Name:     </label>
                             <input id="monsterName" placeholder="Name" />
 					</div>
                     <div class="floatGroup">
@@ -169,6 +164,52 @@
                 <span >Set the amount of gold or the buff amount.</span>
             </div>
 
+			<div id="shopConfig">
+			    <div class="floatGroup">
+					<label for="shopName" > Shop Name:     </label>
+                    <input id="shopName" placeholder="the ..." />
+					</div>
+                <label onchange="shopUpdate()" for="shopKind">shop type:</label>
+                <select  onchange="shopUpdate()"  id="shopKind">
+					<option value="gold">gold</option>
+                    <option value="power">Power</option>
+                    <option value="defense">Defense</option>
+					<option value="life">Life</option>
+                </select>
+                <label for="shopValue">Value:</label>
+                <input  onchange="shopUpdate()" class="number" id="shopValue" type="number" min="1" value="25" />
+				  <label for="shopCost">cost:</label>
+                <input  onchange="shopUpdate()" class="number" id="shopCost" type="number" min="1" value="25" />
+				<label onchange="shopUpdate()" for="shopCurrency">Currency:</label>
+                <select  onchange="shopUpdate()"  id="shopCurrency">
+					<option value="gold">gold</option>
+                    <option value="power">Power</option>
+                    <option value="defense">Defense</option>
+					<option value="life">Life</option>
+					
+                </select>
+				<div style="width: fit-content;">
+				<label for="shopIcon">Icon</label>
+				<select onChange="updateShopIcon()"  id="shopIcon" >
+				<option  value="villager">villager</option>
+				</select>
+				<div id="shopIconDisplay"></div>
+				<input type="file" onchange="addShopIcon()" style="width: 10em; height: 3em;" id="shopAddIcon" accept=".svg" />
+				</div>
+				<div style="clear: both;">
+                        <button id="btnAddShop">Add Shop</button>
+                        <button id="btnCancelShop" >New Shop</button>
+					</div>
+				<div id="shopParent">
+                    <table id="shopList" class="monster-list">
+						
+					</table>
+                </div>
+				
+            </div>
+
+
+
             <div id="stairConfig" >
                 <label for="stairLevelSelect">Target Level:</label>
                 <select  onchange="stairUpdate()"  id="stairLevelSelect">
@@ -206,8 +247,16 @@
 
             <div  id="customWallConfig" >
                 <label for="customWallName">Custom wall name:</label>
-                <input id="customWallName" type="text" placeholder="e.g. Stone Hedge"  />
+                <input id="customWallName" onchange="updateWallName()" type="text" placeholder="e.g. Stone Hedge"  />
                 <span >Optional name shown in the editor and exports.</span>
+				<div style="width: fit-content;">
+				<label for="wallIcon">Icon</label>
+				<select onChange="updateWallIcon()"  id="wallIcon" >
+				<option  value="wall">wall</option>
+				</select>
+				<div id="wallIconDisplay"></div>
+				<input type="file" onchange="addWallIcon()" style="width: 10em; height: 3em;" id="wallAddIcon" accept=".svg" />
+				</div>
             </div>
 			<div class="floatGroup">
                 <label for="inputDesc">Cell description:</label>
