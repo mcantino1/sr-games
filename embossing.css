@@ -28,7 +28,7 @@
 p {margin: 0; padding: 0;}
 .page table{}
 
-.page table td, .page table th{width: 1.5em; text-align: left; height: 1.5em}
+.page table td, .page table th{width: 1.5em; text-align: left; height: 1.5em; font-weight: normal;}
 .page table td{border: 1px solid;}
 #bookContent .page .header{text-align: center; margin: auto; width: fit-content;}
 

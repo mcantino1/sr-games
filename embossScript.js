@@ -142,12 +142,14 @@ function translate(english){
 	//check for capital letters
 	var translated = english.replace(/[A-Z]/g,  "," + "$&".toLowerCase());
 	//check for numbers
-	var translated = translated.replace(/[\d]+/g,  "#" +  "$&");
+	translated = translated.replace(/[\d]+/g,  "#" +  "$&");
 	if (translated.indexOf("#")) {
 		numAt = translated.indexOf("#")
 		translated = translated.substring(numAt + 1, -1) + numFix(translated.substring(numAt + 1));
 		
 	}
+	translated = translated.toLowerCase().replace("super", "sup]");
+	translated = translated.toLowerCase().replace("town", "t[n");
 	return translated;
 }
 
