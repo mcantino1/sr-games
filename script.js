@@ -15,6 +15,11 @@ let footstepAudio = null;
 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 var levels;
  function initGame(){
+	 gameName = document.getElementsByTagName("H1")[0].children[0];
+	try{
+	gameName.innerHTML = getName();
+	}catch(e){console.log("Name not defined in game files")}
+
 	 LEVELS = getLevels();
 	 getLevelIcons();
 	 levels = []
@@ -36,7 +41,7 @@ var levels;
  }
  
  function getLevelIcons(){
-	console.log(ICONS);
+	
 	try{
 		newIcons = getIcons()
 		iconNames = Object.keys(newIcons);
@@ -410,41 +415,14 @@ var ICONS = {
       '<path d="M44.1,5.7c-5.1,0-9.2-.5-9.2-1s4.1-1,9.2-1,9.2.5,9.2,1-4.1,1-9.2,1Z"' +
         ' fill="none" stroke="currentColor" stroke-width="2" stroke-miterlimit="10"/>' +
     '</svg>',
-  void:
-    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 88.2 88.2" aria-hidden="true" focusable="false" style="width:100%;height:100%;display:block;">' +
-      '<g fill="none" stroke="currentColor" stroke-width="4" stroke-miterlimit="10">' +
-        '<circle cx="44.1" cy="44.1" r="30" />' +
-        '<circle cx="44.1" cy="44.1" r="12" />' +
-      '</g>' +
-    '</svg>',
-  weapon_shop: 
-    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 88.2 88.2" aria-hidden="true" focusable="false" style="width:100%;height:100%;display:block;">' +
-      '<g stroke="currentColor" stroke-miterlimit="10" stroke-width="4" fill="none">' +
-        '<path d="M20 68 L68 20"/>' +
-        '<path d="M54 14 L70 30 L56 44"/>' +
-      '</g>' +
-    '</svg>',
-  armor_shop:     '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 88.2 88.2" aria-hidden="true" focusable="false" style="width:100%;height:100%;display:block;">' +
-      '<g fill="none" stroke="currentColor" stroke-width="4" stroke-miterlimit="10">' +
-        '<path d="M44 6 L20 18 L20 42 C20 62 44 74 44 74 C44 74 68 62 68 42 L68 18 Z"/>' +
-      '</g>' +
-    '</svg>',
-  inn:
-    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 88.2 88.2" aria-hidden="true" focusable="false" style="width:100%;height:100%;display:block;">' +
-      '<g fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">' +
-        '<line x1="44.1" y1="20" x2="44.1" y2="68.2" />' +
-        '<line x1="20" y1="44.1" x2="68.2" y2="44.1" />' +
-      '</g>' +
-    '</svg>',
-  stairs: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 88.2 88.2" style="width: 100%; height: 100%; display: block;" aria-hidden="true" focusable="false"> <polyline fill="none" stroke="currentColor" stroke-width="4" points="88.1 24 68 24 68 40 52 40 52 56 36 56 36 72 18 72 18 88.1"/> </svg>'
-   ,
-  villager:
-    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 88.2 88.2" aria-hidden="true" focusable="false" style="width:100%;height:100%;display:block;">' +
-      '<g stroke="currentColor" stroke-miterlimit="10" stroke-width="3" fill="currentColor">' +
-        '<circle cx="44" cy="28" r="10"/>' +
-        '<path d="M24 66 C24 54 64 54 64 66 C64 74 44 80 44 80 C44 80 24 74 24 66 Z"/>' +
-      '</g>' +
-    '</svg>'
+	weapon:"<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\" viewBox=\"0 0 88 88\">\n  \n  <!-- Generator: Adobe Illustrator 28.7.10, SVG Export Plug-In . SVG Version: 1.2.0 Build 236)  -->\n  <g fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\">\n    <g id=\"Layer_2\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\">\n      <path d=\"M49.8,21.7c-13.7,15.8-27.5,31.6-41.2,47.4-.4.5-.8,1.1-1,1.7-.4,1.4,0,2.4,1.4,3.2.9.5,2.2.3,3.1-.6.2-.2.4-.4.6-.6,13.8-15.8,27.5-31.7,41.3-47.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\"></path>\n      <path d=\"M76.9,36.4c-3.5,5.4-8,9.5-13.7,12.4-5,2.6-10.4,3.6-16.1,1.8.6-.6,1.2-1.2,1.8-1.7,2.8-2.4,5.3-5,7.3-8.1,1.7-2.7,3.2-5.5,3.1-8.8v-.7c-.4-2.4-1.7-4.3-3.6-5.7l5-6c.4-.2.8-.2,1.5,0,3.9,1.2,7.8,1.3,11.2-1.5,1.4-1.2,2.5-2.8,3.7-4.2,0,0,0,0,0,0,0,0,0,0,.2,0,1.1,1.8,2,3.8,2.5,5.8,1.4,6,.4,11.5-2.9,16.7h0Z\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\"></path>\n      <path d=\"M55.7,25.5c1.9,1.4,3.2,3.3,3.6,5.7v.7c.2,3.4-1.3,6.2-3,8.8-2,3.1-4.5,5.7-7.3,8.1-.6.5-1.1,1.1-1.8,1.7,5.7,1.8,11.1.8,16.1-1.8,5.6-2.9,10.2-7.1,13.7-12.4,3.3-5.2,4.3-10.7,2.9-16.7-.5-2.1-1.3-4-2.5-5.8,0,0-.1,0-.2,0s0,0,0,0c-1.2,1.4-2.3,3-3.7,4.2-3.4,2.8-7.3,2.8-11.2,1.5-.7-.2-1.1-.2-1.5,0-.3.1-.5.3-.8.6-1.6,1.9-3.3,3.8-5,5.7l-5.8-5,6.3-7.3c1.7,1.5,3.3,2.9,4.9,4.3.4.3.8.6.5,1.3\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\"></path>\n      <circle id=\"Filll\" cx=\"55.4\" cy=\"19.7\" r=\"3.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\"></circle>\n      <path id=\"Filll-2\" data-name=\"Filll\" d=\"M55.4,13.7c3.3,0,6,2.7,6,6\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\"></path>\n    </g>\n  </g>\n</svg>",
+	armor:	"<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\" viewBox=\"0 0 88 88\">\n  \n  <!-- Generator: Adobe Illustrator 28.7.10, SVG Export Plug-In . SVG Version: 1.2.0 Build 236)  -->\n  <g fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\">\n    <g id=\"Layer_2\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\">\n      <g fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\">\n        <g id=\"Fills\" style='opacity: 0.5;' stroke='none' fill='currentColor'>\n          <path d=\"M20,29.2c0,3.2,0,6.4.6,9.5.2,1.1.4,2.2.6,3.3h22.9V15.2h0c-.4,0-.8,0-1.2,0-3.2.9-6.3,1.7-9.5,2.6-3.8,1.1-7.5,2.2-11.3,3.3-.8.2-1.2.7-1.4,1.5-.4,2.1-.7,4.3-.7,6.5h0Z\"></path>\n          <path d=\"M44.1,71.5h0c.3.1.5,0,.8,0,1-.5,2.1-.9,3-1.5,4.2-2.5,7.7-5.8,10.7-9.6,3.6-4.6,6.2-9.8,7.7-15.5.3-.9.5-1.9.7-2.8h-22.9v29.5h0Z\"></path>\n        </g>\n        <g fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\">\n          <path d=\"M44.1,15.2c.8-.3,1.6.1,2.4.3,4.3,1.2,8.6,2.5,12.9,3.8,2.2.6,4.5,1.2,6.7,1.8.8.2,1.3.9,1.4,1.6.2,1.5.4,3.1.5,4.7.1,2.1.2,4.2.1,6.3,0,1.5-.3,3-.5,4.5-.1,1.2-.4,2.5-.6,3.7-.2.9-.4,1.9-.7,2.8-1.5,5.7-4.1,10.8-7.7,15.5-3,3.8-6.5,7.1-10.7,9.6-1,.6-2,1-3,1.5-.3.1-.5.2-.8.2s-.7-.1-1.1-.3c-3.3-1.5-6.1-3.5-8.7-5.9-3.4-3.1-6.2-6.7-8.4-10.6-1.9-3.4-3.3-6.9-4.2-10.7-.2-.7-.3-1.4-.4-2.1-.2-1.1-.4-2.2-.6-3.3-.6-3.2-.6-6.3-.6-9.5,0-2.2.3-4.4.7-6.5.2-.8.6-1.3,1.4-1.5,3.8-1.1,7.5-2.2,11.3-3.3,3.1-.9,6.3-1.8,9.5-2.6.4-.1.8,0,1.2,0\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\"></path>\n          <path d=\"M44.1,15.3v56.2\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\"></path>\n          <path d=\"M45,7.6c1.4.4,2.7.8,4.1,1.2,2.4.7,4.9,1.4,7.3,2.1,2.8.8,5.6,1.6,8.4,2.4,2.2.6,4.4,1.3,6.6,1.9.8.2,1.6.3,2.2,1,.6.7.6,1.6.7,2.4.3,1.8.6,3.7.6,5.6.1,1.9,0,3.9,0,5.8s0,.6,0,.9c-.1,1.6-.2,3.2-.4,4.7-.2,1.6-.3,3.3-.7,4.9-.5,2.3-1.1,4.6-1.7,6.9-.7,2.8-1.7,5.4-3,8-1.4,2.8-3,5.6-4.8,8.2-2.6,3.6-5.5,6.9-8.8,9.8-2.9,2.6-6.1,4.7-9.6,6.4-.2.1-.4.2-.7.3-.9.5-1.8.4-2.8,0-3.6-1.7-6.8-3.8-9.8-6.4-2.6-2.2-4.9-4.5-7-7.2-2.4-3-4.5-6.3-6.3-9.7-1.9-3.8-3.4-7.7-4.4-11.8-.4-1.7-.8-3.4-1.2-5.1-.3-1.3-.4-2.6-.5-3.9-.4-3.1-.6-6.3-.5-9.5,0-1.5,0-3,.3-4.5.2-1.7.5-3.4.8-5.1.2-1,.9-1.5,1.8-1.8,1.7-.5,3.5-1,5.2-1.5,2.7-.8,5.5-1.6,8.2-2.4,3.2-.9,6.3-1.8,9.5-2.7,1.4-.4,2.9-.9,4.3-1.2.6-.1,1.4,0,2,0\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\"></path>\n          <polyline points=\"66.9 42 44.1 42 21.2 42\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\"></polyline>\n        </g>\n      </g>\n    </g>\n  </g>\n</svg>",
+	inn: "<svg id=\"Layer_2\" data-name=\"Layer 2\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 62.55 56.26\">\n  <path style=\" scale: 0.9; transform: translate(4px, 4px);\" d=\"M55.07,34.69c-6.57,8.54-15.36,15.02-23.79,21.57-8.44-6.55-17.23-13.03-23.8-21.57C1.5,26.92-3.44,15.54,3.11,6.55,10.06-2.99,24.82-1.93,30.27,8.54c.36.7.59,1.57.94,2.24l.07.14.07-.14c.34-.67.57-1.54.94-2.24,5.45-10.47,20.21-11.53,27.15-1.99,6.56,8.99,1.62,20.37-4.37,28.14Z\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\"></path>\n</svg>",
+	villager: "<svg id=\"Layer_2\" data-name=\"Layer 2\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 88 88\">\n  \n  <path style=\" scale: 0.9; transform: translate(4px, 4px);\" id=\"path966\" d=\"M69.79,80.5c-2.54-25.58-6.66-33.2-13.41-37.4-6.8-.3-15.35,0-23.63,0-7.33,3.9-11.78,11.65-14.55,37.4h51.59Z\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\"></path>\n  <path id=\"path710\" d=\"M59.43,22.93c0,8.52-6.91,15.43-15.43,15.43s-15.43-6.91-15.43-15.43,6.91-15.43,15.43-15.43,15.43,6.91,15.43,15.43Z\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\"></path>\n  <line x1=\"60.48\" y1=\"80.5\" x2=\"56.9\" y2=\"62.96\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\"></line>\n  <line x1=\"27.61\" y1=\"80.5\" x2=\"31.34\" y2=\"62.96\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\"></line>\n</svg>",
+	void: "<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\" viewBox=\"0 0 88.2 88.2\">\n  \n  <!-- Generator: Adobe Illustrator 28.7.10, SVG Export Plug-In . SVG Version: 1.2.0 Build 236)  -->\n  <g fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\">\n    <g id=\"Layer_1\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\">\n      <path d=\"M86.4,54.4c.9-2.3.6-4.8.3-7.3-1-7.2-2-14.4-3-21.5-.3-2.5-.7-5-2.3-7-2.6-3.2-7.9-3.8-9.7-7.6-.8-1.7-.8-3.7-1.7-5.3-.9-1.5-2.4-2.4-4-3.2-2-1-4.2-1.9-6.4-1.8-3.1.2-5.9,2.3-9,2.6-3,.3-5.8-1.1-8.6-2s-6.3-1.3-8.5.7c-.9.8-1.5,2-2.5,2.9-2.2,2-5.5,1.9-8.4,1.9-4.7,0-9.9.7-13.3,4-3.1,3-4,7.5-4.2,11.8s.4,8.6-.3,12.8c-.6,3.5-1.9,6.8-2.8,10.3s-1.2,7.2.2,10.5c1.6,3.5,5,5.9,6.7,9.3,1.8,3.6,1.5,7.9,3,11.5,2.2,5,8.1,8,13.4,6.9,2.8-.6,5.7-2.2,8.4-1.2,1.9.7,3.1,2.6,4.8,3.7,3.2,2.1,7.5.9,11-.7s7-3.8,10.8-3.5c2.1.2,4.1,1.1,6.3,1.1,2.6,0,5.2-1.3,6.6-3.5,1.5-2.4,1.9-5.2,3.5-7.6s2.9-3.3,3.6-5.6.7-3.6,1.5-5.3c1.2-2.5,3.5-4.3,4.6-6.9Z\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\"></path>\n      <path d=\"M12.1,52.5c-.8-2.5,1-5.1,1.2-7.6.6-3.8-.7-7.9-2.4-11.1-.5-1-1-2.1-1-3.1.3-3.2,4.5-3.7,6.7-5.2,2.9-1.5,5.8-4,7.9-6.7,1.6-1.8,2.7-4.3,5.1-5,2.9-.7,5.8-.2,8.7-.2,6,.4,12.6-1.3,18.2-2.7,2-.4,5.1-1.1,6.7,0,2,2.1,2.5,5.9,3.4,8.6.8,3.3,3.8,7.7,7,10.5,1.4,1.4,1.8,3,1.6,4.9-.2,3,.1,6.8,1.5,9.9.7,2.4,3.1,4.4,3.2,7-.6,2.5-4.1,3.9-5.5,6.1-1.7,2.2-2.7,4.5-3.3,6.6-.5,1.5-1.2,3.1-2.5,4.1-3.9,2.1-8.6,3.5-14.4,5.9-3.4,1.2-5.3,2.7-8.6,2.9-2.9-.2-6.6-2.2-10-2.3-4.4,0-8.3-1.8-12.8-2.8-2.2-.6-2.4-2.8-2.7-4.7-.6-3.2-2.1-6.5-3.8-9-1.3-2.1-3.3-3.7-4.2-6v-.2Z\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\"></path>\n      <path d=\"M28.9,60.3c-.6-.7-1-1.6-1.4-2.5-1.2-2.8-2.8-5.3-4.9-7.6-1.2-1.3-2.9-2.6-2.2-4.6,1.1-3,2.3-6,2.8-9.2.4-4.7,1.7-5.3,5.4-7.3,4.7-2.8,8.8-6.5,12.1-9.9.9-.9,2-1.3,3.2-.6,3.4,2.6,7.5,4.8,11.4,5.9,1.5.4,2.8,1.2,3.7,2.5,1.8,2.5,4.2,5.3,6.7,7.2,1.6,1.1,2.1,2.9,1.9,4.8-.1,2.3,0,4.7.3,6.6.3,1.5.3,3.1-.6,4.5-2,2.8-4.1,5.5-6.2,8.5-1.5,2.1-2.8,4.4-5.5,5-4,.9-7.4,3.4-11.3,4.4-1.6.4-3.1-.2-4.2-1.2-2.7-2.1-5.9-3.9-9.1-5.2-.7-.3-1.4-.7-1.9-1.2h-.1Z\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\"></path>\n    </g>\n  </g>\n</svg>",
+	stairs: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 88.2 88.2" style="width: 100%; height: 100%; display: block;" aria-hidden="true" focusable="false"> <polyline  fill="none" stroke="currentColor" stroke-width="4" points="88.1 24 68 24 68 40 52 40 52 56 36 56 36 72 18 72 18 88.1"/> </svg>',
+	stairsD: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 88.2 88.2" style="width: 100%; height: 100%; display: block;" aria-hidden="true" focusable="false"> <polyline fill="none" stroke="currentColor" stroke-width="4" points=".2 24 20.3 24 20.3 40 36.3 40 36.3 56 52.3 56 52.3 72 70.3 72 70.3 88.1"/> </svg>'
+				
 };
 
 /* ---------------- DEMO LEVELS ---------------- */
@@ -546,6 +524,7 @@ function hasDoor(pos){ return itemsAt(pos).some(it => it.type === "door"); }
 function hasExit(pos){ return itemsAt(pos).some(it => it.type === "exit"); }
 function hasOpenExit(pos){ return itemsAt(pos).some(it => it.type === "exit_open"); }
 function hasKey(pos){ return itemsAt(pos).some(it => it.type === "key"); }
+function hasEnd(pos){ return itemsAt(pos).some(it => it.type === "gameEnd"); }
 function hasStairs(pos){ return itemsAt(pos).some(it => it.type === "stairs"); }
 function hasTreasure(pos){ return itemsAt(pos).some(it => it.type === "treasure"); }
 function hasPotion(pos){ return itemsAt(pos).some(it => it.type === "potion"); }
@@ -704,8 +683,8 @@ function mapTouch(pos){
 			startCol = player.col		
 			dcol = parseInt(tcol) - parseInt(player.col)
 			drow = parseInt(trow) - parseInt(player.row)	
-			console.log(dcol)			
-			console.log(drow)
+			//console.log(dcol)			
+			//console.log(drow)
 			dr = 0;
 			dc = 0;
 			if(drow < 0) {dr = -1}
@@ -799,9 +778,9 @@ function renderMap() {
         } else if (items.some(i => i.type === "void")) {
           el.innerHTML = ICONS.void;
         } else if (items.some(i => i.type === "weapon_shop")) {
-          el.innerHTML = ICONS.weapon_shop;
+          el.innerHTML = ICONS.weapon;
         } else if (items.some(i => i.type === "armor_shop")) {
-          el.innerHTML = ICONS.armor_shop;
+          el.innerHTML = ICONS.armor;
         } else if (items.some(i => i.type === "inn")) {
           el.innerHTML = ICONS.inn;
         } else if (items.some(i => i.type === "villager")) {
@@ -813,8 +792,8 @@ function renderMap() {
 		  else if (t === "stairs") el.innerHTML = ICONS.stairs;
           else if (t === "monster") el.innerHTML = ICONS.monster;
           else if (t === "void") el.innerHTML = ICONS.void;
-          else if (t === "weapon_shop") el.innerHTML = ICONS.weapon_shop;
-          else if (t === "armor_shop") el.innerHTML = ICONS.armor_shop;
+          else if (t === "weapon_shop") el.innerHTML = ICONS.weapon;
+          else if (t === "armor_shop") el.innerHTML = ICONS.armor;
           else if (t === "inn") el.innerHTML = ICONS.inn;
           else if (t === "exit") el.innerHTML = ICONS.exit ? ICONS.exit : ICONS.door;
           else if (t === "villager") el.innerHTML = ICONS.villager;
@@ -850,7 +829,6 @@ function updateStatsUI(){
 function updateUI(){
   posText.textContent = toPos(player.row, player.col) + " " + currentLevelId;
   locStat = document.getElementById("locText");
-  
   updateStatsUI();
   renderMap();
 }
@@ -924,48 +902,50 @@ function isBlocked(r, c) {
 
 function contentsAt(r, c) {
   // Returns a single "sensory cue" label for the square (N/S/E/W) based on contents.
+  //cue priority 1 (highet) to 5 (lowest)
   // Cues in priority order:
-  // - door => "You see the exit"
-  // - void => "mysterious fog"
-  // - key => "faint glow"
-  // - monster => "growling sound"
-  // - treasure => "hidden passage"
+  // - door => "You see the exit"	1 
+  // - void => "mysterious fog"		2
+  // - key => "faint glow"			4
+  // - monster => "growling sound"	3
+  // - treasure => "hidden passage" 4 (stair, shop)
+  // walls: 5
   // Everything else returns null (no cue).
+ 
   if (!inBounds(r, c, level)) return null;
   const pos = toPos(r, c);
   // If a custom wall is present, prefer its configured name as the sensory cue.
   const items = itemsAt(pos);
   const customWall = items.find(i => i.type === 'custom_wall');
 if (customWall) {
-    if (customWall.meta && customWall.meta.name) return String(customWall.meta.name);
-    return 'wall';
+    if (customWall.meta && customWall.meta.name) return [String(customWall.meta.name), 5] ;
+    return ['wall', 5];
   }
 
   if (hasWall(pos)){
 	  if(items[0].meta && items[0].meta.name){
-		  return items[0].meta.name;
+		  return [items[0].meta.name, 5];
 	  } else{
 		return null;
 	  }
 	}
-  if (items.some(i=>i.type==="door")) return "You see the exit";
-  if (items.some(i=>i.type==="door")) return "You see the exit";
-  if (items.some(i=>i.type==="exit")) return "You see the exit";
-  if (items.some(i=>i.type==="void")) return "mysterious fog";
-  if (items.some(i=>i.type==="weapon_shop")) return "weapon shop";
-    if (items.some(i=>i.type==="shop")) return "shop";
-  if (items.some(i=>i.type==="armor_shop")) return "armor shop";
-  if (items.some(i=>i.type==="inn")) return "Inn";
-  if (items.some(i=>i.type==="villager")) return "Villager";
-  if (items.some(i=>i.type==="key")) return "faint glow";
+  if (items.some(i=>i.type==="door")) return ["You see the exit", 1];
+  if (items.some(i=>i.type==="exit")) return ["You see the exit", 1];
+  if (items.some(i=>i.type==="void")) return ["mysterious fog", 2];
+  if (items.some(i=>i.type==="weapon_shop")) return ["weapon shop", 4];
+    if (items.some(i=>i.type==="shop")){ return [items[0].meta.name, 4]};
+  if (items.some(i=>i.type==="armor_shop")) return ["armor shop", 4];
+  if (items.some(i=>i.type==="inn")) return ["Inn", 4];
+  if (items.some(i=>i.type==="villager")) return ["Villager", 4];
+  if (items.some(i=>i.type==="key")) return ["faint glow", 4];
   if (items.some(i=>i.type==="monster")) {
 	  playSoundGrowl();
 	  var monSound = "growling"
-	 if(items[0].meta){if(items[0].meta.sound){monSound = items[0].meta.sound}};
-	  return monSound + " sound";}
-  if (items.some(i=>i.type==="potion")) return "small pouch";
-  if (items.some(i=>i.type==="treasure")) return "hidden passage";
-	if (items.some(i=>i.type==="stairs")) return "stairs";
+		if(items[0].meta){if(items[0].meta.sound){monSound = items[0].meta.sound}};
+	  return [monSound + " sound", 3];}
+  if (items.some(i=>i.type==="potion")) return ["small pouch", 4];
+  if (items.some(i=>i.type==="treasure")) return ["hidden passage", 4];
+	if (items.some(i=>i.type==="stairs")) return ["stairs", 4];
   return null;
 }
 
@@ -991,8 +971,43 @@ function groupedSurroundingsText() {
     // not under blocked path.
     const cue = contentsAt(r, c);
     if (cue) {
-      if (!cueDirs.has(cue)) cueDirs.set(cue, []);
-      cueDirs.get(cue).push(d.name);
+		
+      if (!cueDirs.has(cue[1])) {
+		// no cues at that priority level yet
+		//target structure {id, obj{directions: [west east etc]}}
+		myCue = cue[0]
+		myDirs = []
+		myDirs.push(d.name);
+		dirObj = {dirs: myDirs};
+		cueObj = {};
+		cueObj[myCue] = dirObj;
+		cueDirs.set(cue[1], cueObj);
+	  }
+	  else{
+		  //this priority level exists; does this cue
+		  if(cueDirs.get(cue[1])[cue[0]]){
+			  //repeated cue, add direction
+			  
+			  let myCue = cue[0]
+			  let cueObj = cueDirs.get(cue[1]);
+			  let myDirs = cueObj[myCue].dirs;
+			  
+			  myDirs.push(d.name);
+			  let dirObj = {dirs: myDirs};
+			  cueObj[myCue] = dirObj;
+			  cueDirs.set(cue[1], cueObj);
+			}
+		  else{ //this priority level exists but the cue doesn't
+			myCue = cue[0]
+			myDirs = []
+			myDirs.push(d.name);
+			dirObj = {dirs: myDirs};
+			cueObj = cueDirs.get(cue[1]);
+			cueObj[myCue] = dirObj;
+			cueDirs.set(cue[1], cueObj);
+		  }
+		 
+	  }
       continue;
     }
 
@@ -1006,20 +1021,25 @@ function groupedSurroundingsText() {
 
   // Add cue lines FIRST in priority order: door, void, key, monster, potion, treasure
   // Include Inn so it's described when adjacent. We'll insert 'Inn' after armor shop.
-  const cueOrderWithInn = ["You see the exit", "mysterious fog", "faint glow", "weapon shop", "armor shop", "Inn", "Villager", "growling sound", "small pouch", "hidden passage"];
-  for (const cue of cueOrderWithInn) {
-    const dirs = cueDirs.get(cue);
-    if (dirs && dirs.length) parts.push(`${cue}: ${dirs.join(", ")}. `);
-  }
+  //TODO: FIX THIS
+  // I think the exit and the void are the highest priorities, followed by monsters, then I don’t really care
+  // Basically, if anything of interest is nearby, it should be read before open path.
+	for (let p = 1; p <= 5; p++){
+		
+		myCues = cueDirs.get(p)
+		if (myCues){
+			cueKeys = Object.keys(myCues)
+			for (key of cueKeys){
+				
+				dirSt = myCues[key].dirs.join(", ");
+				parts.push(key + ": " + dirSt);
+				
+			}
+		}
+	}
+
   // Then add open paths
   if (openDirs.length) parts.push(`open path: ${openDirs.join(", ")}. `);
-
-  // Any remaining cues (e.g. custom wall names) that weren't in `cueOrder`:
-  for (const [cue, dirs] of cueDirs.entries()) {
-    if (cueOrderWithInn.indexOf(cue) === -1) {
-      parts.push(`${cue}: ${dirs.join(", ")}. `);
-    }
-  }
 
   // Then add blocked paths
   if (blockedDirs.length) parts.push(`blocked path: ${blockedDirs.join(", ")}. `);
@@ -1432,6 +1452,11 @@ function tryMove(dr, dc) {
 
   const nextPos = toPos(nr, nc);
 
+   if(hasEnd(nextPos)){
+	   announce("You win!");
+   }
+
+
   // Prevent stepping onto a locked door tile even if other checks miss it.
   if (hasDoor(nextPos) && !stats.key) {
     // Reveal the door so the player knows where it is and block movement.
@@ -1450,9 +1475,14 @@ function tryMove(dr, dc) {
     revealedByBump.add(nextPos);
 	
 	wall = itemsAt(nextPos)[0]
-	console.log(wall);
+	
 	if(wall.meta && wall.meta.name && wall.meta.name.length > 0){ wallName = wall.meta.name}
-    announce("A " + wallName + " blocks your way. ");
+	if(wallName.substr(wallName.length - 1) == "s"){
+		announce("Some " + wallName + " blocks your way. ");
+	}
+	else{
+		announce("A " + wallName + " blocks your way. ");
+	}
     playSoundWall();
     renderMap();
     return;
@@ -1647,6 +1677,11 @@ function activateCell(pos){
 		preserveStatsOnNextLoad = true;
 		targetLevel = itemsAt(pos)[0].meta.level;
 		targetCell = itemsAt(pos)[0].meta.cell;
+		if (targetLevel == currentLevelId){
+			announce("You take the stairs to " + targetCell)}
+		else{
+			announce("You take the stairs to " + targetCell + " of " + targetLevel);
+		}
 		
 	if (targetLevel == currentLevelId){
 		player.col = targetCell.charCodeAt(0) - 65;
@@ -1762,9 +1797,13 @@ function speakMapContents(){
 	
 	for (key of revealedSpecial){
 		if(myText.length > 0){myText += ", \n"}
-		myText += String(key).replace(",", " ").replace("_", " ")
-		
-		
+		if(key[1] == "shop"){
+			
+			 myText += String(key[0]) + " " + itemsAt(key[0])[0].meta.name;
+			
+		}
+		else{ 
+		myText += String(key).replace(",", " ").replace("_", " ")}
 	}
 	announce(myText)
 }

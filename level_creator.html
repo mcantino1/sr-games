@@ -12,6 +12,8 @@
     <div class="container">
         <h1>Level Creator</h1>
 		<div>    
+			<label for="gameName">Game Name: </label>
+			<input type="text" id="gameName" value="Super Dungeon"/>
 	       <button id="btnSave" onclick="saveSet()" >save</button> 
         </div>
 <div class="gridParent">
@@ -60,9 +62,10 @@
                 <button class="item-btn" data-item="exit" >Exit (X)</button>
 				<button class="item-btn" data-item="stairs" >Stairs (U)</button>
                 <button class="item-btn" data-item="potion" >Potion (P)</button>
-                <button class="item-btn" data-item="void" aria-label="Place voids on the grid">Void (V)</button>
+                <button class="item-btn" data-item="void">Void (V)</button>
                 <button class="item-btn" data-item="shop" >Shop (S)</button>
                 <button class="item-btn" data-item="villager" >Villager (L)</button>
+				<button class="item-btn" data-item="gameEnd" >Game End (N)</button>
          </div>
 		<div>		 
 			<h2>Cell Properties</h2>

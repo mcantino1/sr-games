@@ -1,0 +1,44 @@
+:root{
+  	color-scheme: light dark;
+	
+}
+#controls{
+	background: light-dark(white, black);
+	color: light-dark(black, white);
+	position: sticky;
+}
+
+#bookContent .page{
+	background: white;
+	color: black;
+	margin: 1em 1em;
+	page-break-after: always;
+}
+#bookContent{
+	border: 4px solid light-dark(black, white);
+	
+}
+#bookContent.tiger{
+	font-family: Braille29;
+    font-size: 29pt;	
+	width: 40em;
+	
+}
+.page table{}
+
+.page table td, .page table th{width: 2em; text-align: left; height: 2em}
+.page table td{border: 1px solid;}
+#bookContent .page .header{text-align: center}
+
+.iconGrid svg{width: 100px;}
+.iconGrid div{float: left; margin: 0em 1em;}
+.iconGrid {height: 25em;}
+@media print {
+	@page{
+		size: 10in 10in;
+		margin: 0.5in 0.75in;
+		}
+	#controls{display: none;}
+	#bookContent .page{margin:none;}
+	#bookContent{border: none;}
+}
