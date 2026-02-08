@@ -52,6 +52,9 @@ var levels;
  }
  
  
+var wallPhrases = ["The wall is gross. Your hands are sticky. ", "The wall tastes delicious! ", "Wall, my old friend! ", "A wall blocks your way. "]
+var wallCount = 0;
+
 function playSoundStep() {
   const duration = 0.05; // 100ms
   
@@ -1445,8 +1448,18 @@ function tryMove(dr, dc) {
 
   // Edge treated like wall
   if (!inBounds(nr, nc, level)) {
-    announce("A wall blocks your way. ");
-	   playSoundWall();
+	wallCount += 1;
+	if (wallCount > 10){
+		max = wallPhrases.length
+		var i = Math.floor(Math.random() * max);
+		myPhrase = wallPhrases[i];
+		myPhrase = myPhrase[0].toUpperCase() + myPhrase.substring(1);
+		announce(wallPhrases[i]);
+	}
+	else {
+		announce("A wall blocks your way. ");
+	}
+	playSoundWall();
     return;
   }
 
@@ -1473,15 +1486,23 @@ function tryMove(dr, dc) {
   if (hasWall(nextPos)) {
 	  wallName = "wall"
     revealedByBump.add(nextPos);
-	
 	wall = itemsAt(nextPos)[0]
+	wallCount += 1;
 	
 	if(wall.meta && wall.meta.name && wall.meta.name.length > 0){ wallName = wall.meta.name}
 	if(wallName.substr(wallName.length - 1) == "s"){
 		announce("Some " + wallName + " blocks your way. ");
 	}
 	else{
-		announce("A " + wallName + " blocks your way. ");
+		if(wallCount > 10){
+			max = wallPhrases.length
+			var i = Math.floor(Math.random() * max);
+			myPhrase = wallPhrases[i].replace("wall", wallName).replace("Wall", wallName);
+			myPhrase = myPhrase[0].toUpperCase() + myPhrase.substring(1);
+			announce(myPhrase);
+		}
+		else{
+		announce("A " + wallName + " blocks your way. ");}
 	}
     playSoundWall();
     renderMap();
@@ -1705,7 +1726,7 @@ function activateCell(pos){
 			
 			else {
 				stats[shop.currency] -= shop.cost;
-				stats[shop.kind] += shop.value;
+				stats[shop.kind] = parseInt(stats[shop.kind]) + parseInt(shop.value);
 				
 			announce("You lose " + shop.cost  + " " + shop.currency + " and gain " + shop.value + " " + shop.kind + ".");	
 			}
