@@ -21,24 +21,26 @@
 #bookContent.tiger{
 	font-family: Braille29;
     font-size: 29pt;	
+	line-height:34.8pt;
 	width: 40em;
 	
 }
+p {margin: 0; padding: 0;}
 .page table{}
 
-.page table td, .page table th{width: 2em; text-align: left; height: 2em}
+.page table td, .page table th{width: 1.5em; text-align: left; height: 1.5em}
 .page table td{border: 1px solid;}
-#bookContent .page .header{text-align: center}
+#bookContent .page .header{text-align: center; margin: auto; width: fit-content;}
 
 .iconGrid svg{width: 100px;}
-.iconGrid div{float: left; margin: 0em 1em;}
-.iconGrid {height: 25em;}
+.iconGrid div{float: left; width: 25%; margin-top: 1em;}
+.iconGrid {height: 20em; margin-top: 1em;}
 @media print {
 	@page{
-		size: 10in 10in;
-		margin: 0.5in 0.75in;
+		size: 11.5in 11in;
+		font-size: 29pt;
 		}
 	#controls{display: none;}
-	#bookContent .page{margin:none;}
+	#bookContent .page{margin:none; font-size: 1.5em;}
 	#bookContent{border: none;}
 }
