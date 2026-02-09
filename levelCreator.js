@@ -46,7 +46,6 @@ currentId="";
 
 function initLevelSet(){
 	for(i = 0; i < myKeys.length; i++){
-		
 		addOption(levelList, myKeys[i],  myKeys[i]);
 		addOption(nextLevelList, myKeys[i],  myKeys[i]);
 		addOption(keyList, myKeys[i],  myKeys[i]);
@@ -1262,13 +1261,13 @@ function renderShopLibrary(){
 }
 
 function selectShop(shopName){
+	
 	if (shopName.length > 0){
 		shopClass(shopName);
 		editingShop = shopName;
 		shop = shopLibrary[shopName].meta;
 		shopNameEl.value = shop.name || 'shop';
 		shopKindEl.value = shop.kind || 'defense';
-		console.log(shop.kind);
 		shopValueEl.value = shop.value || 1;
 		shopCostEl.value = shop.cost || 14;
 		shopCurrencyEl.value = shop.currency || 'gold';
@@ -1591,8 +1590,6 @@ document.getElementById('grid').onclick = function(e) {
 			} else {
 				items.push(monsterObj);
 			}
-			
-			
 		} else if (currentItem === 'potion') {
 			var potionObj = {type: 'potion', pos: pos, meta: {heal: potionHeal}};
 			if (existingIdx >= 0) {
@@ -1609,6 +1606,15 @@ document.getElementById('grid').onclick = function(e) {
 			}
 		} else if (currentItem === 'wall') {
 			var cwObj = {type: 'wall', pos: pos, meta: {name: customWallNameEl.value, icon: wallIconSelect.value}};
+			if (existingIdx >= 0) {
+				items[existingIdx] = cwObj;
+			} else {
+				items.push(cwObj);
+			}
+		} else if (currentItem === 'shop') {
+			//TODO fixme
+			var cwObj = {type: 'shop', pos: pos, meta: {name: shopNameEl.value, kind: shopKind.value, value: shopValue.value, cost: shopCost.value, currency: shopCurrency.value, icon: shopIconSelect.value}};
+			
 			if (existingIdx >= 0) {
 				items[existingIdx] = cwObj;
 			} else {
@@ -1634,14 +1640,11 @@ document.getElementById('grid').onclick = function(e) {
 					treasureValueEl.value = items[existingIdx].meta.value;
 				}
 				else if(type == "shop"){
+					myShop = items[existingIdx].meta;
 					shopConfigEl.style.display = 'block'; 
 					message = type + " properties expanded."
-					shopNameEl.value = items[existingIdx].meta.name;
-					shopKindEl.value = items[existingIdx].meta.kind;
-					shopValueEl.value = items[existingIdx].meta.value;
-					shopCurrencyEl.value = items[existingIdx].meta.currency;
-					shopIconSelect.value = items[existingIdx].meta.icon;
-					updateShopIcon();
+					selectShop(myShop.name)
+					document.getElementById("shopName").focus();
 				}
 				else if (type == "monster"){
 					myMonster = items[existingIdx].meta;
