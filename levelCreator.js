@@ -581,7 +581,7 @@ function keyUpdate(){
 	
 } 
  
-function stairUpdate(){
+function stairUpdate(target){
 	 if(currentItem == 'select'){
 		 //editing an existing treasure Cell
 		var pos = activeCell.dataset.pos;
@@ -589,7 +589,7 @@ function stairUpdate(){
 		items[existingIdx].meta.level = stairLevelSelect.value;
 		items[existingIdx].meta.cell = stairCellSelect.value;				 
 	 }
-	 updateStairCellList();
+	 if (target == "level") {updateStairCellList()}
  }
 
 
@@ -833,6 +833,9 @@ function refreshCells() {
 						} else if (found.type === 'custom_wall') {
 							var label = pos + " " +  (found.meta && found.meta.name) ? found.meta.name : 'Wall';
 							 cell.title = label;
+						} else if (found.type === 'stairs') {
+							var label = pos + " stairs to " + found.meta.cell + " of " + found.meta.level;
+							 cell.title = label;
 			} else {
 							label = pos + " " + found.type;
 							 cell.title = label;
@@ -843,8 +846,24 @@ function refreshCells() {
 			}
 		} else {
 			cell.textContent = '';
+		    let scenesPos = Object.keys(scenes)
+			for (var j = 0; j < scenesPos.length; j++) {
+				if (scenesPos[j] === pos) {
+					cell.textContent = '•';
+					var label = pos + " "
+					sceneText = scenes[scenesPos[j]];
+					maxLength = 20
+					if (sceneText.length < maxLength){label += sceneText}
+					else{ label += sceneText.substring(0, maxLength) + "..."}
+					cell.title = label;
+					break;
+				}
+			}	
+		
 		}
 	}
+	
+	
 	saveLevel()
 }
 
@@ -983,8 +1002,16 @@ function updateTreasureUI() {
 	}
 	
 	if (currentItem == 'stairs') {
+		//TODO 
 		stairConfigEl.style.display = 'block';
-		updateStairCellList();
+		var itemAt = items.find(o => o.pos === selectedPos);
+		if (itemAt && itemAt.type == "stairs"){
+			//don't do anything
+		} else{
+			stairLevelSelect.value = currentId;
+			updateStairCellList();
+			
+		}
 		message = "Stairs properties expanded";
 	} else {
 		stairConfigEl.style.display = 'none';
@@ -1612,7 +1639,7 @@ document.getElementById('grid').onclick = function(e) {
 				items.push(cwObj);
 			}
 		} else if (currentItem === 'shop') {
-			//TODO fixme
+			
 			var cwObj = {type: 'shop', pos: pos, meta: {name: shopNameEl.value, kind: shopKind.value, value: shopValue.value, cost: shopCost.value, currency: shopCurrency.value, icon: shopIconSelect.value}};
 			
 			if (existingIdx >= 0) {
@@ -1674,6 +1701,7 @@ document.getElementById('grid').onclick = function(e) {
 					stairsConfigEl.style.display = 'block'; 
 					mystairs = items[existingIdx].meta
 					stairLevelSelect.value = mystairs.level
+					updateStairCellList()
 					stairCellSelect.value =  mystairs.cell
 					stairLevelSelect.focus();
 				}
