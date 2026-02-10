@@ -1,4 +1,4 @@
-//todo what should A do
+
 
 /*
   NOTE: Fix for ReferenceError: MAX_SIZE is not defined
@@ -52,7 +52,7 @@ var levels;
  }
  
  
-var wallPhrases = ["The wall is gross. Your hands are sticky. ", "The wall tastes delicious! ", "Wall, my old friend! ", "A wall blocks your way. "]
+var wallPhrases = ["The wall is gross. Your hands are sticky. ", "The wall tastes delicious! ", "Wall, my old friend! ", "A wall blocks your way. ", "The wall sneaks up on you.", "The wall squeaks when you touch it. Strange.", "The wall smells wet and soupy."]
 var wallCount = 0;
 
 function playSoundStep() {
@@ -614,6 +614,7 @@ function revealNeighbors(pos) {
 }
 
 function revealMap(){
+	revealed = []
 	for (let r = 0; r < level.rows; r++){
 		for (let c = 0; c < level.cols; c++){
     
@@ -636,9 +637,12 @@ function revealMap(){
     else if (hasArmorShop(pos)) {revealedSpecial.set(pos, "armor_shop")}
     else if (hasInn(pos)) {revealedSpecial.set(pos, "inn")}
     else if (hasExit(pos)) {revealedSpecial.set(pos, "exit")}
-	if(revealedSpecial.has(pos)){ announce("revealed " + revealedSpecial.get(pos) + " at " + pos) }
+	if(revealedSpecial.has(pos)){ revealed.push(revealedSpecial.get(pos) + " at " + pos) }
 	
 	}}
+	if (revealed.length > 0){
+	return ("\nRevealed " + revealed.join(", " ) + ". ")}
+	else {return "";}
 }
 
 function mapTouch(pos){
@@ -1027,7 +1031,7 @@ function groupedSurroundingsText() {
   //TODO: FIX THIS
   // I think the exit and the void are the highest priorities, followed by monsters, then I don’t really care
   // Basically, if anything of interest is nearby, it should be read before open path.
-	for (let p = 1; p <= 5; p++){
+	for (let p = 1; p < 5; p++){
 		
 		myCues = cueDirs.get(p)
 		if (myCues){
@@ -1042,10 +1046,22 @@ function groupedSurroundingsText() {
 	}
 
   // Then add open paths
-  if (openDirs.length) parts.push(`open path: ${openDirs.join(", ")}. `);
+  if (openDirs.length) parts.push(`Path: ${openDirs.join(", ")}. `);
+
+	p = 5
+	myCues = cueDirs.get(p)
+		if (myCues){
+			cueKeys = Object.keys(myCues)
+			for (key of cueKeys){
+				
+				dirSt = myCues[key].dirs.join(", ");
+				parts.push(key + ": " + dirSt);
+				
+			}
+		}
 
   // Then add blocked paths
-  if (blockedDirs.length) parts.push(`blocked path: ${blockedDirs.join(", ")}. `);
+  if (blockedDirs.length) parts.push(`Wall: ${blockedDirs.join(", ")}. `);
 
   return parts.join("<br>");
 }
@@ -1078,7 +1094,7 @@ function groupedSurroundingsTextAt(pos) {
     if (dirs && dirs.length) parts.push(`${cue}: ${dirs.join(", ")}. `);
   }
   // Then add open paths
-  if (openDirs.length) parts.push(`open path: ${openDirs.join(", ")}. `);
+  if (openDirs.length) parts.push(`Path: ${openDirs.join(", ")}. `);
 
   // Any remaining cues (e.g. custom wall names) that weren't in `cueOrder`:
   for (const [cue, dirs] of cueDirs.entries()) {
@@ -1087,7 +1103,7 @@ function groupedSurroundingsTextAt(pos) {
     }
   }
 
-  if (blockedDirs.length) parts.push(`blocked path: ${blockedDirs.join(", ")}. `);
+  if (blockedDirs.length) parts.push(`Wall: ${blockedDirs.join(", ")}. `);
   return parts.join("<br>");
 }
 
@@ -1164,6 +1180,8 @@ function enterCell(prefix) {
   const firstVisit = !visited.has(pos);
   visited.add(pos);
 
+
+
   // Reveal adjacent N/S/E/W tiles when entering a cell (fog of war).
   revealNeighbors(pos);
 
@@ -1200,6 +1218,22 @@ function enterCell(prefix) {
   const text = describeCurrentLocation();
   // Auto actions (announce discoveries)
   const discoveryMsgs = [];
+
+	//did you take the stairs?
+	if (tookStairs.bool == true){
+		if (tookStairs.level != null){
+			//You take the stairs to E5
+			discoverMsgs.push("You take the stairs to " + tookStairs.cell + " of " + tookStairs.level + ".\n")
+		}
+		else{
+			discoveryMsgs.push("You take the stairs to " + tookStairs.cell + ".\n")
+		}
+		tookStairs.level = null;
+		tookStairs.cell = null;
+		tookStairs.bool = false;
+	}
+
+
 
   if (hasKey(pos) && !stats.key) {
 	  let keyLevel;
@@ -1348,8 +1382,8 @@ function enterCell(prefix) {
       // consume the key and complete the level (player stands on the door square)
       //	stats.key = false;
       completed = true;
-      revealMap();
       discoveryMsgs.push("You unlock and open the door. press <kbd>enter</kbd> to continue. ");
+	  discoveryMsgs.push(revealMap());
     } else {
       // No key: inform the player and treat as a blocked/bumped tile in messages.
       discoveryMsgs.push("A locked door is here. You need a key to open it. ");
@@ -1683,6 +1717,8 @@ function speakLoc() {
 	
 }
 
+var tookStairs = {bool: false, level: null, cell: null}
+
 function activateCell(pos){
     if (hasPotion(pos)) {
       // consume potion and remove its icon
@@ -1698,11 +1734,9 @@ function activateCell(pos){
 		preserveStatsOnNextLoad = true;
 		targetLevel = itemsAt(pos)[0].meta.level;
 		targetCell = itemsAt(pos)[0].meta.cell;
-		if (targetLevel == currentLevelId){
-			announce("You take the stairs to " + targetCell)}
-		else{
-			announce("You take the stairs to " + targetCell + " of " + targetLevel);
-		}
+		tookStairs.bool = true;
+		if (targetLevel != currentLevelId){	tookStairs.level = targetLevel;}
+		tookStairs.cell = targetCell;
 		
 	if (targetLevel == currentLevelId){
 		player.col = targetCell.charCodeAt(0) - 65;
