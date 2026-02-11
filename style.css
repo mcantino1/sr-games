@@ -146,7 +146,6 @@ h1 strong{font-size: 1.25em; margin-left: 0.25em}
     padding: 12px;
     flex: 0 0 auto;
   }
-  #spSettingsButton{display: none; float: left; padding: 0em 0.4em 0.25em 0.4em; margin-right: 0.25em;}
   
 
   .panel.locationPanel {
@@ -271,13 +270,13 @@ h1 strong{font-size: 1.25em; margin-left: 0.25em}
 	:root{font-size: 26px;}
 } 
   
-@media (max-width: 1600px) {
-	#spSettingsButton{display: block;}
-	.spSettings{display: none;}
-	#spSettings.enabled{display: block;}
-	#speechDiv{margin-left: 0.25em;}
-	header {display: block;}
-}
+
+#spSettingsButton{display: block; float: right; margin-left: 1em;}
+.spSettings{display: none;}
+#spSettings.enabled{display: block;}
+#speechDiv{margin-left: 0.25em;}
+header {display: block;}
+
 
 header h1{width: 100%;}
 header div{float: left;}

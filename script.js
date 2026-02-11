@@ -62,7 +62,7 @@ var soundEnd = 0;
 var currentSound = "";
 
 function playSound(name){
-	if (!soundBank[name]){return;}
+	if (!soundBank[name] || soundEffects == false){return;}
 	mySound = soundBank[name];
 	const now = audioContext.currentTime;  
 	if(now < soundEnd && currentSound != "step"){return;}
@@ -99,17 +99,16 @@ function playSound(name){
 			oscillatorB.type = mySound.type;
 			oscillatorB.frequency.setValueAtTime(mySound.frequency, now);
 			gainNodeB.gain.setValueAtTime(0, now);
-			console.log("nodes" + s);
+			
 			myNodes = mySound["nodes" + s];
 			
 			 for (let n = 0; n < myNodes.length; n++){
 				if(myNodes[n].type == "frequency"){
 					oscillatorB.frequency.linearRampToValueAtTime(myNodes[n].value, now + (dur * myNodes[n].time));
-					console.log(myNodes[n])
 				}
 				else { //gain
 					gainNodeB.gain.linearRampToValueAtTime((myNodes[n].value * volume), now + (dur * myNodes[n].time));
-					console.log(myNodes[n])
+					
 				}
 			}
 			oscillatorB.start(now);
@@ -130,8 +129,14 @@ var soundBank = {"step": {"dur": 0.1, "type": "sine", "frequency": 15, "layers":
 				};
 				
   
-
-
+var soundEffects = true;
+function toggleEffect(){
+	
+	if (soundEffects == true)
+	{soundEffects = false}
+	else{soundEffects = true}
+	
+}
 
 
 let currentLevelId = "level1";
@@ -497,8 +502,7 @@ function mapTouch(pos){
 			startCol = player.col		
 			dcol = parseInt(tcol) - parseInt(player.col)
 			drow = parseInt(trow) - parseInt(player.row)	
-			//console.log(dcol)			
-			//console.log(drow)
+			
 			dr = 0;
 			dc = 0;
 			if(drow < 0) {dr = -1}
