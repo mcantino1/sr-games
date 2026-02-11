@@ -55,269 +55,82 @@ var levels;
 var wallPhrases = ["The wall is gross. Your hands are sticky. ", "The wall tastes delicious! ", "Wall, my old friend! ", "A wall blocks your way. ", "The wall sneaks up on you.", "The wall squeaks when you touch it. Strange.", "The wall smells wet and soupy."]
 var wallCount = 0;
 
-function playSoundStep() {
-  const duration = 0.05; // 100ms
-  
-  const oscillator = audioContext.createOscillator();
-  const gainNode = audioContext.createGain();
-  let gap = duration/2;
-  oscillator.connect(gainNode);
-  gainNode.connect(audioContext.destination);
-  
-  oscillator.type = 'sine';
 
-  const now = audioContext.currentTime;  
-  oscillator.frequency.setValueAtTime(15, now);
+				
+var volume = 10;
+var soundEnd = 0;
+var currentSound = "";
 
-  for(i = 0; i < 3; i++){	
-	myFreq = 10 + (Math.round(Math.random() * 40));
-	oscillator.frequency.linearRampToValueAtTime(myFreq, now +(i * (duration+ gap)) + (duration * .25));
-	gainNode.gain.exponentialRampToValueAtTime(3, now +(i * (duration + gap)));
-	gainNode.gain.linearRampToValueAtTime(3, now +(i * (duration+ gap)) + (duration * .25)); // Quick attack (10ms)
-	gainNode.gain.linearRampToValueAtTime(0.01, now + duration +(i *( duration + gap)))
-	gainNode.gain.linearRampToValueAtTime(0.01, now + duration +(i *( duration + gap + (gap/2))));
-  }
-    
+function playSound(name){
+	if (!soundBank[name]){return;}
+	mySound = soundBank[name];
+	const now = audioContext.currentTime;  
+	if(now < soundEnd && currentSound != "step"){return;}
+	currentSound = name;
+	const oscillator = audioContext.createOscillator();
+	const gainNode = audioContext.createGain();
+	oscillator.connect(gainNode);
+	gainNode.connect(audioContext.destination);
+	oscillator.type = mySound.type;
+	var dur = mySound.dur;
+	soundEnd = now + dur
+	oscillator.frequency.setValueAtTime(mySound.frequency, now);
+	gainNode.gain.setValueAtTime(0, now);
+	myNodes = mySound.nodes;
+	for (let n = 0; n < myNodes.length; n++){
+		if(myNodes[n].type == "frequency"){
+			oscillator.frequency.linearRampToValueAtTime(myNodes[n].value, now + (dur * myNodes[n].time));
+		}
+		else { //gain
+			gainNode.gain.linearRampToValueAtTime((myNodes[n].value * volume), now + (dur * myNodes[n].time));
+		}
+	}
 	oscillator.start(now);
-	oscillator.stop(now + duration +(3 * (duration + gap)));
-
-}
-
-
-
-
-function playSoundWall() {
-  const now = audioContext.currentTime;
-  const duration = 0.05; //  quick percussive sound
-  
-  // Create low-mid frequency oscillator for footstep tone
-  const oscillator = audioContext.createOscillator();
-  const gainNode = audioContext.createGain();
-  
-  oscillator.connect(gainNode);
-  gainNode.connect(audioContext.destination);
-  
-  // Use a lower frequency that drops quickly for percussive effect
-  oscillator.frequency.setValueAtTime(120, now);
-  oscillator.frequency.exponentialRampToValueAtTime(60, now + duration);
-  oscillator.type = 'sine';
-  
-  // Quick attack, sharp decay for percussive feel
-  gainNode.gain.setValueAtTime(0, now);
-  gainNode.gain.linearRampToValueAtTime(2, now + 0.01); // Quick attack (10ms)
-  gainNode.gain.exponentialRampToValueAtTime(5, now + duration); // Sharp decay
-  
-  oscillator.start(now);
-  oscillator.stop(now + duration);
-}
-
-function playSoundKey(){
-  const now = audioContext.currentTime;
-  const dur = 0.1; 
-  let gap = 0.05;
-  let beeps = 3
-  let duration = (dur * beeps) + (gap * (beeps-1));
-  const oscillator = audioContext.createOscillator();
-  const gainNode = audioContext.createGain();
-  
-  oscillator.connect(gainNode);
-  gainNode.connect(audioContext.destination);
-  
-  oscillator.frequency.setValueAtTime(400, now);
-  oscillator.frequency.exponentialRampToValueAtTime(700, now + duration);
-  oscillator.type = 'sine';
-  for (let i = 0; i < beeps; i++){
-  gainNode.gain.setValueAtTime(2, now + (i * dur) + (gap * dur));
-  gainNode.gain.linearRampToValueAtTime(0.01, now + dur + (i * dur) + (gap * dur)); 
-  } 
-  oscillator.start(now);
-  oscillator.stop(now + duration);
-}
-
-function playSoundUnlock(){
-  const now = audioContext.currentTime;
-  let duration = 0.5;
-  const oscillator = audioContext.createOscillator();
-  const gainNode = audioContext.createGain();
-  
-  oscillator.connect(gainNode);
-  gainNode.connect(audioContext.destination);
-  
-  oscillator.frequency.setValueAtTime(50, now);
-  oscillator.frequency.exponentialRampToValueAtTime(10, now + duration);
-  oscillator.type = 'sawtooth';
-  gainNode.gain.setValueAtTime(3, now);
-  gainNode.gain.linearRampToValueAtTime(1, now + (duration * .75))
-  gainNode.gain.linearRampToValueAtTime(0.01, now + duration); 
-  oscillator.start(now);
-  oscillator.stop(now + duration);
-}
-
-function playSoundTreasure(){
-//walked into a location with a potion
-  const now = audioContext.currentTime;
- 
-  let duration = 0.15;
-  const oscillator = audioContext.createOscillator();
-  const gainNode = audioContext.createGain();
-  
-  oscillator.connect(gainNode);
-  gainNode.connect(audioContext.destination);
-  oscillator.type = 'sine';
-  
-  oscillator.frequency.setValueAtTime(100, now);
-  oscillator.frequency.exponentialRampToValueAtTime(150, now + 0.02);
-  oscillator.frequency.exponentialRampToValueAtTime(200, now + 0.05);
-
-  oscillator.frequency.setValueAtTime(150, now + 0.1);
-  oscillator.frequency.exponentialRampToValueAtTime(200, now + 0.12);
-  oscillator.frequency.exponentialRampToValueAtTime(100, now + 0.15);
-  
-  gainNode.gain.setValueAtTime(1, now);
-  gainNode.gain.linearRampToValueAtTime(0.01, now + 0.05); 
-  gainNode.gain.setValueAtTime(1, now + 0.1);
-  gainNode.gain.linearRampToValueAtTime(0.01, now + 0.15); 
-
-
-  oscillator.start(now);
-  oscillator.stop(now + duration);	
-}
-
-function playSoundDrink(){
-	//Drinking a health potion
- const now = audioContext.currentTime; 
-  let duration = 0.1;
-  const oscillator = audioContext.createOscillator();
-  const gainNode = audioContext.createGain();
-  
-  oscillator.connect(gainNode);
-  gainNode.connect(audioContext.destination);
-  oscillator.type = 'sine';
-
-  oscillator.frequency.setValueAtTime(100, now);
-  oscillator.frequency.exponentialRampToValueAtTime(50, now + duration / 2);
-  oscillator.frequency.exponentialRampToValueAtTime(200, now + duration);
-  
+	oscillator.stop(soundEnd);
 	
-	  
-  gainNode.gain.setValueAtTime(3, now);
-  gainNode.gain.linearRampToValueAtTime(0.01, now + duration); 
-
-  oscillator.start(now);
-  oscillator.stop(now + duration);	
+	if (mySound.layers > 1)
+	{
+		nodes = mySound.layers + 1
+		for(let s = 2; s < nodes; s++){
+			const oscillatorB = audioContext.createOscillator();
+			const gainNodeB = audioContext.createGain();
+			oscillatorB.connect(gainNodeB);
+			gainNodeB.connect(audioContext.destination);
+			oscillatorB.type = mySound.type;
+			oscillatorB.frequency.setValueAtTime(mySound.frequency, now);
+			gainNodeB.gain.setValueAtTime(0, now);
+			console.log("nodes" + s);
+			myNodes = mySound["nodes" + s];
+			
+			 for (let n = 0; n < myNodes.length; n++){
+				if(myNodes[n].type == "frequency"){
+					oscillatorB.frequency.linearRampToValueAtTime(myNodes[n].value, now + (dur * myNodes[n].time));
+					console.log(myNodes[n])
+				}
+				else { //gain
+					gainNodeB.gain.linearRampToValueAtTime((myNodes[n].value * volume), now + (dur * myNodes[n].time));
+					console.log(myNodes[n])
+				}
+			}
+			oscillatorB.start(now);
+			oscillatorB.stop(soundEnd);			
+		}		
+	}
 }
 
-function playSoundPotion(){
- const now = audioContext.currentTime; 
-  let duration = 0.1;
-  const oscillator = audioContext.createOscillator();
-  const gainNode = audioContext.createGain();
+var soundBank = {"step": {"dur": 0.1, "type": "sine", "frequency": 15, "layers": 1, "nodes": [{"type": "frequency", "value": 15, "time": 0}, {"type": "frequency", "value": 30, "time": 0.5}, {"type": "frequency", "value": 10, "time": 1}, {"type": "gain", "value": 1, "time": 0.01}, {"type": "gain", "value": 0.01, "time": 0.31}, {"type": "gain", "value": 1, "time": 0.35}, {"type": "gain", "value": 0.01, "time": 0.65}, {"type": "gain", "value": 1, "time": 0.69}, {"type": "gain", "value": 0.01, "time": 0.99}]},
+				"wall": {"dur": 0.05, "type": "sine", "frequency": 120, "layers": 1, "nodes": [{"type": "frequency", "value": 60, "time": 1}, {"type": "gain", "value": 1, "time": 0.25}, {"type": "gain", "value": 0.01, "time": 0.99}]},
+				"key": {"dur": 0.4, "type": "sine", "frequency": 400, "layers": 1, "nodes": [{"type": "frequency", "value": 650, "time": 1}, {"type": "gain", "value": 0.5, "time": 0.01}, {"type": "gain", "value": 0.01, "time": 0.31}, {"type": "gain", "value": 0.5, "time": 0.35}, {"type": "gain", "value": 0.01, "time": 0.65}, {"type": "gain", "value": 0.5, "time": 0.69}, {"type": "gain", "value": 0.01, "time": 0.99}]},
+				"door": {"dur": 0.5, "type": "sawtooth", "frequency": 50, "layers": 1, "nodes": [{"type": "frequency", "value": 10, "time": 1}, {"type": "gain", "value": 1, "time": 0.01}, {"type": "gain", "value": 0.3, "time": 0.9}, {"type": "gain", "value": 0.01, "time": 1}] },
+				"get": {"dur": 0.15, "type": "sine", "frequency": 100, "layers": 1, "nodes": [{"type": "frequency", "value": 150, "time": 0.15}, {"type": "frequency", "value": 200, "time": 0.3}, {"type": "frequency", "value": 150, "time": 0.6}, {"type": "frequency", "value": 200, "time": 0.75}, {"type": "frequency", "value": 100, "time": 1}, {"type": "gain", "value": 1, "time": 0.01}, {"type": "gain", "value": 0.01, "time": 0.3}, {"type": "gain", "value": 1, "time": 0.75}, {"type": "gain", "value": 0.01, "time": 1}]},
+				"drink": {"dur": 0.1, "type": "sine", "frequency": 100, "layers": 1, "nodes": [{"type": "frequency", "value": 50, "time": 0.5}, {"type": "frequency", "value": 200, "time": 1}, {"type": "gain", "value": 1, "time": 0.01}, {"type": "gain", "value": 0.01, "time": 1}]},
+				"fall": {"dur": 1, "type": "sine", "frequency": 800, "layers": 1, "nodes": [{"type": "frequency", "value": 300, "time": 1}, {"type": "gain", "value": 1, "time": 0.01}, {"type": "gain", "value": .01, "time": 1}]},
+				"growl": {"layers": 2, "dur": 0.5, "type": "triangle", "frequency": 50, "nodes": [{"type": "frequency", "value": 40, "time": 1}, {"type": "gain", "value": 1, "time": 0.01}, {"type": "gain", "value": 0.25, "time": 0.5}, {"type": "gain", "value": 0.01, "time": 1}], "nodes2": [{"type": "frequency", "value": 50, "time": 0}, {"type": "frequency", "value": 100, "time": 1}, {"type": "gain", "value": 1 , "time": 0 }, {"type": "gain", "value": 0.01 , "time": 0.083 }, {"type": "gain", "value": 1 , "time": 0.084 }, {"type": "gain", "value": 0.01 , "time": 0.166 }, {"type": "gain", "value": 1 , "time": 0.167 }, {"type": "gain", "value": 0.01 , "time": 0.25 }, {"type": "gain", "value": 1 , "time": 0.251 }, {"type": "gain", "value": 0.01 , "time": 0.333 }, {"type": "gain", "value": 1 , "time": 0.334 }, {"type": "gain", "value": 0.01 , "time": 0.416 }, {"type": "gain", "value": 1 , "time": 0.417 }, {"type": "gain", "value": 0.01 , "time": 0.5 }]},
+				"slay": {"layers": 2, "dur": 0.5, "type": "triangle", "frequency": 200, "nodes": [{"type": "frequency", "value": 40, "time": 1}, {"type": "gain", "value": 0.5, "time": 0.01}, {"type": "gain", "value": 1, "time": 0.5},  {"type": "gain", "value": 0.01, "time":1}], "nodes2": [{"type": "frequency", "value": 50, "time": 0}, {"type": "frequency", "value": 100, "time": 1}, {"type": "gain", "value": 1 , "time": 0 }, {"type": "gain", "value": 0.01 , "time": 0.083 }, {"type": "gain", "value": 1 , "time": 0.084 }, {"type": "gain", "value": 0.01 , "time": 0.166 }, {"type": "gain", "value": 1 , "time": 0.167 }, {"type": "gain", "value": 0.01 , "time": 0.25 }, {"type": "gain", "value": 1 , "time": 0.251 }, {"type": "gain", "value": 0.01 , "time": 0.333 }, {"type": "gain", "value": 1 , "time": 0.334 }, {"type": "gain", "value": 0.01 , "time": 0.416 }, {"type": "gain", "value": 1 , "time": 0.417 }, {"type": "gain", "value": 0.01 , "time": 0.5 }] }
+				};
+				
   
-  oscillator.connect(gainNode);
-  gainNode.connect(audioContext.destination);
-  oscillator.type = 'sine';
 
-  oscillator.frequency.setValueAtTime(100, now);
-  oscillator.frequency.exponentialRampToValueAtTime(300, now + duration / 2);
-  oscillator.frequency.exponentialRampToValueAtTime(600, now + duration);
-	
-	  
-  gainNode.gain.setValueAtTime(1, now);
-  gainNode.gain.linearRampToValueAtTime(0.01, now + duration); 
-
-  oscillator.start(now);
-  oscillator.stop(now + duration);	
-}
-
-
-function playSoundFall(){
-  const now = audioContext.currentTime; 
-  let duration = 1.;
-  const oscillator = audioContext.createOscillator();
-  const gainNode = audioContext.createGain();
-  
-  oscillator.connect(gainNode);
-  gainNode.connect(audioContext.destination);
-  oscillator.type = 'sine';
-  oscillator.frequency.setValueAtTime(800, now);
-  oscillator.frequency.linearRampToValueAtTime(300, now + duration);	  
-  gainNode.gain.setValueAtTime(2.5, now);
-  gainNode.gain.linearRampToValueAtTime(0.01, now + duration); 
-  oscillator.start(now);
-  oscillator.stop(now + duration);	
-}
-  
-function playSoundGrowl(){
-  const now = audioContext.currentTime; 
-  let duration = 0.5;
-  const oscillator = audioContext.createOscillator();
-  const gainNode = audioContext.createGain();
-  
-  oscillator.connect(gainNode);
-  gainNode.connect(audioContext.destination);
-  oscillator.type = 'triangle';
-  oscillator.frequency.setValueAtTime(50, now);
-  oscillator.frequency.linearRampToValueAtTime(40, now + duration);	  
-  gainNode.gain.setValueAtTime(5, now);
-  gainNode.gain.linearRampToValueAtTime(1, now + (duration * .5));
-  gainNode.gain.linearRampToValueAtTime(0.01, now + duration); 
-  oscillator.start(now);
-  oscillator.stop(now + duration);	
-
-  const oscillatorB = audioContext.createOscillator();
-  const gainNodeB = audioContext.createGain();
-  let beeps = 12;
-  dur = duration / beeps;
-  oscillatorB.connect(gainNode);
-  gainNodeB.connect(audioContext.destination);
-  oscillatorB.type = 'triangle';
-  oscillatorB.frequency.setValueAtTime(50, now);
-  oscillatorB.frequency.linearRampToValueAtTime(100, now + (duration * .5));	  
-  gainNodeB.gain.setValueAtTime(5, now);
-  for (let i = 0; i < beeps; i++){
-	gainNode.gain.setValueAtTime(10, now + (i * dur));
-	gainNode.gain.linearRampToValueAtTime(0.01, now + dur + (i * dur)); 
-  } 
-  
-  oscillatorB.start(now);
-  oscillatorB.stop(now + (duration / 2));	
-}
-
-function playSoundSlay(){
-  const now = audioContext.currentTime; 
-  let duration = 0.5;
-  const oscillator = audioContext.createOscillator();
-  const gainNode = audioContext.createGain();
-  
-  oscillator.connect(gainNode);
-  gainNode.connect(audioContext.destination);
-  oscillator.type = 'triangle';
-  oscillator.frequency.setValueAtTime(200, now);
-  oscillator.frequency.linearRampToValueAtTime(40, now + duration);	  
-  gainNode.gain.setValueAtTime(5, now);
-  gainNode.gain.linearRampToValueAtTime(10, now + (duration * .5));
-  gainNode.gain.linearRampToValueAtTime(0.01, now + duration); 
-  oscillator.start(now);
-  oscillator.stop(now + duration);	
-
-  const oscillatorB = audioContext.createOscillator();
-  const gainNodeB = audioContext.createGain();
-  let beeps = 12;
-  dur = duration / beeps;
-  oscillatorB.connect(gainNode);
-  gainNodeB.connect(audioContext.destination);
-  oscillatorB.type = 'triangle';
-  oscillatorB.frequency.setValueAtTime(50, now);
-  oscillatorB.frequency.linearRampToValueAtTime(100, now + (duration * .5));	  
-  gainNodeB.gain.setValueAtTime(5, now);
-  for (let i = 0; i < beeps; i++){
-	gainNode.gain.setValueAtTime(10, now + (i * dur));
-	gainNode.gain.linearRampToValueAtTime(0.01, now + dur + (i * dur)); 
-  } 
-  
-  oscillatorB.start(now);
-  oscillatorB.stop(now + (duration / 2));	
-}
 
 
 
@@ -503,16 +316,10 @@ const gameEl = document.getElementById("game");
 let speechQueue = Promise.resolve();
 
 function announce(msg){
-  speechQueue = speechQueue.then(() => new Promise(resolve => {
     live.innerHTML = "";
-    setTimeout(() => {
 	msg = trimText(msg)
       live.innerHTML = msg;
-	  if (speechOn){speechSay(live.textContent)}
-      // Give AT time to start speaking before allowing next message.
-      setTimeout(resolve, 250);
-    }, 10);
-  }));
+	  if (speechOn){speechSay(live.textContent)}   
 }
 
 function announceSequence(msgs){
@@ -876,7 +683,7 @@ function rollTreasureReward(meta) {
 }
 
 function consumePotion() {
-	playSoundDrink();
+	playSound("drink");
   // Determine heal amount from a potion on the player's current square, if any.
   const pos = toPos(player.row, player.col);
   const potionItem = itemsAt(pos).find(it => it.type === 'potion');
@@ -946,7 +753,7 @@ if (customWall) {
   if (items.some(i=>i.type==="villager")) return ["Villager", 4];
   if (items.some(i=>i.type==="key")) return ["faint glow", 4];
   if (items.some(i=>i.type==="monster")) {
-	  playSoundGrowl();
+	  playSound("growl");
 	  var monSound = "growling"
 		if(items[0].meta){if(items[0].meta.sound){monSound = items[0].meta.sound}};
 	  return [monSound + " sound", 3];}
@@ -1493,7 +1300,7 @@ function tryMove(dr, dc) {
 	else {
 		announce("A wall blocks your way. ");
 	}
-	playSoundWall();
+	playSound("wall");
     return;
   }
 
@@ -1538,7 +1345,7 @@ function tryMove(dr, dc) {
 		else{
 		announce("A " + wallName + " blocks your way. ");}
 	}
-    playSoundWall();
+    playSound("wall");
     renderMap();
     return;
   }
@@ -1607,7 +1414,7 @@ function tryMove(dr, dc) {
 
       // If player dies, reset level.
       if (stats.life <= 0) {
-		  playSoundFall();
+		  playSound("fall");
         msg += "You have been defeated. Restarting level. ";
         const curPos = toPos(player.row, player.col);
 		msg = trimText(msg)
@@ -1655,7 +1462,7 @@ function tryMove(dr, dc) {
     }
 
     // Monster defeated
-	playSoundSlay();
+	playSound("slay");
 	//get rewards
     removeMonster(nextPos);
     // Once defeated, the monster icon should disappear from the map.
@@ -1683,16 +1490,16 @@ function tryMove(dr, dc) {
     return;
   }
 //hasKey(pos)
-	if(hasKey(nextPos)){playSoundKey();}
-	else if(hasDoor(nextPos)){playSoundUnlock();}
-	else if(hasWeaponShop(nextPos)){playSoundUnlock();}
-	else if(hasArmorShop(nextPos)){playSoundUnlock();}
-	else if(hasInn(nextPos)){playSoundUnlock();}
-	else if(hasVoid(nextPos)){playSoundFall();}
-	//else if(hasPotion(nextPos)){playSoundPotion()}
-	else if(hasTreasure(nextPos)){playSoundTreasure()}
-	else if(hasVillager(nextPos)){playSoundTreasure()}
-	else{playSoundStep();}
+	if(hasKey(nextPos)){playSound("key");}
+	else if(hasDoor(nextPos)){playSound("door");}
+	else if(hasWeaponShop(nextPos)){playSound("door");}
+	else if(hasArmorShop(nextPos)){playSound("door");}
+	else if(hasInn(nextPos)){playSound("door");}
+	else if(hasVoid(nextPos)){playSound("fall");}
+	else if(hasPotion(nextPos)){playSound("drink")}
+	else if(hasTreasure(nextPos)){playSound("get")}
+	else if(hasVillager(nextPos)){playSound("get")}
+	else{playSound("step");}
   // Normal movement
   player.row = nr;
   player.col = nc;
