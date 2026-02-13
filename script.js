@@ -14,6 +14,51 @@ var baseLife = 20;
 let footstepAudio = null;
 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 var levels;
+
+var effectToggle = document.getElementById("effectToggle");
+var speechBox = document.getElementById("speechToggle");
+var voiceBox = document.getElementById("voiceSelector")
+var speedBox = document.getElementById("voiceSpeed")
+var pitchBox = document.getElementById("voicePitch")
+
+//user settings
+var speechOn = false;
+speechOn = initCheckbox(speechOn, "speechOn", speechBox)
+
+var soundEffects = true;
+soundEffects = initCheckbox(soundEffects, "soundEffects", effectToggle)
+
+initSetting("speedBox", speedBox);
+initSetting("pitchBox", pitchBox);
+initSetting("voiceBox", voiceBox);
+
+
+var voiceSpeed = speedBox.value * 0.2 ;
+var voicePitch = pitchBox.value * 0.2;
+
+
+
+
+function initCheckbox(vari, cook, box){
+	myCook = getCookie(cook);
+	if (myCook == "true"){
+		box.checked = true;
+		return true;
+	}
+	else if (myCook == "false"){
+		box.checked = false;
+		return false;
+	}
+	return vari;
+}
+
+function initSetting(cook, field){
+	myCook = getCookie(cook);
+	if (myCook != ''){
+		field.value = myCook;
+	}
+}
+
  function initGame(){
 	 gameName = document.getElementsByTagName("H1")[0].children[0];
 	try{
@@ -129,11 +174,11 @@ var soundBank = {"step": {"dur": 0.1, "type": "sine", "frequency": 15, "layers":
 				};
 				
   
-var soundEffects = true;
+
 function toggleEffect(){
 	
 	if (soundEffects == true)
-	{soundEffects = false}
+	{soundEffects = false; setCookie("soundEffects", false)}
 	else{soundEffects = true}
 	
 }
@@ -1798,10 +1843,6 @@ function loadLevel(id, cell = "A1") {
   
   updateUI();
   
-  
-  
-  
-  
   enterCell();
   gameEl.focus();
 }
@@ -1818,20 +1859,23 @@ function speechSay(message) {
 	
 }
 
-var speedBox = document.getElementById("voiceSpeed")
-var pitchBox = document.getElementById("voicePitch")
-
-var voiceSpeed = speedBox.value * 0.2 ;
-var voicePitch = pitchBox.value * 0.2;
+function updateVoice(){
+	speechSynthesis.cancel();
+	setCookie("voiceBox", voiceBox.value);
+	let msg = voiceBox.value;
+	speechSay(msg);
+}
 
 function updateSpeed(){
 	speechSynthesis.cancel();
+	setCookie("speedBox", speedBox.value);
 	voiceSpeed = speedBox.value  * 0.2;
 	let msg = "Speed " + speedBox.value
 	speechSay(msg)
 }
 function updatePitch(){
 	speechSynthesis.cancel();
+	setCookie("pitchBox", pitchBox.value);
 	voicePitch = (pitchBox.value/10) * 2;
 	let msg = "Pitch " + pitchBox.value
 	speechSay(msg)
@@ -1842,12 +1886,13 @@ function updatePitch(){
 // single-file campaign) can control startup and avoid using the demo
 // LEVELS bundled inside this runtime.
 
-speechOn = false;
+
 
 function toggleSpeech(){
-	if (speechOn){speechOn = false;}
+	if (speechOn){speechOn = false; setCookie("speechOn", false)}
 	else {
 		speechOn = true;
+	setCookie("speechOn", true);
 	let utterance = new SpeechSynthesisUtterance("Speech on");
 	mySelect = document.getElementById("voiceSelector")
 	myVoice = voices[mySelect.selectedIndex];
@@ -1884,4 +1929,30 @@ populateVoiceList();
 
 if (speechSynthesis.onvoiceschanged !== undefined) {
   speechSynthesis.onvoiceschanged = populateVoiceList;
+}
+
+
+
+function getCookie(cname) {
+  let name = cname + "=";
+  let decodedCookie = decodeURIComponent(document.cookie);
+  let ca = decodedCookie.split(';');
+  for(let i = 0; i <ca.length; i++) {
+    let c = ca[i];
+    while (c.charAt(0) == ' ') {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) == 0) {
+      return c.substring(name.length, c.length);
+    }
+  }
+  return "";
+}
+
+function setCookie(cname, cvalue, exdays = 30) {
+  const d = new Date();
+  d.setTime(d.getTime() + (exdays*24*60*60*1000));
+  let expires = "expires="+ d.toUTCString();
+  document.cookie = cname + "=" + cvalue + ";" + expires + ";";
+  console.log(document.cookie)
 }

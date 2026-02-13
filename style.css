@@ -251,7 +251,7 @@ h1 strong{font-size: 1.25em; margin-left: 0.25em}
 	:root{font-size: 20px;}
 	h1 strong{font-size: 1.25em;}
 }
-#speechDiv{margin-top: 1em;}
+#speechDiv{margin-top: 0.5em;}
 @media (max-width: 800px) {
 	#speechDiv{margin-top: 0.25em;}
 	
@@ -261,7 +261,6 @@ h1 strong{font-size: 1.25em; margin-left: 0.25em}
     .leftPane { border-right: none; border-bottom: 1px solid light-dark(var(--border), var(--borderDark)); }
 	  #map {}
 	.statsList li, .foot button {width: 25%}
-	
 	
   }
  
