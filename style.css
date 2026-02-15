@@ -88,7 +88,7 @@ h1 strong{font-size: 1.25em; margin-left: 0.25em}
     min-height: 0;
   }
 
-.spSettings input {
+.settings input {
     width: 2em;
 	font-size: 1em;
 }
@@ -270,9 +270,9 @@ h1 strong{font-size: 1.25em; margin-left: 0.25em}
 } 
   
 
-#spSettingsButton{display: block; float: right; margin-left: 1em;}
-.spSettings{display: none;}
-#spSettings.enabled{display: block;}
+#settingsButton{display: block; float: right; margin-left: 1em;}
+.spSettings, .settings{display: none;}
+#spSettings.enabled, .settings.enabled{display: block;}
 #speechDiv{margin-left: 0.25em;}
 header {display: block;}
 

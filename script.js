@@ -16,6 +16,7 @@ const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 var levels;
 
 var effectToggle = document.getElementById("effectToggle");
+var tonesToggle = document.getElementById("toneToggle");
 var speechBox = document.getElementById("speechToggle");
 var voiceBox = document.getElementById("voiceSelector")
 var speedBox = document.getElementById("voiceSpeed")
@@ -24,9 +25,13 @@ var pitchBox = document.getElementById("voicePitch")
 //user settings
 var speechOn = false;
 speechOn = initCheckbox(speechOn, "speechOn", speechBox)
+if(speechOn){spSettings.classList.add("enabled")}
 
 var soundEffects = true;
 soundEffects = initCheckbox(soundEffects, "soundEffects", effectToggle)
+
+var tonesOn = false;
+tonesOn = initCheckbox(tonesOn, "tonesOn", tonesToggle)
 
 initSetting("speedBox", speedBox);
 initSetting("pitchBox", pitchBox);
@@ -103,8 +108,41 @@ var wallCount = 0;
 
 				
 var volume = 10;
+var toneVol = 5;
 var soundEnd = 0;
 var currentSound = "";
+var toneLength = (0.25)/2;
+var toneOscillator = audioContext.createOscillator();
+
+function playTones(dirs){
+	
+	const now = Math.max(audioContext.currentTime, soundEnd);
+	
+	try{toneOscillator.stop(audioContext.currentTime);}
+	catch(e){}
+	toneOscillator = audioContext.createOscillator();
+	const gainNode = audioContext.createGain();
+	toneOscillator.connect(gainNode);
+	gainNode.connect(audioContext.destination);
+	toneOscillator.type = 'sine';
+	
+	let dur = toneLength * 4;
+
+	freq = 100;
+	fStep = 100;
+	
+	for (let i = 0; i < dirs.length; i++){
+		
+		toneOscillator.frequency.setValueAtTime(freq + (fStep * i), now + (toneLength * i));
+		if (dirs[i] == true){gainNode.gain.setValueAtTime(toneVol,  now + (toneLength * i));}
+		else{gainNode.gain.setValueAtTime(0,  now + (toneLength * i));}
+	}
+	toneOscillator.start(now);
+	toneOscillator.stop(now + dur);	
+
+	
+}
+
 
 function playSound(name){
 	if (!soundBank[name] || soundEffects == false){return;}
@@ -178,10 +216,20 @@ var soundBank = {"step": {"dur": 0.1, "type": "sine", "frequency": 15, "layers":
 function toggleEffect(){
 	
 	if (soundEffects == true)
-	{soundEffects = false; setCookie("soundEffects", false)}
+	{soundEffects = false;}
 	else{soundEffects = true}
+	 setCookie("soundEffects", soundEffects)
+}
+
+function toggleTone(){
+	
+	if (tonesOn == true)
+	{tonesOn = false;}
+	else{tonesOn = true; }
+	 setCookie("tonesOn", tonesOn)
 	
 }
+
 
 
 let currentLevelId = "level1";
@@ -902,7 +950,18 @@ function groupedSurroundingsText() {
 	}
 
   // Then add open paths
-  if (openDirs.length) parts.push(`Path: ${openDirs.join(", ")}. `);
+ 
+  toneDirs = [false, false, false, false];
+  
+  if (openDirs.length){
+	parts.push(`Path: ${openDirs.join(", ")}. `)
+	if(tonesOn == true){
+		if(!blockedDirs.includes("north")){toneDirs[0] = true;}
+		if(!blockedDirs.includes("east")){toneDirs[1] = true;}
+		if(!blockedDirs.includes("south")){toneDirs[2] = true;}
+		if(!blockedDirs.includes("west")){toneDirs[3] = true;}
+		playTones(toneDirs);
+  }}
 
 	p = 5
 	myCues = cueDirs.get(p)
@@ -1740,12 +1799,13 @@ function  speakLocDesc(){
 	if (speechOn){speechSay(currentText.textContent)}
 }
 
-const spSettings = document.getElementById("spSettings");
-function toggleSpeechSettings(){
-	if (spSettings.classList.contains("enabled")) {
-		spSettings.classList.remove("enabled")
+const settings = document.getElementById("settings");
+
+function toggleSettings(){
+	if (settings.classList.contains("enabled")) {
+		settings.classList.remove("enabled")
 	}
-	else{spSettings.classList.add("enabled")}
+	else{settings.classList.add("enabled")}
 }
 /* ---------------- Controls ---------------- */
 
@@ -1886,13 +1946,16 @@ function updatePitch(){
 // single-file campaign) can control startup and avoid using the demo
 // LEVELS bundled inside this runtime.
 
+var spSettings = document.getElementById("spSettings");
 
 
 function toggleSpeech(){
-	if (speechOn){speechOn = false; setCookie("speechOn", false)}
+	if (speechOn){speechOn = false; setCookie("speechOn", false); spSettings.classList.remove("enabled")}
 	else {
 		speechOn = true;
-	setCookie("speechOn", true);
+		setCookie("speechOn", true);
+		spSettings.classList.add("enabled")
+
 	let utterance = new SpeechSynthesisUtterance("Speech on");
 	mySelect = document.getElementById("voiceSelector")
 	myVoice = voices[mySelect.selectedIndex];
@@ -1954,5 +2017,5 @@ function setCookie(cname, cvalue, exdays = 30) {
   d.setTime(d.getTime() + (exdays*24*60*60*1000));
   let expires = "expires="+ d.toUTCString();
   document.cookie = cname + "=" + cvalue + ";" + expires + ";";
-  console.log(document.cookie)
+  
 }
