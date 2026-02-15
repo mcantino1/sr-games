@@ -225,7 +225,7 @@ function toggleTone(){
 	
 	if (tonesOn == true)
 	{tonesOn = false;}
-	else{tonesOn = true; }
+	else{tonesOn = true; playTones([true, true, true, true])}
 	 setCookie("tonesOn", tonesOn)
 	
 }
