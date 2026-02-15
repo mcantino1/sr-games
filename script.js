@@ -1036,8 +1036,6 @@ function enterCell(prefix) {
   const firstVisit = !visited.has(pos);
   visited.add(pos);
 
-
-
   // Reveal adjacent N/S/E/W tiles when entering a cell (fog of war).
   revealNeighbors(pos);
 
@@ -1079,7 +1077,7 @@ function enterCell(prefix) {
 	if (tookStairs.bool == true){
 		if (tookStairs.level != null){
 			//You take the stairs to E5
-			discoverMsgs.push("You take the stairs to " + tookStairs.cell + " of " + tookStairs.level + ".\n")
+			discoveryMsgs.push("You take the stairs to " + tookStairs.cell + " of " + tookStairs.level + ".\n")
 		}
 		else{
 			discoveryMsgs.push("You take the stairs to " + tookStairs.cell + ".\n")
@@ -1087,6 +1085,12 @@ function enterCell(prefix) {
 		tookStairs.level = null;
 		tookStairs.cell = null;
 		tookStairs.bool = false;
+	}
+	//Did you die?
+	if (defeat == true){
+		discoveryMsgs.push("You have died. Reloading " + currentLevelId + "... \n")
+		discoveryMsgs.push("You are back in cell " + pos + ".\n")
+		defeat = false;
 	}
 
 
@@ -1327,7 +1331,7 @@ function enterCell(prefix) {
 
   updateUI();
 }
-
+var defeat = false;
 /* ---------------- Movement ---------------- */
 function tryMove(dr, dc) {
 	speechSynthesis.cancel();
@@ -1463,17 +1467,13 @@ function tryMove(dr, dc) {
 
       // If player dies, reset level.
       if (stats.life <= 0) {
-		  playSound("fall");
-        msg += "You have been defeated. Restarting level. ";
+		playSound("fall");
         const curPos = toPos(player.row, player.col);
-		msg = trimText(msg)
-        currentText.innerHTML = msg;
-		if (speechOn){speechSay(currentText.textContent)}
-        
+
         //announce(msg);
         // Reset life to default and remove any held key, but preserve other stats.
         stats.life = baseLife;
-		
+		defeat = true;
         stats.key = levels[currentLevelId].foundKey;
         // Tell loadLevel to preserve the current stats object when reloading.
         preserveStatsOnNextLoad = true;
@@ -1585,6 +1585,16 @@ function activateCell(pos){
       // Announce result and repeating location description
       announce("You drink the potion. " + potionMsg);
     }
+		if(completed == true && (hasExit(pos) || hasDoor(pos))){
+		if (level.nextLevelId != 'null' && level.nextLevelId != null) {
+		  preserveStatsOnNextLoad = true;
+		  loadLevel(level.nextLevelId);
+		} else{
+			speechSynthesis.cancel();
+			announce("You have completed the final level. Congratulations!");
+		}
+		return;		
+	}
 	if (hasStairs(pos)) {
 		//take stairs
 		preserveStatsOnNextLoad = true;
@@ -1670,9 +1680,11 @@ function activateCell(pos){
     else if (hasExit(pos)) {
       // Pressing Space on an Exit marks the stage complete (like a door).
       completed = true;
+	 
       
       // Announce completion but do not immediately load next level; Enter will advance.
-      announce("You exit and return to the dungeon. <br> press <kbd>enter</kbd> to continue. ");
+      announce("You exit and return to the dungeon. <br> press <kbd>enter</kbd> to continue. " + revealMap());
+	  updateUI();
       return;
     }
     else {
@@ -1772,24 +1784,13 @@ gameEl.addEventListener("keydown", (e) => {
 
   
   // Spacebar: drink potion if present on current square
-  if (e.key === ' ' || e.key === 'Spacebar' || e.code === 'Space') {
+if (e.key === ' ' || e.key === 'Spacebar' || e.code === 'Space' || e.code == "Enter") {
     e.preventDefault();
     const pos = toPos(player.row, player.col);
 	activateCell(pos);
     return;
   }
-  // If the level is complete, Enter advances to the next stage.
-  if (completed && e.key === "Enter") {
-    e.preventDefault();
-    if (level.nextLevelId != 'null' && level.nextLevelId != null) {
-      preserveStatsOnNextLoad = true;
-      loadLevel(level.nextLevelId);
-    } else {
-		speechSynthesis.cancel();
-		announce("You have completed the final level. Congratulations!");
-    }
-    return;
-  }
+
 
   if (e.key.startsWith("Arrow")) e.preventDefault();
 
@@ -1826,7 +1827,6 @@ function loadLevel(id, cell = "A1") {
   //player = { row: 0, col: 0 };
   player.col = cell.charCodeAt(0) - 65;
   player.row = cell.substring(1) - 1;
-  
   visited = new Set();
   revealedByBump = new Set();
   revealedSpecial = new Map();
