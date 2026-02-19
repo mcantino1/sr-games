@@ -1845,7 +1845,7 @@ gameEl.addEventListener("keydown", (e) => {
 
   
   // Spacebar: drink potion if present on current square
-if (e.key === ' ' || e.key === 'Spacebar' || e.code === 'Space' || e.code == "Enter") {
+if (e.key === ' ' || e.key === 'Spacebar' || e.code === 'Space' || e.code == "Enter" || e.key == "Enter" || e.code == "NumpadEnter") {
     e.preventDefault();
     const pos = toPos(player.row, player.col);
 	activateCell(pos);
