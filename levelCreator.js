@@ -307,7 +307,7 @@ function sortLevelList(){
 	for (l = 0; l < listItems.length; l++){
 		levelName = listItems[l].getAttribute("value")
 		myLevels[levelName] = listItems[l];
-		if(LEVELS[levelName].nextLevelId != "null"){
+		if(LEVELS[levelName].nextLevelId != "null" && LEVELS[levelName].nextLevelId != null){
 			levelNames.push(listItems[l].getAttribute("value"))
 		};
 	}
@@ -326,7 +326,7 @@ function sortLevelList(){
 	let firstLevel = levelNames[0];
 	let nextLevel = firstLevel;
 	
-	while (nextLevel != "null"){
+	while (nextLevel != "null" && nextLevel != null){
 		levelList.append(myLevels[nextLevel]);
 		nextLevel = LEVELS[nextLevel].nextLevelId;
 		

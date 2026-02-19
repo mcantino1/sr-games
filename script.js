@@ -18,27 +18,27 @@ var levels;
 var effectToggle = document.getElementById("effectToggle");
 var tonesToggle = document.getElementById("toneToggle");
 var speechBox = document.getElementById("speechToggle");
-var voiceBox = document.getElementById("voiceSelector")
-var speedBox = document.getElementById("voiceSpeed")
-var pitchBox = document.getElementById("voicePitch")
+var voiceBox = document.getElementById("voiceSelector");
+var speedBox = document.getElementById("voiceSpeed");
+var pitchBox = document.getElementById("voicePitch");
 
 //user settings
 var speechOn = false;
-speechOn = initCheckbox(speechOn, "speechOn", speechBox)
+speechOn = initCheckbox(speechOn, "speechOn", speechBox);
 if(speechOn){spSettings.classList.add("enabled")}
 
 var soundEffects = true;
-soundEffects = initCheckbox(soundEffects, "soundEffects", effectToggle)
+soundEffects = initCheckbox(soundEffects, "soundEffects", effectToggle);
 
 var tonesOn = false;
-tonesOn = initCheckbox(tonesOn, "tonesOn", tonesToggle)
+tonesOn = initCheckbox(tonesOn, "tonesOn", tonesToggle);
 
 initSetting("speedBox", speedBox);
 initSetting("pitchBox", pitchBox);
 initSetting("voiceBox", voiceBox);
 
 
-var voiceSpeed = speedBox.value * 0.2 ;
+var voiceSpeed = speedBox.value * 0.2;
 var voicePitch = pitchBox.value * 0.2;
 
 
@@ -68,6 +68,7 @@ function initSetting(cook, field){
 	 gameName = document.getElementsByTagName("H1")[0].children[0];
 	try{
 	gameName.innerHTML = getName();
+	document.getElementsByTagName("title")[0].innerHTML = getName();
 	}catch(e){console.log("Name not defined in game files")}
 
 	 LEVELS = getLevels();
