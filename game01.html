@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Super Dungeon</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://use.typekit.net/hrj8jrm.css">
+</head>
+<body>
+
+<header>
+	<div>
+		<h1><strong>Super Dungeon</strong></h1>
+	</div>
+	<div id="speechDiv">
+		<form>
+			
+
+						
+			<button id="settingsButton" type="button" onclick="toggleSettings()" title="Settings">≡</button>
+			<div id="settings" class="settings">
+			<div class="switch" onclick="document.getElementById('effectToggle').click()">
+			<input id="effectToggle" onclick="toggleEffect()" checked type="checkbox">
+			<span class="slider round"></span>
+			</div>
+			<label for="effectToggle">
+			<span class="splab">Sound Effects</span>
+			</label>
+			<div class="switch" onclick="document.getElementById('toneToggle').click()">
+			<input id="toneToggle" onclick="toggleTone()" type="checkbox">
+			<span class="slider round"></span>
+			</div>
+			<label for="toneToggle">
+				<span class="splab">Path Tones</span>
+			</label>
+			<div class="switch" onclick="document.getElementById('speechToggle').click()">
+			<input id="speechToggle" onclick="toggleSpeech()" type="checkbox">
+			<span class="slider round"></span>
+			</div>
+			<label for="speechToggle">
+				<span class="splab">Speech</span>
+			</label>
+			
+			<div class="spSettings" id="spSettings">
+				<select id="voiceSelector" onChange="updateVoice()"></select>
+				<label for="voiceSpeed">Voice Speed</label>
+				<input onchange="updateSpeed()" type="number" id="voiceSpeed" min="1" max="20" value="5" >
+				<label for="voicePitch">Voice Pitch</label>
+				<input onchange="updatePitch()" type="number" id="voicePitch" min="1" max="10" value="5" >
+			</div>
+			</div>
+		</form>
+		
+	</div>
+</header>
+<main id="game" tabindex="0" role="application" ">
+  <section class="leftPane" aria-label="Grid panel">
+    <div class="mapShell" aria-hidden="true">
+      <div id="map"></div>
+    </div>
+  </section>
+  <section class="rightPane" aria-label="Text and stats panel">
+    <div class="panel locationPanel" aria-label="Current location">
+      <div class="row">
+        <strong>Current location: </strong>
+        <span id="posText" >A1</span>
+      </div>
+      <p id="currentText" aria-live="polite">Use arrow keys to explore.</p>
+	  <div id="live" aria-live="polite"></div>
+    </div>
+	 </section>
+</main>
+   <div class="foot" >
+
+      <ul class="statsList" id="statsList" aria-label="Stats list">
+        <li>Life: <strong id="lifeText">10</strong></li>
+        <li>Strength: <strong id="strText">2</strong></li>
+        <li>Defense: <strong id="defText">0</strong></li>
+        <li>Gold: <strong id="goldText">0</strong></li>
+        <li>Key: <strong id="keyText">No</strong></li>
+      </ul>
+         
+    </div>
+<dialog id="guideDialog" aria-labelledby="guideTitle">
+  <h2 id="guideTitle" style="margin-top:0;">Gameplay Guide</h2>
+  <p><strong>Goal:</strong> Find the key, then unlock the door to finish the level.</p>
+  <ul>
+    <li><strong>Move:</strong> Use the Arrow Keys to move between grid cells.</li>
+    <li><strong>Fog of war:</strong> You only learn what's in a cell after you visit it.</li>
+    <li><strong>Walls:</strong> You cannot move into a wall. If you bump a wall, it becomes visible.</li>
+    <li><strong>Auto actions:</strong> Keys, treasure, and potions trigger automatically when you step onto them.</li>
+    <li><strong>Door:</strong> You can only unlock the door if you have the key (step onto the door to unlock).</li>
+  </ul>
+  <div class="dialogActions">
+    <button id="closeGuideBtn">Close guide</button>
+  </div>
+</dialog>
+<script src="script.js"></script>
+<script src="levels01.js"></script>
+<script>
+initGame()
+
+// Start campaign at first stage (signal startup announcements)
+
+</script>
+</body>
+</html>
