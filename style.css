@@ -1,42 +1,31 @@
 :root{
 	font-size: 32px;
-    --bg: #ffffff;
-    --text: #111111;
-    --muted: #333333;
-    --border: #dddddd;
-    --panelBorder: #cccccc;
-    --cellBorder: #aaaaaa;
-    --unknown: #eeeeee;
-    --visited: #ffffff;
-    --wallBg: #ffffff;
-    --wallText: #000000;
-    --focus: #000000;
-    --btnBg: #36A155;
-    --btnBorder: #666666;
   	color-scheme: light dark;
-	--bgDark: #0f1115;
-    --textDark: #f2f2f2;
-    --mutedDark: #d0d0d0;
-    --borderDark: #2a2f3a;
-    --panelBorderDark: #3a4150;
-    --cellBorderDark: #4b5565;
-    --unknownDark: #222834;
-    --visitedDark: #0f1115;
-    --wallBgDark: #000000;
-    --wallTextDark: #ffffff;
-    --focusDark: #ffffff;
-    --btnBgDark: #26733D;
-    --btnBorderDark: #677089;
-	
+	--colDark: #000000;
+	--colLight: #ffffff;
+	--colEmDark: #227733;
+	--colEmLight: #FFFF00;
+	--colDarkR: 0, 0, 0;
+	--colLightR: 255, 255, 255;
+	--colEmDarkR: 34, 119, 51;
+	--colEmLightR: 255, 255, 0;
+	--colAlphaBorder: 0.5;
+	--colAlphaSwitch: 0.5;
+	--colAlphaUnknown: 0.35;
+	--colAlphaSettings: 0.8;
   }
 
   html, body { height: 100%; margin: 0; }
-
+.columnStyle{
+	display: flex;
+	flex-direction: column;
+}
+.columnStyle div{margin: auto;}
   body {
     font-family: system-ui, sans-serif;
     line-height: 1.4;
-    background: light-dark(var(--bg), var(--bgDark));
-    color: light-dark(var(--text), var(--textDark));
+    background: light-dark(var(--colLight), var(--colDark));
+    color: light-dark(var(--colDark), var(--colLight));
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -55,7 +44,7 @@ h1 strong{font-size: 1.25em; margin-left: 0.25em}
 
   header {
     padding: 12px 16px;
-    border-bottom: 1px solid light-dark(var(--border), var(--borderDark));
+    border-bottom: 1px solid  light-dark(rgba(var(--colDarkR), var(--colAlphaBorder)), rgba(var(--colLightR), var(--colAlphaBorder)));
     display: flex;
     gap: 12px;
     align-items: start;
@@ -70,7 +59,7 @@ h1 strong{font-size: 1.25em; margin-left: 0.25em}
 	font-weight: 400;
 	font-style: normal;
   }
-  header p { margin: 6px 0 0; color: light-dark(var(--muted), var(--mutedDark)); max-width: 70ch; }
+  header p { margin: 6px 0 0; color: light-dark(var(--colDark), var(--colLight)); max-width: 70ch; }
 
   main {
     flex: 1 1 auto;
@@ -81,7 +70,7 @@ h1 strong{font-size: 1.25em; margin-left: 0.25em}
 
   .leftPane {
     padding: 12px 16px 16px;
-    border-right: 1px solid light-dark(var(--border), var(--borderDark));
+    border-right: 1px solid  light-dark(rgba(var(--colDarkR), var(--colAlphaBorder)), rgba(var(--colLightR), var(--colAlphaBorder)));
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -96,7 +85,7 @@ h1 strong{font-size: 1.25em; margin-left: 0.25em}
   .mapShell {
     flex: 1 1 auto;
     min-height: 0;
-    border: 1px solid light-dark(var(--panelBorder), var(--panelBorderDark));
+    border: 2px solid  light-dark(rgba(var(--colDarkR), var(--colAlphaBorder)), rgba(var(--colLightR), var(--colAlphaBorder)));
     border-radius: 14px;
     padding: 10px;
     display: grid;
@@ -115,21 +104,21 @@ h1 strong{font-size: 1.25em; margin-left: 0.25em}
   #map div{max-width: 100px; aspect-ratio: 1/1;}
 
   .cell {
-    border: 1px solid light-dark(var(--cellBorder), var(--cellBorderDark));
+    border: 2px solid  light-dark(rgba(var(--colDarkR), var(--colAlphaBorder)), rgba(var(--colLightR), var(--colAlphaBorder)));
     border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
     user-select: none;
-    color: light-dark(var(--text), var(--textDark));
+    color: light-dark(var(--colDark), var(--colLight));
   }
 
   .cell svg { width: 86%; height: 86%; }
 
-  .unknown { background: light-dark(var(--unknown), var(--unknownDark)); }
-  .visited { background: light-dark(var(--visited), var(--visitedDark)); }
-  .player { outline: 3px solid light-dark(var(--focus), var(--focusDark)); outline-offset: 1px; }
-  .wall { background: light-dark(var(--wallBg), var(--wallBgDark)); color: light-dark(var(--wallText), var(--wallTextDark)); }
+  .unknown { background: light-dark(rgba(var(--colDarkR), var(--colAlphaUnknown	)), rgba(var(--colLightR), var(--colAlphaUnknown))); }
+  .visited { background: light-dark(var(--colLight), var(--colDark)); }
+  .player { outline: 3px solid light-dark(var(--colEmDark), var(--colEmLight)); outline-offset: 1px; }
+  .wall { background: light-dark(var(--colLight), var(--colDark)); color: light-dark(var(--colDark), var(--colLight)); }
 
   .rightPane {
     padding: 12px 16px 16px;
@@ -141,7 +130,7 @@ h1 strong{font-size: 1.25em; margin-left: 0.25em}
 	select{font-size: 1em; width: 10em;}
 	
   .panel {
-    border: 1px solid light-dark(var(--panelBorder), var(--panelBorderDark));
+    border: 2px solid  light-dark(rgba(var(--colDarkR), var(--colAlphaBorder)), rgba(var(--colLightR), var(--colAlphaBorder)));
     border-radius: 14px;
     padding: 12px;
     flex: 0 0 auto;
@@ -168,14 +157,15 @@ h1 strong{font-size: 1.25em; margin-left: 0.25em}
     font: inherit;
     padding: 8px 12px;
     border-radius: 10px;
-    border: 1px solid light-dark(var(--btnBorder), var(--btnBorderDark));
-    background: light-dark(var(--btnBg), var(--btnBgDark));
-    color: light-dark(var(--text), var(--textDark));
+    border: 2px solid  light-dark(rgba(var(--colDarkR), var(--colAlphaBorder)), rgba(var(--colLightR), var(--colAlphaBorder)));
+    background: light-dark(var(--colEmLight), var(--colEmDark));;
+    color: light-dark(var(--colDark), var(--colLight));
     cursor: pointer;
   }
+  
 
   button:focus {
-    outline: 3px solid light-dark(var(--focus), var(--focusDark));
+    outline: 3px solid light-dark(var(--colEmLight), var(--colEmDark));
     outline-offset: 2px;
   }
 
@@ -183,7 +173,7 @@ h1 strong{font-size: 1.25em; margin-left: 0.25em}
     display: inline-block;
     padding: 6px 10px;
     border-radius: 999px;
-    border: 1px solid light-dark(var(--cellBorder), var(--cellBorderDark));
+    border: 2px solid  light-dark(rgba(var(--colDarkR), var(--colAlphaBorder)), rgba(var(--colLightR), var(--colAlphaBorder)));
   }
 
   #currentText { margin: 10px 0 0;    white-space: pre-line;
@@ -196,7 +186,7 @@ h1 strong{font-size: 1.25em; margin-left: 0.25em}
 
   #logArea {
     margin-top: 10px;
-    border-top: 1px solid light-dark(var(--border), var(--borderDark));
+    border-top: 1px solid  light-dark(rgba(var(--colDarkR), var(--colAlphaBorder)), rgba(var(--colLightR), var(--colAlphaBorder)));
     padding-top: 10px;
     overflow: auto;
     min-height: 0;
@@ -213,25 +203,39 @@ h1 strong{font-size: 1.25em; margin-left: 0.25em}
     float: left;
     width: 15%;
     text-align: center;
-    border: 1px solid;
+    border: 2px solid;
     border-radius: 14px;
 	padding: 0.25em;
 	margin-right: 2%;
-	
-}
-.foot{padding-bottom: 1em;}
 
- .statsList li {border-color: light-dark(var(--panelBorder), var(--panelBorderDark));}
+}
+
+.settingGroup{
+	border: 2px solid light-dark(rgba(var(--colDarkR), var(--colAlphaBorder)), rgba(var(--colLightR), var(--colAlphaBorder)));
+    border-radius: 14px;
+	background: light-dark(var(--colLight), var(--colDark));
+	padding: 0.25em;
+	margin-right: 0.5em;
+	float: left;
+	display: flex;
+	flex-direction: column;
+	animation: 1s;
+	animation-name: menu-Fadein;
+}
+
+.foot{padding-bottom: 1em;}
+#colP, #pieText	{text-align: center; margin: auto;}
+ .statsList li {border-color:  light-dark(rgba(var(--colDarkR), var(--colAlphaBorder)), rgba(var(--colLightR), var(--colAlphaBorder)));}
   dialog {
-    border: 1px solid light-dark(var(--panelBorder), var(--panelBorderDark));
+    border: 2px solid  light-dark(rgba(var(--colDarkR), var(--colAlphaBorder)), rgba(var(--colLightR), var(--colAlphaBorder)));
     border-radius: 14px;
     padding: 14px;
     max-width: 720px;
     width: min(720px, calc(100% - 32px));
-    background: light-dark(var(--bg), var(--bgDark));
-    color: light-dark(var(--text), var(--textDark));
+    background: light-dark(var(--colLight), var(--colDark));
+    color: light-dark(var(--colDark), var(--colLight));
   }
-  dialog::backdrop { background: rgba(0,0,0,0.5); }
+  
   .dialogActions { display: flex; justify-content: flex-end; margin-top: 12px; }
 
   #game { outline: none; }
@@ -242,7 +246,7 @@ h1 strong{font-size: 1.25em; margin-left: 0.25em}
 
   kbd {
     padding: 2px 6px;
-    border: 1px solid light-dark(var(--cellBorder), var(--cellBorderDark));
+    border: 2px solid  light-dark(rgba(var(--colDarkR), var(--colAlphaBorder)), rgba(var(--colLightR), var(--colAlphaBorder)));
     border-radius: 6px;
     background: transparent;
   }
@@ -258,7 +262,7 @@ h1 strong{font-size: 1.25em; margin-left: 0.25em}
 }
   @media (max-width: 900px) {
     main { grid-template-columns: 1fr; }
-    .leftPane { border-right: none; border-bottom: 1px solid light-dark(var(--border), var(--borderDark)); }
+    .leftPane { border-right: none; border-bottom: 1px solid  light-dark(rgba(var(--colDarkR), var(--colAlphaBorder)), rgba(var(--colLightR), var(--colAlphaBorder))); }
 	  #map {}
 	.statsList li, .foot button {width: 25%}
 	
@@ -268,16 +272,64 @@ h1 strong{font-size: 1.25em; margin-left: 0.25em}
 @media (max-width: 1000px) {
 	:root{font-size: 26px;}
 } 
-  
 
-#settingsButton{display: block; float: right; margin-left: 1em;}
+.colorPicker{display: flex;}  
+.colorPicker svg{width: 6em;}
+.colorPie{display: none;}
+
+.colorPie.enabled{display: block; width: 6em;}
+
+#settingsButton{
+	position: fixed;
+	right:1em;
+	top: 0.5em;
+	z-index: 10;
+}
 .spSettings, .settings{display: none;}
-#spSettings.enabled, .settings.enabled{display: block;}
+.spSettings.enabled{display: block;}
+.settings.enabled{
+	display: block; 
+	animation-duration:1s; 
+	animation-name: menu-open}
+	
+@keyframes menu-open {
+0% {
+	width: 0em;
+	height: 1em;
+  }
+25%{
+	height: 3em;
+	
+}
+ 100% {
+	width: 43%;
+	}
+
+}
+
+
+@keyframes menu-Fadein{
+	0%{opacity: 0%;}
+	50%{opacity: 0%;}
+	100%{opacity: 100%;}
+	
+}
+
+.settings{
+	position: fixed;
+	max-width: 43%;
+	right: 0.75em;
+	top: 0.25em;
+	background:light-dark(rgba(var(--colLightR), var(--colAlphaSettings	)), rgba(var(--colDarkR), var(--colAlphaSettings)));
+	padding: 1em 2em 1em 1em ;
+	border: 2px solid  light-dark(var(--colEmDark), var(--colEmLight));
+    border-radius: 14px;
+}
 #speechDiv{margin-left: 0.25em;}
 header {display: block;}
 
 
-header h1{width: 100%;}
+header h1{width: 100%; margin-right: 1em;}
 header div{float: left;}
   .switch {
   float: left;
@@ -307,10 +359,14 @@ header div{float: left;}
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #ccc;
+  background-color: light-dark(rgba(var(--colDarkR), var(--colAlphaSwitch)), rgba(var(--colLightR), var(--colAlphaSwitch)));
   -webkit-transition: .4s;
   transition: .4s;
 }
+.settingsBox{
+  -webkit-transition: .5s;
+  transition: .5s;	
+}	
 
 .slider:before {
   position: absolute;
@@ -319,17 +375,13 @@ header div{float: left;}
   width: 26px;
   left: 4px;
   bottom: 4px;
-  background-color: white;
+  background-color: light-dark(var(--colDark), var(--colLight));
   -webkit-transition: .4s;
   transition: .4s;
 }
 
 input:checked + .slider {
-  background-color: #2196F3;
-}
-
-input:focus + .slider {
-  box-shadow: 0 0 1px #2196F3;
+  background-color: light-dark(var(--colEmLight), var(--colEmDark));
 }
 
 input:checked + .slider:before {

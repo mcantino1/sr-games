@@ -6,20 +6,20 @@
 <title>Welcome to Super Dungeon</title>
 <link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="https://use.typekit.net/hrj8jrm.css">
+<script type="text/javascript" src="https://chir.ag/projects/ntc/ntc.js"></script>
+
 </head>
 <body>
 
 <header>
 	<div>
 		<h1><strong>Super Dungeon</strong></h1>
-	</div>
-	<div id="speechDiv">
-		<form>
-			
-
-						
-			<button id="settingsButton" type="button" onclick="toggleSettings()" title="Settings">≡</button>
+	</div>	
+			<div class="settingsBox">
+				<button id="settingsButton" type="button" onclick="toggleSettings()" title="Settings">≡</button>
 			<div id="settings" class="settings">
+			<div class="settingGroup">
+			<div class="toggleGroup">
 			<div class="switch" onclick="document.getElementById('effectToggle').click()">
 			<input id="effectToggle" onclick="toggleEffect()" checked type="checkbox">
 			<span class="slider round"></span>
@@ -27,6 +27,18 @@
 			<label for="effectToggle">
 			<span class="splab">Sound Effects</span>
 			</label>
+			</div>
+			<div class="spSettings enabled" id="effectSettings">
+				<label for="effectSpeed">Speed</label>
+				<input onchange="updateEffect()" type="number" id="effectSpeed" min="1" max="20" value="5" >
+				<label for="effectPitch">Pitch</label>
+				<input onchange="updateEffect()" type="number" id="effectPitch" min="1" max="10" value="5" >
+				<label for="effectVol">Volume</label>
+				<input onchange="updateEffect()" type="number" id="effectVol" min="1" max="10" value="5" >
+			</div>
+			</div>
+			<div class="settingGroup">
+			<div class="toggleGroup">
 			<div class="switch" onclick="document.getElementById('toneToggle').click()">
 			<input id="toneToggle" onclick="toggleTone()" type="checkbox">
 			<span class="slider round"></span>
@@ -34,6 +46,18 @@
 			<label for="toneToggle">
 				<span class="splab">Path Tones</span>
 			</label>
+			</div>
+			<div class="spSettings" id="toneSettings">
+				<label for="toneSpeed">Speed</label>
+				<input onchange="updateTone()" type="number" id="toneSpeed" min="1" max="20" value="4" >
+				<label for="tonePitch">Pitch</label>
+				<input onchange="updateTone()" type="number" id="tonePitch" min="1" max="10" value="5" >
+				<label for="toneVol">Volume</label>
+				<input onchange="updateTone()" type="number" id="toneVol" min="1" max="10" value="5" >
+			</div>
+			</div>
+			<div class="settingGroup">
+			<div class="toggleGroup">
 			<div class="switch" onclick="document.getElementById('speechToggle').click()">
 			<input id="speechToggle" onclick="toggleSpeech()" type="checkbox">
 			<span class="slider round"></span>
@@ -41,18 +65,85 @@
 			<label for="speechToggle">
 				<span class="splab">Speech</span>
 			</label>
-			
+			</div>
 			<div class="spSettings" id="spSettings">
+			<div class="columnStyle">
+				<div>
 				<select id="voiceSelector" onChange="updateVoice()"></select>
-				<label for="voiceSpeed">Voice Speed</label>
+				</div>
+				<div>
+				<label for="voiceSpeed">Speed</label>
 				<input onchange="updateSpeed()" type="number" id="voiceSpeed" min="1" max="20" value="5" >
-				<label for="voicePitch">Voice Pitch</label>
+				<label for="voicePitch">Pitch</label>
 				<input onchange="updatePitch()" type="number" id="voicePitch" min="1" max="10" value="5" >
+				<label for="voiceVol">Volume</label>
+				<input onchange="updateVol()" type="number" id="voiceVol" min="1" max="10" value="5" >
+				</div>
+			</div></div>
 			</div>
-			</div>
-		</form>
+			<div class="settingGroup">
+			<div class="colorPicker">
+			<div>
+			<svg  id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 90 90">
+  <defs>
+    <style>
+      .cpk-1 {
+        fill: var(--colLight);
+      }
+
+      .cpk-1, .cpk-2 {
+        stroke: var(--colDark);
+      }
+
+      .cpk-1, .cpk-2, .cpk-3, .cpk-4 {
+        stroke-miterlimit: 10;
+      }
+
+      .cpk-2 {
+        fill: var(--colEmDark);
+      }
+
+      .cpk-3 {
+        fill: var(--colDark);
+      }
+
+      .cpk-3, .cpk-4 {
+        stroke: var(--colLight);
+      }
+
+      .cpk-4 {
+        fill: var(--colEmLight);
+      }
+    </style>
+  </defs>
+  <g>
+    <line class="cpk-1" x1="45" y1="45" x2="45" y2="85"/>
+    <line class="cpk-1" x1="45" y1="45" x2="45" y2="5"/>
+  </g>
+  <path title="Dark" id="cWedge01" variable="--colDark" conhigh="--colLight" conmid="--colEmLight" tabindex="0" focusable="true" onclick="colPicker(this)" onkeypress="colPicker(this)" class="cpk-3" d="M45,85c-22.11,0-40-17.89-40-40S22.89,5,45,5s40,17.89,40,40-17.89,40-40,40Z"/>
+  <path title="Light Emphasis" variable="--colEmLight" conmid="--colDark" tabindex="0" focusable="true" onclick="colPicker(this)" onkeypress="colPicker(this)" class="cpk-4" d="M65,45c0-11.05-8.95-20-20-20s-20,8.95-20,20,8.95,20,20,20,20-8.95,20-20Z"/>
+  <path title="Light" tabindex="0" variable="--colLight" conmid="--colEmDark" conhigh="--colDark" focusable="true"  onclick="colPicker(this)" onkeypress="colPicker(this)" class="cpk-1" d="M45,5C22.89,5,5,22.89,5,45s17.89,40,40,40V5Z"/>
+  <path title="Dark Emphasis" variable="--colEmDark"  conmid="--colLight" tabindex="0" focusable="true" onclick="colPicker(this)" onkeypress="colPicker(this)" class="cpk-2" d="M45,25c-11.05,0-20,8.95-20,20s8.95,20,20,20V25Z"/>
+</svg>
+<p id="colP">Color Picker</p>
+</div>
+<div class="colorPie" id="colorPie">
+<svg  alt="Color Pie" id="dynaCircle" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 250 250">
+	<defs id="pieDefs"></defs>
+	<g  class="cpk-1" id="fillsGroup">
 		
-	</div>
+	</g>
+	
+</svg>
+<p id="pieText">Choose a color</p>
+</div></div>
+			</div>
+			</div>
+					
+			</div>
+
+		
+
 </header>
 <main id="game" tabindex="0" role="application" ">
   <section class="leftPane" aria-label="Grid panel">

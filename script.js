@@ -21,6 +21,16 @@ var speechBox = document.getElementById("speechToggle");
 var voiceBox = document.getElementById("voiceSelector");
 var speedBox = document.getElementById("voiceSpeed");
 var pitchBox = document.getElementById("voicePitch");
+var volBox = document.getElementById("voiceVol");
+var speedBoxEffect = document.getElementById("effectSpeed");
+var pitchBoxEffect = document.getElementById("effectPitch");
+var volBoxEffect = document.getElementById("effectVol");
+var speedBoxTone = document.getElementById("toneSpeed");
+var pitchBoxTone = document.getElementById("tonePitch");
+var volBoxTone = document.getElementById("toneVol");
+
+
+
 
 //user settings
 var speechOn = false;
@@ -36,10 +46,27 @@ tonesOn = initCheckbox(tonesOn, "tonesOn", tonesToggle);
 initSetting("speedBox", speedBox);
 initSetting("pitchBox", pitchBox);
 initSetting("voiceBox", voiceBox);
+initSetting("volBox", volBox);
+initSetting("speedBoxEffect", speedBoxEffect);
+initSetting("pitchBoxEffect", pitchBoxEffect);
+initSetting("volBoxEffect", volBoxEffect);
+initSetting("speedBoxTone", speedBoxTone);
+initSetting("pitchBoxTone", pitchBoxTone);	
+initSetting("volBoxTone", volBoxTone);
+
+initCSS("colDark");
+initCSS("colLight");
+initCSS("colEmDark");
+initCSS("colEmLight");
+initCSS("colDarkR");
+initCSS("colLightR");
+initCSS("colEmDarkR");
+initCSS("colEmLightR");
 
 
 var voiceSpeed = speedBox.value * 0.2;
 var voicePitch = pitchBox.value * 0.2;
+var voiceVol = volBox.value * 0.1;
 
 
 
@@ -61,6 +88,14 @@ function initSetting(cook, field){
 	myCook = getCookie(cook);
 	if (myCook != ''){
 		field.value = myCook;
+	}
+}
+
+function initCSS(varName){
+	thisVar = "--" + varName;
+	myCook = getCookie(thisVar)
+	if (myCook != ''){
+		root.style.setProperty(thisVar, myCook);
 	}
 }
 
@@ -108,15 +143,20 @@ var wallCount = 0;
 
 
 				
-var volume = 10;
-var toneVol = 5;
+
+var toneVol = volBoxTone.value;
+//pitch adjust
+// 5 = 1
+// 10 = 10
+// 1 = 0.1
+var tonePitch = pitchBoxTone.value * 0.2;
 var soundEnd = 0;
 var currentSound = "";
-var toneLength = (0.25)/2;
+
+var toneLength = 0.5 / speedBoxTone.value;
 var toneOscillator = audioContext.createOscillator();
 
 function playTones(dirs){
-	
 	const now = Math.max(audioContext.currentTime, soundEnd);
 	
 	try{toneOscillator.stop(audioContext.currentTime);}
@@ -129,11 +169,10 @@ function playTones(dirs){
 	
 	let dur = toneLength * 4;
 
-	freq = 100;
+	freq = 100 * tonePitch;
 	fStep = 100;
 	
-	for (let i = 0; i < dirs.length; i++){
-		
+	for (let i = 0; i < dirs.length; i++){		
 		toneOscillator.frequency.setValueAtTime(freq + (fStep * i), now + (toneLength * i));
 		if (dirs[i] == true){gainNode.gain.setValueAtTime(toneVol,  now + (toneLength * i));}
 		else{gainNode.gain.setValueAtTime(0,  now + (toneLength * i));}
@@ -144,6 +183,13 @@ function playTones(dirs){
 	
 }
 
+// 5 = 1
+// 1 = +
+// 10 = 0.25
+
+var soundSpeed = 5 / speedBoxEffect.value;
+var volume = volBoxEffect.value * 2;
+var effectPitch = pitchBoxEffect.value * 0.2;
 
 function playSound(name){
 	if (!soundBank[name] || soundEffects == false){return;}
@@ -156,14 +202,14 @@ function playSound(name){
 	oscillator.connect(gainNode);
 	gainNode.connect(audioContext.destination);
 	oscillator.type = mySound.type;
-	var dur = mySound.dur;
+	var dur = (mySound.dur * soundSpeed);
 	soundEnd = now + dur
-	oscillator.frequency.setValueAtTime(mySound.frequency, now);
+	oscillator.frequency.setValueAtTime((mySound.frequency * effectPitch), now);
 	gainNode.gain.setValueAtTime(0, now);
 	myNodes = mySound.nodes;
 	for (let n = 0; n < myNodes.length; n++){
 		if(myNodes[n].type == "frequency"){
-			oscillator.frequency.linearRampToValueAtTime(myNodes[n].value, now + (dur * myNodes[n].time));
+			oscillator.frequency.linearRampToValueAtTime((myNodes[n].value * effectPitch), now + (dur * myNodes[n].time));
 		}
 		else { //gain
 			gainNode.gain.linearRampToValueAtTime((myNodes[n].value * volume), now + (dur * myNodes[n].time));
@@ -214,22 +260,6 @@ var soundBank = {"step": {"dur": 0.1, "type": "sine", "frequency": 15, "layers":
 				
   
 
-function toggleEffect(){
-	
-	if (soundEffects == true)
-	{soundEffects = false;}
-	else{soundEffects = true}
-	 setCookie("soundEffects", soundEffects)
-}
-
-function toggleTone(){
-	
-	if (tonesOn == true)
-	{tonesOn = false;}
-	else{tonesOn = true; playTones([true, true, true, true])}
-	 setCookie("tonesOn", tonesOn)
-	
-}
 
 
 
@@ -1915,6 +1945,7 @@ function speechSay(message) {
 	utterance.voice = myVoice
 	utterance.pitch = voicePitch;
 	utterance.rate = voiceSpeed;
+	utterance.volume = voiceVol;
 	speechSynthesis.speak(utterance);
 	
 	
@@ -1942,12 +1973,230 @@ function updatePitch(){
 	speechSay(msg)
 }
 
+function updateVol(){
+	speechSynthesis.cancel();
+	setCookie("volBox", volBox.value);
+	voiceVol = volBox.value * 0.1;
+	let msg = "Volume " + volBox.value
+	speechSay(msg)
+}
+
+function updateTone(){
+	setCookie("volBoxTone", volBoxTone.value);
+	toneVol = volBoxTone.value;
+	setCookie("speedBoxTone", speedBoxTone.value);
+	toneLength = 0.5 / speedBoxTone.value;
+	setCookie("pitchBoxTone", pitchBoxTone.value);
+	tonePitch = pitchBoxTone.value * 0.2;
+	playTones([true, true, true, true]);
+	
+}
+function updateEffect(){
+	setCookie("volBoxEffect", volBoxEffect.value);
+	setCookie("speedBoxEffect", speedBoxEffect.value);
+	setCookie("pitchBoxEffect", pitchBoxEffect.value);
+	soundSpeed = 5 / speedBoxEffect.value;
+	volume = volBoxEffect.value * 2;
+	effectPitch = pitchBoxEffect.value * 0.2;
+	soundNames = Object.keys(soundBank);
+	mySound = soundNames[Math.floor(Math.random() * soundNames.length)]
+	playSound(mySound);	
+}
+
+//TODO: setting colors
+var namedColors = ["#FFFFFF", "#000000", "#696969", "#808080", "#A9A9A9", "#C0C0C0", "#D3D3D3", "#DCDCDC", "#F5F5F5", "#BC8F8F", "#CD5C5C", "#A52A2A", "#B22222", "#F08080", "#800000", "#8B0000", "#FF0000", "#FFFAFA", "#FFE4E1", "#FA8072", "#FF6347", "#E9967A", "#FF7F50", "#FF4500", "#FFA07A", "#A0522D", "#FFF5EE", "#D2691E", "#8B4513", "#F4A460", "#FFDAB9", "#CD853F", "#FAF0E6", "#FFE4C4", "#FF8C00", "#DEB887", "#FAEBD7", "#D2B48C", "#FFDEAD", "#FFEBCD", "#FFEFD5", "#FFE4B5", "#FFA500", "#F5DEB3", "#FDF5E6", "#FFFAF0", "#B8860B", "#DAA520", "#FFF8DC", "#FFD700", "#FFFACD", "#F0E68C", "#EEE8AA", "#BDB76B", "#F5F5DC", "#FAFAD2", "#808000", "#FFFF00", "#FFFFE0", "#FFFFF0", "#6B8E23", "#9ACD32", "#556B2F", "#ADFF2F", "#7FFF00", "#7CFC00", "#8FBC8F", "#228B22", "#32CD32", "#90EE90", "#98FB98", "#006400", "#008000", "#00FF00", "#F0FFF0", "#2E8B57", "#3CB371", "#00FF7F", "#F5FFFA", "#00FA9A", "#66CDAA", "#7FFFD4", "#40E0D0", "#20B2AA", "#48D1CC", "#2F4F4F", "#AFEEEE", "#008080", "#008B8B", "#00FFFF", "#E0FFFF", "#F0FFFF", "#00CED1", "#5F9EA0", "#B0E0E6", "#ADD8E6", "#00BFFF", "#87CEEB", "#87CEFA", "#4682B4", "#F0F8FF", "#1E90FF", "#708090", "#778899", "#B0C4DE", "#6495ED", "#4169E1", "#191970", "#E6E6FA", "#000080", "#00008B", "#0000CD", "#0000FF", "#F8F8FF", "#6A5ACD", "#483D8B", "#7B68EE", "#9370DB", "#663399", "#8A2BE2", "#4B0082", "#9932CC", "#9400D3", "#BA55D3", "#D8BFD8", "#DDA0DD", "#EE82EE", "#800080", "#8B008B", "#FF00FF", "#DA70D6", "#C71585", "#FF1493", "#FF69B4", "#FFF0F5", "#DB7093", "#DC143C", "#FFC0CB", "#FFB6C1"]
+
+function rgbToHsl(r, g, b){
+    r /= 255, g /= 255, b /= 255;
+    var max = Math.max(r, g, b), min = Math.min(r, g, b);
+    var h, s, l = (max + min) / 2;
+
+    if(max == min){
+        h = s = 0; // achromatic
+    }else{
+        var d = max - min;
+        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+        switch(max){
+            case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+            case g: h = (b - r) / d + 2; break;
+            case b: h = (r - g) / d + 4; break;
+        }
+        h /= 6;
+    }
+
+    return [h, s, l];
+}
+
+
+
+function hexToRgb(hex) {
+  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result ? {
+    r: parseInt(result[1], 16),
+    g: parseInt(result[2], 16),
+    b: parseInt(result[3], 16)
+  } : null;
+}
+
+function componentToHex(c) {
+  var hex = c.toString(16);
+  return hex.length == 1 ? "0" + hex : hex;
+}
+
+
+function rgbToHex(r, g, b) {
+  return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+}
+
+
+const RED = 0.2126;
+const GREEN = 0.7152;
+const BLUE = 0.0722;
+
+const GAMMA = 2.4;
+
+function luminance(r, g, b) {
+  var a = [r, g, b].map((v) => {
+    v /= 255;
+    return v <= 0.03928
+      ? v / 12.92
+      : Math.pow((v + 0.055) / 1.055, GAMMA);
+  });
+  return a[0] * RED + a[1] * GREEN + a[2] * BLUE;
+}
+
+function contrast(hex1, hex2) {
+  colorA = hexToRgb(hex1);
+  colorB = hexToRgb(hex2);
+  var lum1 = luminance(colorA.r, colorA.g, colorA.b);
+  var lum2 = luminance(colorB.r, colorB.g, colorB.b);
+  var brightest = Math.max(lum1, lum2);
+  var darkest = Math.min(lum1, lum2);
+  return (brightest + 0.05) / (darkest + 0.05);
+}
+
+
+function showName(wedge){
+	//id="colP"
+	myP = document.getElementById("colP")
+	myP.innerHTML = wedge.getAttribute("title")
+}
+function resetColP(){
+	myP = document.getElementById("colP")
+	myP.innerHTML = "Color Picker"
+	
+}
+var colorPie = document.getElementById("colorPie");
+
+function colPicker(wedge){
+	clearPicker();
+	showName(wedge)
+	myVar = wedge.getAttribute("variable");
+	colorVar = myVar;
+	let myHighVar = wedge.getAttribute("conhigh");
+	//console.log(myHighVar);
+	let myMidVar = wedge.getAttribute("conmid");
+	//console.log(myMidVar);
+	let myHex = getComputedStyle(root).getPropertyValue(myVar);
+	let myMid = getComputedStyle(root).getPropertyValue(myMidVar);
+	let myHigh = null;
+	let myStroke = myMid;
+	if(myHighVar){myHigh = getComputedStyle(root).getPropertyValue(myHighVar); myStroke = myHigh;}
+	//console.log(myHigh);
+	//console.log(myMid);
+	//console.log("---")
+	var myColors = []
+	for(color of namedColors){		
+		let keepMe = true;
+		if (myHigh){
+			if(contrast(myHigh, color) < 4.5){keepMe = false}
+		}
+		if(contrast(myMid, color) < 3){keepMe = false}
+		if(keepMe == true){myColors.push(color);}
+	
+	}
+	colorPie.classList.add("enabled")
+	
+	if (myColors.length < 12){
+	for(c = 0; c < myColors.length; c++){
+		addColor(myColors[c], myStroke);
+	}}
+	else{
+		//now it gets wacky
+		//myRange["stop1"] stop2 stop3 colors
+		let colPer = Math.ceil(myColors.length / 12);
+		let rangeCnt = Math.ceil(myColors.length / colPer);
+		
+		myRanges = []
+		for(let r = 0; r < rangeCnt; r++){
+			myRanges.push([])
+		}
+		for(let c = 0; c < myColors.length; c ++){
+			range = Math.floor(c / colPer);
+			myRanges[range].push(myColors[c]);
+		}
+		
+		for(range of myRanges){
+			//console.log(range);
+			colorA = range[0];
+			colorB = range[range.length - 1];
+			colorC = range[Math.round(range.length/2)];
+			let myRange = {"stop1": colorA, "stop2": colorB, "stop3": colorC, "colors": range}
+			//console.log(myRange);
+			addGradient(myRange);
+			
+		}
+		
+	}
+}
+
+var colorVar = ""
+
+
+//var r = document.querySelector(':root');
+//r.style.setProperty(myVar, newCol);
+//newrgb = hexToRgb(newCol)
+//myrgb = [newrgb.r, newrgb.g, newrgb.b].join(", ")
+//r.style.setProperty(myVar + "R", myrgb);
+
+var root = document.querySelector(':root')
+
+function pickColor(wedge){
+	myColor = wedge.getAttribute("title").split(" ")[0];
+	//console.log(colorVar);
+	//console.log(myColor);
+	root.style.setProperty(colorVar, myColor);
+	
+	newrgb = hexToRgb(myColor)
+	myrgb = [newrgb.r, newrgb.g, newrgb.b].join(", ")
+	root.style.setProperty(colorVar + "R", myrgb);
+	setCookie(colorVar, myColor);
+	setCookie(colorVar + "R", myrgb);
+}
+
+function pickGradient(wedge){
+	myColors = wedge.getAttribute("colors").split(",");
+	//console.log(myColors);
+	clearPicker();
+	//colorVar 
+	oColor =  getComputedStyle(root).getPropertyValue(colorVar);
+	myRGB = hexToRgb(oColor)
+	myLum = luminance(myRGB.r, myRGB.g, myRGB.b);
+	myStroke = "#000000"
+	if(myLum < 0.5){myStroke = "#ffffff"}
+	for(c = 0; c < myColors.length; c++){
+		addColor(myColors[c], myStroke);
+	}
+	
+}
 // Note: pages should call `loadLevel(...)` themselves. The automatic
 // `loadLevel("level1")` call was removed so host pages (like the
 // single-file campaign) can control startup and avoid using the demo
 // LEVELS bundled inside this runtime.
 
 var spSettings = document.getElementById("spSettings");
+var toneSettings = document.getElementById("toneSettings");
+var effectSettings = document.getElementById("effectSettings");
 
 
 function toggleSpeech(){
@@ -1956,17 +2205,40 @@ function toggleSpeech(){
 		speechOn = true;
 		setCookie("speechOn", true);
 		spSettings.classList.add("enabled")
+	speechSay("Speech on.")
+}
+}
 
-	let utterance = new SpeechSynthesisUtterance("Speech on");
-	mySelect = document.getElementById("voiceSelector")
-	myVoice = voices[mySelect.selectedIndex];
-	utterance.voice = myVoice
+
+function toggleEffect(){
+	if (soundEffects == true){
+		soundEffects = false;
+		effectSettings.classList.remove("enabled")
+		}
+	else{
+		soundEffects = true
+		effectSettings.classList.add("enabled")
+		//play random sound effect
+		soundNames = Object.keys(soundBank);
+		mySound = soundNames[Math.floor(Math.random() * soundNames.length)]
+		playSound(mySound);
+		}
+	 setCookie("soundEffects", soundEffects)
+}
+
+function toggleTone(){
 	
-	speechSynthesis.cancel();
-	speechSynthesis.speak(utterance);
+	if (tonesOn == true){
+		tonesOn = false;
+		toneSettings.classList.remove("enabled")
+		}
+	else{
+		tonesOn = true; 
+		playTones([true, true, true, true]);
+		toneSettings.classList.add("enabled")
+		}
+	 setCookie("tonesOn", tonesOn)	
 }
-}
-
 
 
 
@@ -2019,4 +2291,150 @@ function setCookie(cname, cvalue, exdays = 30) {
   let expires = "expires="+ d.toUTCString();
   document.cookie = cname + "=" + cvalue + ";" + expires + ";";
   
+}
+
+function clearPicker(){
+	var allFills = document.getElementById("fillsGroup").children;
+	//Loop to remove all fills from fillsGroup
+	while (allFills.length > 0){
+		allFills[0].remove();
+	}
+	var allGradients = document.getElementsByTagName("linearGradient");
+	while (allGradients.length > 0){
+		allGradients[0].remove();
+	}
+	pieText.innerHTML = "choose"
+}
+
+var pieText = document.getElementById("pieText")
+
+function pieName(wedge){
+	pieText.innerHTML = wedge.getAttribute("title")
+	
+	var myPaths = wedge.parentElement.children;
+	for (var i = 0; i < myPaths.length; i++) { 
+		myPaths[i].setAttribute("transform", "");
+	}
+
+	wedge.setAttribute("transform", "translate(" + wedge.getAttribute("movex") + " " + wedge.getAttribute("movey") + ")");
+	
+}
+
+
+function addColor(myColor, myLine){
+	var fillsGroup = document.getElementById("fillsGroup");
+	//Add a new path for the new color
+	var myPath = document.createElement("path");
+	myPath.setAttribute("style", "fill: " + myColor + "; stroke: " + myLine);
+	var colorName = ntc.name(myColor)[1];
+	myPath.setAttribute("title", myColor + " " + colorName);
+	myPath.setAttribute("tabindex", "0");
+	myPath.setAttribute("onmouseover", "pieName(this)");
+	myPath.setAttribute("onfocus", "pieName(this)");
+	myPath.setAttribute("focusable", "true");
+	myPath.setAttribute("onclick", "pickColor(this)");
+	myPath.setAttribute("onkeypress", "pickColor(this)");
+	fillsGroup.appendChild(myPath);
+	//redraw all paths as equal pie slices
+	var myPaths = fillsGroup.children;
+	var myAngle = Math.min(120, 360/myPaths.length);
+	let thisAng = 0;
+	for (var i = 0; i < myPaths.length; i++) {
+		let startX = 100 * Math.sin(thisAng * (Math.PI / 180)) + 125;
+		let startY = -(100 * Math.cos(thisAng * (Math.PI / 180))) + 125;
+		let endX = 100 * Math.sin((thisAng + myAngle) * (Math.PI / 180)) + 125;
+		let endY = -(100 * Math.cos((thisAng + myAngle) * (Math.PI / 180))) + 125;
+		var myD = "M 125 125 L " + startX + " " + startY + " A 100 100 0 0,1 " + endX + " " + endY + " Z";
+		myPaths[i].setAttribute("d", myD);
+		myPaths[i].setAttribute("movex", 10 * Math.sin((thisAng + (0.5 * myAngle)) * (Math.PI / 180)));
+		myPaths[i].setAttribute("movey", -(10 * Math.cos((thisAng + (0.5 * myAngle)) * (Math.PI / 180))));
+		thisAng += myAngle;	
+	}
+	//Force redraw so the new slices show up
+	fillsGroup.innerHTML = fillsGroup.innerHTML;
+	//Reset input and error message space
+}
+
+
+var gradKey = 0
+
+function addGradient(myRange){
+	defs = document.getElementById("pieDefs");
+	var svgns = 'http://www.w3.org/2000/svg';
+	var gradient = document.createElementNS(svgns, 'linearGradient');
+	// Parses an array of stop information and appends <stop> elements to the <linearGradient>
+	let name1 = ntc.name(myRange["stop1"])[1];
+	let name2 = ntc.name(myRange["stop2"])[1];
+	let name3 = ntc.name(myRange["stop3"])[1];
+	var colorNames = name1;
+	if(name1 != name2){colorNames += ", " + name2}
+	if(name2 != name3){colorNames += ", " + name3}
+	var stop = document.createElementNS(svgns, 'stop');
+	stop.setAttribute('offset', "0.2");
+	stop.setAttribute('stop-color', myRange["stop1"]);
+	gradient.appendChild(stop);
+	
+	stop = document.createElementNS(svgns, 'stop');
+	stop.setAttribute('offset', "0.6");
+	stop.setAttribute('stop-color', myRange["stop2"]);
+	gradient.appendChild(stop);
+
+	stop = document.createElementNS(svgns, 'stop');
+	stop.setAttribute('offset', "1");
+	stop.setAttribute('stop-color', myRange["stop3"]);
+	gradient.appendChild(stop);
+
+	var gradName = 'Gradient' + gradKey;
+	gradKey += 1;
+	gradient.id = gradName;
+	gradient.setAttribute('x1', '125');
+	gradient.setAttribute('y1', '125');
+	//TODO: gradient endpoint Math
+	gradient.setAttribute('x2', '0');
+	gradient.setAttribute('y2', '0');
+	gradient.setAttribute("gradientUnits", "userSpaceOnUse");
+	defs.appendChild(gradient);
+	
+	var fillsGroup = document.getElementById("fillsGroup");
+	//Add a new path for the new color
+	var myPath = document.createElement("path");
+	myPath.style= "fill: url(#" + gradName + ")";
+	myPath.setAttribute("title", colorNames);
+
+	//tabindex="0" onkeypress="displayDescription(this)" onclick="displayDescription(this), focus()" focusable="true"
+	myPath.setAttribute("onmouseover", "pieName(this)");
+	myPath.setAttribute("onfocus", "pieName(this)");
+	myPath.setAttribute("onclick", "pickGradient(this)");
+	myPath.setAttribute("onkeypress", "pickGradient(this)");
+	myPath.setAttribute("tabindex", "0");
+	myPath.setAttribute("focusable", "true");
+	myPath.setAttribute("colors", myRange["colors"]);
+	
+	fillsGroup.appendChild(myPath);
+	//redraw all paths as equal pie slices
+	var myPaths = fillsGroup.children;
+	var myAngle = Math.min(120, 360/myPaths.length);
+	let thisAng = 0;
+	for (var i = 0; i < myPaths.length; i++) {
+		let startX = 100 * Math.sin(thisAng * (Math.PI / 180)) + 125;
+		let startY = -(100 * Math.cos(thisAng * (Math.PI / 180))) + 125;
+		let endX = 100 * Math.sin((thisAng + myAngle) * (Math.PI / 180)) + 125;
+		let endY = -(100 * Math.cos((thisAng + myAngle) * (Math.PI / 180))) + 125;
+		var myD = "M 125 125 L " + startX + " " + startY + " A 100 100 0 0,1 " + endX + " " + endY + " Z";
+		try{
+			let gradx =  100 * Math.sin((thisAng + (myAngle/2)) * (Math.PI / 180)) + 125;
+			let grady =  -(100 * Math.cos((thisAng + (myAngle/2)) * (Math.PI / 180))) + 125;
+			var myGradient = document.getElementById(myPaths[i].getAttribute("style").split("#")[1].split('"')[0])
+			myGradient.setAttribute('x2', gradx);
+			myGradient.setAttribute('y2', grady);}
+		catch{console.log("Not a gradient?"); console.log(myPaths[i]);}
+		myPaths[i].setAttribute("d", myD);
+		myPaths[i].setAttribute("movex", 10 * Math.sin((thisAng + (0.5 * myAngle)) * (Math.PI / 180)));
+		myPaths[i].setAttribute("movey", -(10 * Math.cos((thisAng + (0.5 * myAngle)) * (Math.PI / 180))));
+		thisAng += myAngle;
+	}
+	//Force redraw so the new slices show up
+	fillsGroup.innerHTML = fillsGroup.innerHTML;
+	
+	
 }
