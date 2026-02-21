@@ -9,7 +9,7 @@
 const MAX_SIZE = 12; // maximum grid size used for consistent scaling
 const MAX_LIFE = 100; // global maximum life cap for players
 var baseLife = 20;
-
+var root = document.querySelector(':root')
 // Audio setup for footstep sounds
 let footstepAudio = null;
 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -54,14 +54,7 @@ initSetting("speedBoxTone", speedBoxTone);
 initSetting("pitchBoxTone", pitchBoxTone);	
 initSetting("volBoxTone", volBoxTone);
 
-initCSS("colDark");
-initCSS("colLight");
-initCSS("colEmDark");
-initCSS("colEmLight");
-initCSS("colDarkR");
-initCSS("colLightR");
-initCSS("colEmDarkR");
-initCSS("colEmLightR");
+
 
 
 var voiceSpeed = speedBox.value * 0.2;
@@ -2159,7 +2152,7 @@ var colorVar = ""
 //myrgb = [newrgb.r, newrgb.g, newrgb.b].join(", ")
 //r.style.setProperty(myVar + "R", myrgb);
 
-var root = document.querySelector(':root')
+
 
 function pickColor(wedge){
 	myColor = wedge.getAttribute("title").split(" ")[0];
@@ -2438,3 +2431,12 @@ function addGradient(myRange){
 	
 	
 }
+
+initCSS("colDark");
+initCSS("colLight");
+initCSS("colEmDark");
+initCSS("colEmLight");
+initCSS("colDarkR");
+initCSS("colLightR");
+initCSS("colEmDarkR");
+initCSS("colEmLightR");
