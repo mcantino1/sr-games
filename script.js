@@ -32,28 +32,6 @@ var volBoxTone = document.getElementById("toneVol");
 
 
 
-//user settings
-var speechOn = false;
-speechOn = initCheckbox(speechOn, "speechOn", speechBox);
-if(speechOn){spSettings.classList.add("enabled")}
-
-var soundEffects = true;
-soundEffects = initCheckbox(soundEffects, "soundEffects", effectToggle);
-
-var tonesOn = false;
-tonesOn = initCheckbox(tonesOn, "tonesOn", tonesToggle);
-
-initSetting("speedBox", speedBox);
-initSetting("pitchBox", pitchBox);
-initSetting("voiceBox", voiceBox);
-initSetting("volBox", volBox);
-initSetting("speedBoxEffect", speedBoxEffect);
-initSetting("pitchBoxEffect", pitchBoxEffect);
-initSetting("volBoxEffect", volBoxEffect);
-initSetting("speedBoxTone", speedBoxTone);
-initSetting("pitchBoxTone", pitchBoxTone);	
-initSetting("volBoxTone", volBoxTone);
-
 
 
 
@@ -2431,6 +2409,31 @@ function addGradient(myRange){
 	
 	
 }
+
+
+//user settings
+var speechOn = false;
+speechOn = initCheckbox(speechOn, "speechOn", speechBox);
+if(speechOn){spSettings.classList.add("enabled")}
+
+var soundEffects = true;
+soundEffects = initCheckbox(soundEffects, "soundEffects", effectToggle);
+
+var tonesOn = false;
+tonesOn = initCheckbox(tonesOn, "tonesOn", tonesToggle);
+
+initSetting("speedBox", speedBox);
+initSetting("pitchBox", pitchBox);
+initSetting("voiceBox", voiceBox);
+initSetting("volBox", volBox);
+initSetting("speedBoxEffect", speedBoxEffect);
+initSetting("pitchBoxEffect", pitchBoxEffect);
+initSetting("volBoxEffect", volBoxEffect);
+initSetting("speedBoxTone", speedBoxTone);
+initSetting("pitchBoxTone", pitchBoxTone);	
+initSetting("volBoxTone", volBoxTone);
+
+
 
 initCSS("colDark");
 initCSS("colLight");
