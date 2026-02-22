@@ -152,6 +152,7 @@ function initGame(myButton){
 	 welcomeDiv.classList.add("hideMe");
 	 gameDiv.classList.remove("hideMe");
 	 footDiv.classList.remove("hideMe");
+	 gameDiv.focus();
  }
  
 var wallPhrases = ["The wall is gross. Your hands are sticky. ", "The wall tastes delicious! ", "Wall, my old friend! ", "A wall blocks your way. ", "The wall sneaks up on you.", "The wall squeaks when you touch it. Strange.", "The wall smells wet and soupy."]
