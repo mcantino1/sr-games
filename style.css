@@ -15,7 +15,11 @@
 	--colAlphaSettings: 0.8;
   }
 
+
   html, body { height: 100%; margin: 0; }
+  
+  .hideMe{display: none;}
+  
 .columnStyle{
 	display: flex;
 	flex-direction: column;
@@ -353,8 +357,7 @@ header div{float: left;}
 
 /* The slider */
 input:focus + .slider, input:hover + .slider{
-	border: 2px solid  light-dark(var(--colEmDark), var(--colEmLight));
-	
+	border: 2px solid  light-dark(var(--colEmDark), var(--colEmLight));	
 }
 .slider {
   border: 2px solid  light-dark(var(--colDark), var(--colLight));

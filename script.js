@@ -70,18 +70,51 @@ function initCSS(varName){
 	}
 }
 
- function initGame(){
-	
-	 gameName = document.getElementsByTagName("H1")[0].children[0];
-	try{
-	gameName.innerHTML = getName();
-	document.getElementsByTagName("title")[0].innerHTML = getName();
-	}catch(e){console.log("Name not defined in game files")}
+myGames = {}
 
-	 LEVELS = getLevels();
-	 getLevelIcons();
-	 levels = []
-	 myKeys = Object.keys(LEVELS);
+const dataPath = "./data/game";
+
+function getFile(num){
+	fetch(dataPath + num + ".json")
+	.then(response => {
+		if (!response.ok) {
+			console.log(`HTTP error! Status: ${response.status}`);
+		}
+		return response.json();  
+	})
+	.then(data => {
+		myGames["game" + num] = data; 
+		addGame(num);
+		getFile((parseInt(num) + 1).toString().padStart(2, '0'));
+		})  
+	.catch(error => console.log("no more games")); 
+}
+
+buttonZone = document.getElementById("gameButtons");
+
+function addGame(num){
+	console.log("adding button");
+	let gameId = "game" + num;
+	let myButton = document.createElement("button");
+	myButton.setAttribute("onClick", "initGame(this)");
+	myButton.setAttribute("gameId", gameId);
+	myButton.setAttribute("type", "button");
+	console.log(gameId)
+	myButton.innerHTML = myGames[gameId]["title"];
+	buttonZone.appendChild(myButton);
+	console.log("Button Added")
+}
+welcomeDiv = document.getElementById("welcome");
+gameDiv =  document.getElementById("game");
+footDiv =  document.getElementById("foot");
+function initGame(myButton){
+	myGame = myGames[myButton.getAttribute("gameId")];
+	gameName = document.getElementsByTagName("H1")[0].children[0];
+	gameName.innerHTML = myGame["title"]
+	
+	LEVELS = myGame["levels"];
+	levels = [];
+	myKeys = Object.keys(LEVELS);
 	 
 	 //level = JSON.parse(JSON.stringify(LEVELS[id]));
 	 for (let k = 0; k < myKeys.length; k ++){
@@ -95,7 +128,9 @@ function initCSS(varName){
 	  console.error('Failed to start campaign level:', e);
 	  document.getElementById('currentText').textContent = 'Failed to start campaign.';
 	}
-	 
+	 welcomeDiv.classList.add("hideMe");
+	 gameDiv.classList.remove("hideMe");
+	 footDiv.classList.remove("hideMe");
  }
  
  function getLevelIcons(){
@@ -1983,7 +2018,7 @@ function speechSay(message) {
 	let hushTime = 0;
 	hushTime += soundEnd - audioContext.currentTime;
 	if(tonesOn == true){
-		hushTime += toneLength;
+		hushTime += toneLength * 4;
 	}
 	
 	let utterance = new SpeechSynthesisUtterance(message);
@@ -2566,3 +2601,6 @@ initCSS("colDarkR");
 initCSS("colLightR");
 initCSS("colEmDarkR");
 initCSS("colEmLightR");
+
+
+getFile("01")

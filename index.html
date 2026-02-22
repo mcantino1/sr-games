@@ -145,7 +145,12 @@
 		
 
 </header>
-<main id="game" tabindex="0" role="application" ">
+<div id="welcome">
+<p>Welcome, hero.</p>
+<h2>Select your game</h2>
+<div id="gameButtons"></div>
+</div>
+<main class="hideMe" id="game" tabindex="0" role="application" ">
   <section class="leftPane" aria-label="Grid panel">
     <div class="mapShell" aria-hidden="true">
       <div id="map"></div>
@@ -162,7 +167,7 @@
     </div>
 	 </section>
 </main>
-   <div class="foot" >
+   <footer id="foot" class="foot hideMe">
 
       <ul class="statsList" id="statsList" aria-label="Stats list">
         <li>Life: <strong id="lifeText">10</strong></li>
@@ -172,7 +177,7 @@
         <li>Key: <strong id="keyText">No</strong></li>
       </ul>
          
-    </div>
+    </footer>
 <dialog id="guideDialog" aria-labelledby="guideTitle">
   <h2 id="guideTitle" style="margin-top:0;">Gameplay Guide</h2>
   <p><strong>Goal:</strong> Find the key, then unlock the door to finish the level.</p>
@@ -188,11 +193,8 @@
   </div>
 </dialog>
 <script src="script.js"></script>
-<script src="levels.js"></script>
 <script>
-initGame()
-
-// Start campaign at first stage (signal startup announcements)
+	
 
 </script>
 </body>
