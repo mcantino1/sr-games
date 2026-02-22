@@ -29,7 +29,7 @@ var speedBoxTone = document.getElementById("toneSpeed");
 var pitchBoxTone = document.getElementById("tonePitch");
 var volBoxTone = document.getElementById("toneVol");
 
-
+let stats = { life: baseLife, strength: 2, defense: 0, gold: 0, key: false };
 
 
 
@@ -126,13 +126,14 @@ function initGame(myButton){
 			ICONS[icon] = newIcons[icon];
 		}	
 	}
+	
 	if(myGame["stats"]){
 		myStats = myGame["stats"];
 		statKeys = Object.keys(myStats);
 		for (stat of statKeys){
 			stats[stat] = myStats[stat];
 		}
-		
+		if(myStats["life"]){baseLife = myStats["life"];}
 	}
 
 	
@@ -316,7 +317,7 @@ let revealedNeighbors = new Set();
 // Map of pos -> type ("key" | "treasure" | "monster").
 let revealedSpecial = new Map();
 let completed = false;
-let stats = { life: baseLife, strength: 2, defense: 0, gold: 0, key: false };
+
 let discoveryLog = [];
 
 // Monsters are tracked separately so they can have HP and be defeated.
