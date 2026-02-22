@@ -128,33 +128,56 @@ var currentSound = "";
 
 var toneLength = 0.5 / speedBoxTone.value;
 var toneOscillator = audioContext.createOscillator();
+var hissOscillator = audioContext.createOscillator();
 
 function playTones(dirs){
-	console.log("playTones");
+	
 	const now = Math.max(audioContext.currentTime, soundEnd);
 	
-	try{toneOscillator.stop(audioContext.currentTime);}
-	catch(e){}
+	try{toneOscillator.stop(audioContext.currentTime); hissOscillator.stop(audioContext.currentTime);}
+	catch(e){}	
+
 	toneOscillator = audioContext.createOscillator();
 	const gainNode = audioContext.createGain();
 	toneOscillator.connect(gainNode);
 	gainNode.connect(audioContext.destination);
 	toneOscillator.type = 'sine';
+
+	hissOscillator = audioContext.createOscillator();
+	const gainNodeHiss = audioContext.createGain();
+	hissOscillator.connect(gainNodeHiss);
+	gainNodeHiss.connect(audioContext.destination);
+	hissOscillator.type = 'sawtooth';
+	hissFreq = 50;
+	
+
 	
 	let dur = toneLength * 4;
 
 	freq = 100 * tonePitch;
 	fStep = 100;
 	
+	hissOscillator.frequency.setValueAtTime(hissFreq, now)
+	gainNodeHiss.gain.setValueAtTime(0, now);
+	
 	for (let i = 0; i < dirs.length; i++){		
 		toneOscillator.frequency.setValueAtTime(freq + (fStep * i), now + (toneLength * i));
-		if (dirs[i] == true){gainNode.gain.setValueAtTime(toneVol,  now + (toneLength * i));}
-		else{gainNode.gain.setValueAtTime(0,  now + (toneLength * i));}
+		if (dirs[i] == true){
+			gainNode.gain.setValueAtTime(toneVol,  now + (toneLength * i));
+			gainNodeHiss.gain.setValueAtTime(0,  now + (toneLength * i));
+			}
+		else{
+			gainNode.gain.setValueAtTime(0,  now + (toneLength * i));
+			gainNodeHiss.gain.setValueAtTime((toneVol * 0.1),  now + (toneLength * i));
+			gainNodeHiss.gain.setValueAtTime(0,  now + (toneLength * i + (toneLength * 0.75)));
+			}
 	}
 	soundEnd = now+dur;
 	
 	toneOscillator.start(now);
 	toneOscillator.stop(now + dur);	
+	hissOscillator.start(now);
+	hissOscillator.stop(now + dur);	
 	
 	
 }
@@ -231,7 +254,8 @@ var soundBank = {"step": {"dur": 0.1, "type": "sine", "frequency": 15, "layers":
 				"drink": {"dur": 0.1, "type": "sine", "frequency": 100, "layers": 1, "nodes": [{"type": "frequency", "value": 50, "time": 0.5}, {"type": "frequency", "value": 200, "time": 1}, {"type": "gain", "value": 1, "time": 0.01}, {"type": "gain", "value": 0.01, "time": 1}]},
 				"fall": {"dur": 1, "type": "sine", "frequency": 800, "layers": 1, "nodes": [{"type": "frequency", "value": 300, "time": 1}, {"type": "gain", "value": 1, "time": 0.01}, {"type": "gain", "value": .01, "time": 1}]},
 				"growl": {"layers": 2, "dur": 0.5, "type": "triangle", "frequency": 50, "nodes": [{"type": "frequency", "value": 40, "time": 1}, {"type": "gain", "value": 1, "time": 0.01}, {"type": "gain", "value": 0.25, "time": 0.5}, {"type": "gain", "value": 0.01, "time": 1}], "nodes2": [{"type": "frequency", "value": 50, "time": 0}, {"type": "frequency", "value": 100, "time": 1}, {"type": "gain", "value": 1 , "time": 0 }, {"type": "gain", "value": 0.01 , "time": 0.083 }, {"type": "gain", "value": 1 , "time": 0.084 }, {"type": "gain", "value": 0.01 , "time": 0.166 }, {"type": "gain", "value": 1 , "time": 0.167 }, {"type": "gain", "value": 0.01 , "time": 0.25 }, {"type": "gain", "value": 1 , "time": 0.251 }, {"type": "gain", "value": 0.01 , "time": 0.333 }, {"type": "gain", "value": 1 , "time": 0.334 }, {"type": "gain", "value": 0.01 , "time": 0.416 }, {"type": "gain", "value": 1 , "time": 0.417 }, {"type": "gain", "value": 0.01 , "time": 0.5 }]},
-				"slay": {"layers": 2, "dur": 0.5, "type": "triangle", "frequency": 200, "nodes": [{"type": "frequency", "value": 40, "time": 1}, {"type": "gain", "value": 0.5, "time": 0.01}, {"type": "gain", "value": 1, "time": 0.5},  {"type": "gain", "value": 0.01, "time":1}], "nodes2": [{"type": "frequency", "value": 50, "time": 0}, {"type": "frequency", "value": 100, "time": 1}, {"type": "gain", "value": 1 , "time": 0 }, {"type": "gain", "value": 0.01 , "time": 0.083 }, {"type": "gain", "value": 1 , "time": 0.084 }, {"type": "gain", "value": 0.01 , "time": 0.166 }, {"type": "gain", "value": 1 , "time": 0.167 }, {"type": "gain", "value": 0.01 , "time": 0.25 }, {"type": "gain", "value": 1 , "time": 0.251 }, {"type": "gain", "value": 0.01 , "time": 0.333 }, {"type": "gain", "value": 1 , "time": 0.334 }, {"type": "gain", "value": 0.01 , "time": 0.416 }, {"type": "gain", "value": 1 , "time": 0.417 }, {"type": "gain", "value": 0.01 , "time": 0.5 }] }
+				"slay": {"layers": 2, "dur": 0.5, "type": "triangle", "frequency": 200, "nodes": [{"type": "frequency", "value": 40, "time": 1}, {"type": "gain", "value": 0.5, "time": 0.01}, {"type": "gain", "value": 1, "time": 0.5},  {"type": "gain", "value": 0.01, "time":1}], "nodes2": [{"type": "frequency", "value": 50, "time": 0}, {"type": "frequency", "value": 100, "time": 1}, {"type": "gain", "value": 1 , "time": 0 }, {"type": "gain", "value": 0.01 , "time": 0.083 }, {"type": "gain", "value": 1 , "time": 0.084 }, {"type": "gain", "value": 0.01 , "time": 0.166 }, {"type": "gain", "value": 1 , "time": 0.167 }, {"type": "gain", "value": 0.01 , "time": 0.25 }, {"type": "gain", "value": 1 , "time": 0.251 }, {"type": "gain", "value": 0.01 , "time": 0.333 }, {"type": "gain", "value": 1 , "time": 0.334 }, {"type": "gain", "value": 0.01 , "time": 0.416 }, {"type": "gain", "value": 1 , "time": 0.417 }, {"type": "gain", "value": 0.01 , "time": 0.5 }] },
+				"hiss": {"dur": 1, "type": "sawtooth", "frequency": 10, "layers": 1, "nodes": [{"type": "frequency", "value": 10, "time": 1},{"type": "gain", "value": 0.1, "time": 0.01},{"type": "gain", "value": 0.1, "time": 1}]}
 				};
 				
   
@@ -734,7 +758,7 @@ function renderMap() {
   }
 
   focusSquare.scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
-  console.log("map rendered")
+  
 }
 
 /* ---------------- UI ---------------- */
@@ -756,12 +780,12 @@ function sleep(milliseconds) {
   }
 }  
 function updateUI(){
-	console.log("updateUI: " + player.row + " " + player.col)
+	
   posText.textContent = toPos(player.row, player.col) + " " + currentLevelId;
   locStat = document.getElementById("locText");
   updateStatsUI();
   renderMap();
-  console.log("UI Done")
+  
 }
 
 /* ---------------- Rewards / auto-actions ---------------- */
@@ -861,7 +885,7 @@ if (customWall) {
 	  }
 	}
   if (items.some(i=>i.type==="door")) return ["You see the exit", 1];
-  if (items.some(i=>i.type==="exit")) return ["You see the exit", 1];
+  if (items.some(i=>i.type==="exit")) return ["Dungeon entrance", 1];
   if (items.some(i=>i.type==="void")) return ["mysterious fog", 2];
   if (items.some(i=>i.type==="weapon_shop")) return ["weapon shop", 4];
     if (items.some(i=>i.type==="shop")){ return [items[0].meta.name, 4]};
@@ -1003,7 +1027,7 @@ function groupedSurroundingsText() {
 
 // Like groupedSurroundingsText but for an arbitrary cell `pos` instead of player.
 function groupedSurroundingsTextAt(pos) {
-	console.log("**groupedSurroundingsTextAt**")
+	
   const p = posToRC(pos);
   const openDirs = [];
   const blockedDirs = [];
@@ -1086,7 +1110,7 @@ function hereSummary(pos) {
   if (items.some(i=>i.type==="key")) return "A key is here. ";
   if (items.some(i=>i.type==="monster")) return "A monster is here. ";
   if (items.some(i=>i.type==="treasure")) return "A treasure chest is here. ";
-  if (items.some(i=>i.type==="potion")) return "A potion is here. ";
+//  if (items.some(i=>i.type==="potion")) return "A potion is here. ";
   if (items.some(i=>i.type==="weapon_shop")) return "A weapon shop is here. ";
   if (items.some(i=>i.type==="armor_shop")) return "An armor shop is here. ";
   if (items.some(i=>i.type==="villager")) return "A villager is here. ";
@@ -1115,7 +1139,7 @@ function describeCurrentLocation() {
 /* ---------------- Discovery + entering a cell ---------------- */
 
 function enterCell(prefix) {
-	console.log("enterCell")
+	
   const pos = toPos(player.row, player.col);
   const firstVisit = !visited.has(pos);
   visited.add(pos);
@@ -1178,6 +1202,7 @@ function enterCell(prefix) {
 	if (defeat == true){
 		discoveryMsgs.push("You have died. Reloading " + currentLevelId + "... \n")
 		discoveryMsgs.push("You are back in cell " + pos + ".\n")
+		stats["strength"] = parseInt(stats["strength"]) + 1;
 		defeat = false;
 	}
 
@@ -1532,7 +1557,7 @@ function tryMove(dr, dc) {
         let appliedDamage = playerDamage;
         if (isCrit) appliedDamage = Math.round(playerDamage * 1.5);
         monster.hp -= appliedDamage;
-        msg = `You attack ${monsterName} for ${appliedDamage}. `;
+        msg = `You attack for ${appliedDamage}. `;
       }
     }
 
@@ -1546,7 +1571,7 @@ function tryMove(dr, dc) {
       } else {
         const monsterDamage = Math.max(0, raw - stats.defense);
         stats.life -= monsterDamage;
-        msg += `${monsterName} attacks you for ${monsterDamage}. `;
+        msg += `${monsterName} attacks for ${monsterDamage}. `;
       }
       msg += `Your life: ${Math.max(0, stats.life)}. ${monsterName} life: ${Math.max(0, monster.hp)}. `;
 
@@ -1882,6 +1907,11 @@ if (e.key === ' ' || e.key === 'Spacebar' || e.code === 'Space' || e.code == "En
   }
 
 
+if (e.key === 'Escape'){
+	e.preventDefault();
+	settings.classList.remove("enabled");
+	}
+
   if (e.key.startsWith("Arrow")) e.preventDefault();
 
   if (e.key === "ArrowUp") tryMove(-1, 0);
@@ -1891,7 +1921,13 @@ if (e.key === ' ' || e.key === 'Spacebar' || e.code === 'Space' || e.code == "En
 });
 
 
-
+settings.addEventListener("keydown", (e) => {
+if (e.key === 'Escape'){
+	e.preventDefault();
+	settings.classList.remove("enabled");
+	gameEl.focus()
+	}	
+});
 
 /* ---------------- Load level ---------------- */
 let preserveStatsOnNextLoad = false;
@@ -1944,8 +1980,6 @@ var smlFoot = "</speak>"
 function speechSay(message) {
 	
 	let hushTime = Math.floor(Math.max(soundEnd + (toneLength * 4), audioContext.currentTime + (toneLength * 4)) - audioContext.currentTime);
-	message = smlHead + message + smlFoot
-	console.log(message)
 	let utterance = new SpeechSynthesisUtterance(message);
 	mySelect = document.getElementById("voiceSelector")
 	myVoice = voices[mySelect.selectedIndex];
@@ -1957,12 +1991,12 @@ function speechSay(message) {
 	hushedPause.volume = 0.001;
 	hushedPause.voice = myVoice
 	hushedPause.rate = 5;
-	console.log(hushTime)
+	
 	for(let i = 0; i < hushTime; i++){
-		console.log("sh")
+		
 			speechSynthesis.speak(hushedPause);
 	}
-	console.log("bla")
+	
 	speechSynthesis.speak(utterance);
 }
 

@@ -352,7 +352,12 @@ header div{float: left;}
 }
 
 /* The slider */
+input:focus + .slider, input:hover + .slider{
+	border: 2px solid  light-dark(var(--colEmDark), var(--colEmLight));
+	
+}
 .slider {
+  border: 2px solid  light-dark(var(--colDark), var(--colLight));
   position: absolute;
   cursor: pointer;
   top: 0;
@@ -374,11 +379,13 @@ header div{float: left;}
   height: 26px;
   width: 26px;
   left: 4px;
-  bottom: 4px;
+  bottom: 3px;
   background-color: light-dark(var(--colDark), var(--colLight));
   -webkit-transition: .4s;
   transition: .4s;
 }
+
+
 
 input:checked + .slider {
   background-color: light-dark(var(--colEmLight), var(--colEmDark));
