@@ -71,6 +71,7 @@ function initCSS(varName){
 }
 
  function initGame(){
+	
 	 gameName = document.getElementsByTagName("H1")[0].children[0];
 	try{
 	gameName.innerHTML = getName();
@@ -98,6 +99,7 @@ function initCSS(varName){
  }
  
  function getLevelIcons(){
+	
 	
 	try{
 		newIcons = getIcons()
@@ -128,6 +130,7 @@ var toneLength = 0.5 / speedBoxTone.value;
 var toneOscillator = audioContext.createOscillator();
 
 function playTones(dirs){
+	console.log("playTones");
 	const now = Math.max(audioContext.currentTime, soundEnd);
 	
 	try{toneOscillator.stop(audioContext.currentTime);}
@@ -148,9 +151,11 @@ function playTones(dirs){
 		if (dirs[i] == true){gainNode.gain.setValueAtTime(toneVol,  now + (toneLength * i));}
 		else{gainNode.gain.setValueAtTime(0,  now + (toneLength * i));}
 	}
+	soundEnd = now+dur;
+	
 	toneOscillator.start(now);
 	toneOscillator.stop(now + dur);	
-
+	
 	
 }
 
@@ -447,6 +452,7 @@ function hasInn(pos){ return itemsAt(pos).some(it => it.type === "inn"); }
 function hasVillager(pos){ return itemsAt(pos).some(it => it.type === "villager"); }
 function getMonster(pos){ return monsters.get(pos) || null; }
 function initMonsters(){
+	
   monsters = new Map();
   for (const it of level.items) {
     if (it.type === "monster") {
@@ -521,6 +527,7 @@ function revealNeighbors(pos) {
 }
 
 function revealMap(){
+	
 	revealed = []
 	for (let r = 0; r < level.rows; r++){
 		for (let c = 0; c < level.cols; c++){
@@ -727,10 +734,12 @@ function renderMap() {
   }
 
   focusSquare.scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
+  console.log("map rendered")
 }
 
 /* ---------------- UI ---------------- */
 function updateStatsUI(){
+	
   lifeText.textContent = stats.life;
   strText.textContent = stats.strength;
   defText.textContent = stats.defense;
@@ -738,12 +747,21 @@ function updateStatsUI(){
   keyText.textContent = stats.key ? "Yes" : "No";
 }
 
-
+function sleep(milliseconds) {
+  var start = new Date().getTime();
+  for (var i = 0; i < 1e7; i++) {
+    if ((new Date().getTime() - start) > milliseconds){
+      break;
+    }
+  }
+}  
 function updateUI(){
+	console.log("updateUI: " + player.row + " " + player.col)
   posText.textContent = toPos(player.row, player.col) + " " + currentLevelId;
   locStat = document.getElementById("locText");
   updateStatsUI();
   renderMap();
+  console.log("UI Done")
 }
 
 /* ---------------- Rewards / auto-actions ---------------- */
@@ -945,7 +963,7 @@ function groupedSurroundingsText() {
 			for (key of cueKeys){
 				
 				dirSt = myCues[key].dirs.join(", ");
-				parts.push(key + ": " + dirSt);
+				parts.push(key + ": " + dirSt + ". ");
 				
 			}
 		}
@@ -962,7 +980,7 @@ function groupedSurroundingsText() {
 		if(!blockedDirs.includes("east")){toneDirs[1] = true;}
 		if(!blockedDirs.includes("south")){toneDirs[2] = true;}
 		if(!blockedDirs.includes("west")){toneDirs[3] = true;}
-		playTones(toneDirs);
+		playTones(toneDirs);		
   }}
 
 	p = 5
@@ -985,6 +1003,7 @@ function groupedSurroundingsText() {
 
 // Like groupedSurroundingsText but for an arbitrary cell `pos` instead of player.
 function groupedSurroundingsTextAt(pos) {
+	console.log("**groupedSurroundingsTextAt**")
   const p = posToRC(pos);
   const openDirs = [];
   const blockedDirs = [];
@@ -1039,7 +1058,7 @@ function trimText(myMessage){
 	return myMessage
 }
 
-function describePos(pos) {
+function describePos(pos){
   const parts = [];
   const rd = roomDescription(pos);
   if (rd) parts.push(rd);
@@ -1081,6 +1100,9 @@ function hereSummary(pos) {
 function describeCurrentLocation() {
   const pos = toPos(player.row, player.col);
   const parts = [];
+  
+  
+  
   parts.push(roomDescription(pos));
 
   const here = hereSummary(pos);
@@ -1093,13 +1115,13 @@ function describeCurrentLocation() {
 /* ---------------- Discovery + entering a cell ---------------- */
 
 function enterCell(prefix) {
+	console.log("enterCell")
   const pos = toPos(player.row, player.col);
   const firstVisit = !visited.has(pos);
   visited.add(pos);
-
   // Reveal adjacent N/S/E/W tiles when entering a cell (fog of war).
   revealNeighbors(pos);
-
+	
   // If the page set a campaign startup flag, do a minimal announcement sequence:
   // 1) "Welcome to Super Dungeon"
   // 2) the level's A1 scene text (if any)
@@ -1107,6 +1129,7 @@ function enterCell(prefix) {
   try {
     if (window.__campaignStartup) {
       // Build the same description used elsewhere (room + here summary + surroundings)
+	  
       let fullText = describeCurrentLocation();
       updateUI();
       // Announce title then full location description (includes surroundings)
@@ -1130,7 +1153,11 @@ function enterCell(prefix) {
   }
 
   // Build room text up front (used for log + announcements)
+  
+  
+  
   const text = describeCurrentLocation();
+  
   // Auto actions (announce discoveries)
   const discoveryMsgs = [];
 
@@ -1343,7 +1370,7 @@ function enterCell(prefix) {
   }
 
   // Update visuals/stats before speaking
-  updateUI();
+ 
 
   // Build spoken sequence. If a prefix (combat text) was provided, include it first.
   var spoken = [];
@@ -1383,14 +1410,11 @@ function enterCell(prefix) {
   currentText.innerHTML = fullSpoken;
   if (speechOn){speechSay(currentText.textContent)}
   
-  
-
+ 
   // Announce everything in order.
 //  announceSequence(spoken);
-
+	updateUI();
   
-
-  updateUI();
 }
 var defeat = false;
 /* ---------------- Movement ---------------- */
@@ -1613,6 +1637,7 @@ function tryMove(dr, dc) {
   // Normal movement
   player.row = nr;
   player.col = nc;
+  updateUI();
   enterCell();
 }
 
@@ -1775,6 +1800,7 @@ function activateCell(pos){
 }	
 
 function speakMapContents(){
+	
 	speechSynthesis.cancel();
 	//tell user about currently visible map contents
 	let myText = "";
@@ -1793,6 +1819,7 @@ function speakMapContents(){
 }
 
 function  speakLocDesc(){
+	
 	speechSynthesis.cancel();
 	//rewrite the current location description so it announces again. 
 	let myText = currentText.innerHTML;
@@ -1804,6 +1831,7 @@ function  speakLocDesc(){
 const settings = document.getElementById("settings");
 
 function toggleSettings(){
+	
 	if (settings.classList.contains("enabled")) {
 		settings.classList.remove("enabled")
 	}
@@ -1909,7 +1937,15 @@ function loadLevel(id, cell = "A1") {
   gameEl.focus();
 }
 
+
+var smlHead = "<?xml version=\"1.0\"?> <speak version=\"1.1\" xmlns=\"http://www.w3.org/2001/10/synthesis\"        xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"        xsi:schemaLocation=\"http://www.w3.org/2001/10/synthesis                  http://www.w3.org/TR/speech-synthesis11/synthesis.xsd\"        xml:lang=\"en-US\">"
+var smlFoot = "</speak>"
+
 function speechSay(message) {
+	
+	let hushTime = Math.floor(Math.max(soundEnd + (toneLength * 4), audioContext.currentTime + (toneLength * 4)) - audioContext.currentTime);
+	message = smlHead + message + smlFoot
+	console.log(message)
 	let utterance = new SpeechSynthesisUtterance(message);
 	mySelect = document.getElementById("voiceSelector")
 	myVoice = voices[mySelect.selectedIndex];
@@ -1917,12 +1953,21 @@ function speechSay(message) {
 	utterance.pitch = voicePitch;
 	utterance.rate = voiceSpeed;
 	utterance.volume = voiceVol;
+	let hushedPause = new SpeechSynthesisUtterance(" beep ");
+	hushedPause.volume = 0.001;
+	hushedPause.voice = myVoice
+	hushedPause.rate = 5;
+	console.log(hushTime)
+	for(let i = 0; i < hushTime; i++){
+		console.log("sh")
+			speechSynthesis.speak(hushedPause);
+	}
+	console.log("bla")
 	speechSynthesis.speak(utterance);
-	
-	
 }
 
 function updateVoice(){
+	
 	speechSynthesis.cancel();
 	setCookie("voiceBox", voiceBox.value);
 	let msg = voiceBox.value;
@@ -1930,6 +1975,7 @@ function updateVoice(){
 }
 
 function updateSpeed(){
+	
 	speechSynthesis.cancel();
 	setCookie("speedBox", speedBox.value);
 	voiceSpeed = speedBox.value  * 0.2;
@@ -1937,6 +1983,7 @@ function updateSpeed(){
 	speechSay(msg)
 }
 function updatePitch(){
+	
 	speechSynthesis.cancel();
 	setCookie("pitchBox", pitchBox.value);
 	voicePitch = (pitchBox.value/10) * 2;
@@ -1945,6 +1992,7 @@ function updatePitch(){
 }
 
 function updateVol(){
+	
 	speechSynthesis.cancel();
 	setCookie("volBox", volBox.value);
 	voiceVol = volBox.value * 0.1;
@@ -1953,6 +2001,7 @@ function updateVol(){
 }
 
 function updateTone(){
+	
 	setCookie("volBoxTone", volBoxTone.value);
 	toneVol = volBoxTone.value;
 	setCookie("speedBoxTone", speedBoxTone.value);
@@ -1963,6 +2012,7 @@ function updateTone(){
 	
 }
 function updateEffect(){
+	
 	setCookie("volBoxEffect", volBoxEffect.value);
 	setCookie("speedBoxEffect", speedBoxEffect.value);
 	setCookie("pitchBoxEffect", pitchBoxEffect.value);
@@ -1975,7 +2025,24 @@ function updateEffect(){
 }
 
 //TODO: setting colors
-var namedColors = ["#FFFFFF", "#000000", "#696969", "#808080", "#A9A9A9", "#C0C0C0", "#D3D3D3", "#DCDCDC", "#F5F5F5", "#BC8F8F", "#CD5C5C", "#A52A2A", "#B22222", "#F08080", "#800000", "#8B0000", "#FF0000", "#FFFAFA", "#FFE4E1", "#FA8072", "#FF6347", "#E9967A", "#FF7F50", "#FF4500", "#FFA07A", "#A0522D", "#FFF5EE", "#D2691E", "#8B4513", "#F4A460", "#FFDAB9", "#CD853F", "#FAF0E6", "#FFE4C4", "#FF8C00", "#DEB887", "#FAEBD7", "#D2B48C", "#FFDEAD", "#FFEBCD", "#FFEFD5", "#FFE4B5", "#FFA500", "#F5DEB3", "#FDF5E6", "#FFFAF0", "#B8860B", "#DAA520", "#FFF8DC", "#FFD700", "#FFFACD", "#F0E68C", "#EEE8AA", "#BDB76B", "#F5F5DC", "#FAFAD2", "#808000", "#FFFF00", "#FFFFE0", "#FFFFF0", "#6B8E23", "#9ACD32", "#556B2F", "#ADFF2F", "#7FFF00", "#7CFC00", "#8FBC8F", "#228B22", "#32CD32", "#90EE90", "#98FB98", "#006400", "#008000", "#00FF00", "#F0FFF0", "#2E8B57", "#3CB371", "#00FF7F", "#F5FFFA", "#00FA9A", "#66CDAA", "#7FFFD4", "#40E0D0", "#20B2AA", "#48D1CC", "#2F4F4F", "#AFEEEE", "#008080", "#008B8B", "#00FFFF", "#E0FFFF", "#F0FFFF", "#00CED1", "#5F9EA0", "#B0E0E6", "#ADD8E6", "#00BFFF", "#87CEEB", "#87CEFA", "#4682B4", "#F0F8FF", "#1E90FF", "#708090", "#778899", "#B0C4DE", "#6495ED", "#4169E1", "#191970", "#E6E6FA", "#000080", "#00008B", "#0000CD", "#0000FF", "#F8F8FF", "#6A5ACD", "#483D8B", "#7B68EE", "#9370DB", "#663399", "#8A2BE2", "#4B0082", "#9932CC", "#9400D3", "#BA55D3", "#D8BFD8", "#DDA0DD", "#EE82EE", "#800080", "#8B008B", "#FF00FF", "#DA70D6", "#C71585", "#FF1493", "#FF69B4", "#FFF0F5", "#DB7093", "#DC143C", "#FFC0CB", "#FFB6C1"]
+var colorBank = ["#FFFFFF", "#000000", "#696969", "#808080", "#A9A9A9", "#C0C0C0", "#D3D3D3", "#DCDCDC", "#F5F5F5", "#BC8F8F", "#CD5C5C", "#A52A2A", "#B22222", "#F08080", "#800000", "#8B0000", "#FF0000", "#FFFAFA", "#FFE4E1", "#FA8072", "#FF6347", "#E9967A", "#FF7F50", "#FF4500", "#FFA07A", "#A0522D", "#FFF5EE", "#D2691E", "#8B4513", "#F4A460", "#FFDAB9", "#CD853F", "#FAF0E6", "#FFE4C4", "#FF8C00", "#DEB887", "#FAEBD7", "#D2B48C", "#FFDEAD", "#FFEBCD", "#FFEFD5", "#FFE4B5", "#FFA500", "#F5DEB3", "#FDF5E6", "#FFFAF0", "#B8860B", "#DAA520", "#FFF8DC", "#FFD700", "#FFFACD", "#F0E68C", "#EEE8AA", "#BDB76B", "#F5F5DC", "#FAFAD2", "#808000", "#FFFF00", "#FFFFE0", "#FFFFF0", "#6B8E23", "#9ACD32", "#556B2F", "#ADFF2F", "#7FFF00", "#7CFC00", "#8FBC8F", "#228B22", "#32CD32", "#90EE90", "#98FB98", "#006400", "#008000", "#00FF00", "#F0FFF0", "#2E8B57", "#3CB371", "#00FF7F", "#F5FFFA", "#00FA9A", "#66CDAA", "#7FFFD4", "#40E0D0", "#20B2AA", "#48D1CC", "#2F4F4F", "#AFEEEE", "#008080", "#008B8B", "#00FFFF", "#E0FFFF", "#F0FFFF", "#00CED1", "#5F9EA0", "#B0E0E6", "#ADD8E6", "#00BFFF", "#87CEEB", "#87CEFA", "#4682B4", "#F0F8FF", "#1E90FF", "#708090", "#778899", "#B0C4DE", "#6495ED", "#4169E1", "#191970", "#E6E6FA", "#000080", "#00008B", "#0000CD", "#0000FF", "#F8F8FF", "#6A5ACD", "#483D8B", "#7B68EE", "#9370DB", "#663399", "#8A2BE2", "#4B0082", "#9932CC", "#9400D3", "#BA55D3", "#D8BFD8", "#DDA0DD", "#EE82EE", "#800080", "#8B008B", "#FF00FF", "#DA70D6", "#C71585", "#FF1493", "#FF69B4", "#FFF0F5", "#DB7093", "#DC143C", "#FFC0CB", "#FFB6C1"]
+
+initColorBank();
+
+function initColorBank(){
+	
+colorBank = ["#FFFFFF", "#000000"]
+
+	for(h = 0; h < 360; h += (360/12)){
+		for(l = 20; l < 100; l += 20){
+			for(s = 20; s <= 100; s += 20){
+				newColor = hslToHex(h, s, l);	
+				colorBank.push(newColor);
+			}
+		}
+	}
+}
+
 
 function rgbToHsl(r, g, b){
     r /= 255, g /= 255, b /= 255;
@@ -1998,7 +2065,16 @@ function rgbToHsl(r, g, b){
     return [h, s, l];
 }
 
-
+function hslToHex(h, s, l) {
+  l /= 100;
+  const a = s * Math.min(l, 1 - l) / 100;
+  const f = n => {
+    const k = (n + h / 30) % 12;
+    const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+    return Math.round(255 * color).toString(16).padStart(2, '0');   // convert to Hex and prefix "0" if needed
+  };
+  return `#${f(0)}${f(8)}${f(4)}`;
+}
 
 function hexToRgb(hex) {
   var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
@@ -2044,6 +2120,7 @@ function contrast(hex1, hex2) {
   var brightest = Math.max(lum1, lum2);
   var darkest = Math.min(lum1, lum2);
   return (brightest + 0.05) / (darkest + 0.05);
+  
 }
 
 
@@ -2053,6 +2130,7 @@ function showName(wedge){
 	myP.innerHTML = wedge.getAttribute("title")
 }
 function resetColP(){
+	
 	myP = document.getElementById("colP")
 	myP.innerHTML = "Color Picker"
 	
@@ -2065,27 +2143,28 @@ function colPicker(wedge){
 	myVar = wedge.getAttribute("variable");
 	colorVar = myVar;
 	let myHighVar = wedge.getAttribute("conhigh");
-	//console.log(myHighVar);
+	
 	let myMidVar = wedge.getAttribute("conmid");
-	//console.log(myMidVar);
+	
 	let myHex = getComputedStyle(root).getPropertyValue(myVar);
 	let myMid = getComputedStyle(root).getPropertyValue(myMidVar);
 	let myHigh = null;
 	let myStroke = myMid;
 	if(myHighVar){myHigh = getComputedStyle(root).getPropertyValue(myHighVar); myStroke = myHigh;}
-	//console.log(myHigh);
-	//console.log(myMid);
-	//console.log("---")
+	
 	var myColors = []
-	for(color of namedColors){		
+	myRgb = hexToRgb(myHex);
+	lumi = luminance(myRgb.r, myRgb.g, myRgb.b);
+	
+	for(color of colorBank){		
 		let keepMe = true;
 		if (myHigh){
 			if(contrast(myHigh, color) < 4.5){keepMe = false}
 		}
 		if(contrast(myMid, color) < 3){keepMe = false}
 		if(keepMe == true){myColors.push(color);}
-	
 	}
+
 	colorPie.classList.add("enabled")
 	
 	if (myColors.length < 12){
@@ -2108,12 +2187,12 @@ function colPicker(wedge){
 		}
 		
 		for(range of myRanges){
-			//console.log(range);
+			 
 			colorA = range[0];
 			colorB = range[range.length - 1];
 			colorC = range[Math.round(range.length/2)];
 			let myRange = {"stop1": colorA, "stop2": colorB, "stop3": colorC, "colors": range}
-			//console.log(myRange);
+			 
 			addGradient(myRange);
 			
 		}
@@ -2134,8 +2213,8 @@ var colorVar = ""
 
 function pickColor(wedge){
 	myColor = wedge.getAttribute("title").split(" ")[0];
-	//console.log(colorVar);
-	//console.log(myColor);
+	 
+	 
 	root.style.setProperty(colorVar, myColor);
 	
 	newrgb = hexToRgb(myColor)
@@ -2147,7 +2226,7 @@ function pickColor(wedge){
 
 function pickGradient(wedge){
 	myColors = wedge.getAttribute("colors").split(",");
-	//console.log(myColors);
+	 
 	clearPicker();
 	//colorVar 
 	oColor =  getComputedStyle(root).getPropertyValue(colorVar);
@@ -2171,6 +2250,7 @@ var effectSettings = document.getElementById("effectSettings");
 
 
 function toggleSpeech(){
+	
 	if (speechOn){speechOn = false; setCookie("speechOn", false); spSettings.classList.remove("enabled")}
 	else {
 		speechOn = true;
@@ -2182,6 +2262,7 @@ function toggleSpeech(){
 
 
 function toggleEffect(){
+	
 	if (soundEffects == true){
 		soundEffects = false;
 		effectSettings.classList.remove("enabled")
@@ -2201,15 +2282,16 @@ function toggleTone(){
 	
 	if (tonesOn == true){
 		tonesOn = false;
-		toneSettings.classList.remove("enabled")
+		toneSettings.classList.remove("enabled");
 		}
 	else{
 		tonesOn = true; 
 		playTones([true, true, true, true]);
-		toneSettings.classList.add("enabled")
+		toneSettings.classList.add("enabled");
 		}
-	 setCookie("tonesOn", tonesOn)	
+	 setCookie("tonesOn", tonesOn);
 }
+
 
 
 
@@ -2265,6 +2347,7 @@ function setCookie(cname, cvalue, exdays = 30) {
 }
 
 function clearPicker(){
+	
 	var allFills = document.getElementById("fillsGroup").children;
 	//Loop to remove all fills from fillsGroup
 	while (allFills.length > 0){
