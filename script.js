@@ -172,7 +172,7 @@ function playTones(dirs){
 			gainNodeHiss.gain.setValueAtTime(0,  now + (toneLength * i + (toneLength * 0.75)));
 			}
 	}
-	soundEnd = now+dur;
+	
 	
 	toneOscillator.start(now);
 	toneOscillator.stop(now + dur);	
@@ -1978,8 +1978,14 @@ var smlHead = "<?xml version=\"1.0\"?> <speak version=\"1.1\" xmlns=\"http://www
 var smlFoot = "</speak>"
 
 function speechSay(message) {
+	//soundEnd
+	//audioContext.currentTime 
+	let hushTime = 0;
+	hushTime += soundEnd - audioContext.currentTime;
+	if(tonesOn == true){
+		hushTime += toneLength;
+	}
 	
-	let hushTime = Math.floor(Math.max(soundEnd + (toneLength * 4), audioContext.currentTime + (toneLength * 4)) - audioContext.currentTime);
 	let utterance = new SpeechSynthesisUtterance(message);
 	mySelect = document.getElementById("voiceSelector")
 	myVoice = voices[mySelect.selectedIndex];
