@@ -1363,7 +1363,7 @@ function enterCell(prefix) {
   if (hasWeaponShop(pos)) {
     // Do NOT auto-purchase. Prompt the player and leave the shop available until they Press <kbd>Space</kbd>.
     revealedSpecial.set(pos, "weapon_shop");
-    discoveryMsgs.push("Welcome to the weapon shop! Press <kbd>Space</kbd> to upgrade your strength 2 points for 18 gold. ");
+    discoveryMsgs.push("Welcome to the weapon shop! Press <kbd>Space</kbd> to upgrade your strength 1 points for 18 gold. ");
   }
 
   if (hasArmorShop(pos)) {
@@ -1796,9 +1796,9 @@ function activateCell(pos){
       const cost = 18;
       if (stats.gold >= cost) {
         stats.gold -= cost;
-        stats.strength += 2;
+        stats.strength += 1;
         updateUI();
-        announce(`You upgrade your strength by 2. You spent ${cost} gold. `);
+        announce(`You upgrade your strength by 1. You spent ${cost} gold. `);
       } else {
         announce(`You need ${cost} gold to buy an upgrade. `);
       }
