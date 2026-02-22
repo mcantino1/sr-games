@@ -20,6 +20,10 @@
   
   .hideMe{display: none;}
   
+ #gameButtons button{
+	 color:  light-dark(var(--colDark), var(--colLight));
+	 margin: 1em;
+ }
 .columnStyle{
 	display: flex;
 	flex-direction: column;

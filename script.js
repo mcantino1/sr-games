@@ -8,7 +8,7 @@
 /* ---------------- Constants / Game State ---------------- */
 const MAX_SIZE = 12; // maximum grid size used for consistent scaling
 const MAX_LIFE = 100; // global maximum life cap for players
-var baseLife = 20;
+var baseLife = 10;
 var root = document.querySelector(':root')
 // Audio setup for footstep sounds
 let footstepAudio = null;
@@ -104,10 +104,13 @@ function addGame(num){
 	buttonZone.appendChild(myButton);
 	console.log("Button Added")
 }
+
 welcomeDiv = document.getElementById("welcome");
 gameDiv =  document.getElementById("game");
 footDiv =  document.getElementById("foot");
+
 function initGame(myButton){
+	
 	myGame = myGames[myButton.getAttribute("gameId")];
 	gameName = document.getElementsByTagName("H1")[0].children[0];
 	gameName.innerHTML = myGame["title"]
@@ -115,7 +118,24 @@ function initGame(myButton){
 	LEVELS = myGame["levels"];
 	levels = [];
 	myKeys = Object.keys(LEVELS);
-	 
+	
+	if(myGame["myIcons"]){
+		newIcons = myGame["myIcons"];
+		iconNames = Object.keys(newIcons);
+		for(icon of iconNames){
+			ICONS[icon] = newIcons[icon];
+		}	
+	}
+	if(myGame["stats"]){
+		myStats = myGame["stats"];
+		statKeys = Object.keys(myStats);
+		for (stat of statKeys){
+			stats[stat] = myStats[stat];
+		}
+		
+	}
+
+	
 	 //level = JSON.parse(JSON.stringify(LEVELS[id]));
 	 for (let k = 0; k < myKeys.length; k ++){
 		 levels[myKeys[k]] = JSON.parse(JSON.stringify(LEVELS[myKeys[k]]));
@@ -132,19 +152,6 @@ function initGame(myButton){
 	 gameDiv.classList.remove("hideMe");
 	 footDiv.classList.remove("hideMe");
  }
- 
- function getLevelIcons(){
-	
-	
-	try{
-		newIcons = getIcons()
-		iconNames = Object.keys(newIcons);
-		for(icon of iconNames){
-			ICONS[icon] = newIcons[icon];
-	}}
-	catch(e){console.log(e)}
- }
- 
  
 var wallPhrases = ["The wall is gross. Your hands are sticky. ", "The wall tastes delicious! ", "Wall, my old friend! ", "A wall blocks your way. ", "The wall sneaks up on you.", "The wall squeaks when you touch it. Strange.", "The wall smells wet and soupy."]
 var wallCount = 0;
