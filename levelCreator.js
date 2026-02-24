@@ -112,7 +112,7 @@ function initLevelSet(){
 	newLevels = myGames[currentGame]["levels"];
 	myKeys = Object.keys(newLevels);
 	for(i = 0; i < myKeys.length; i++){
-		LEVELS[myKeys[i]] = newLevels[myKeys[i]];]
+		LEVELS[myKeys[i]] = newLevels[myKeys[i]];
 		addOption(levelList, myKeys[i],  myKeys[i]);
 		addOption(nextLevelList, myKeys[i],  myKeys[i]);
 		addOption(keyList, myKeys[i],  myKeys[i]);
