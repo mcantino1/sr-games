@@ -104,6 +104,14 @@ function selectGame(){
 		console.log("saving game")
 		myGames[currentGame]["levels"] = JSON.parse(JSON.stringify(LEVELS));
 		myGames[currentGame]["myIcons"] = JSON.parse(JSON.stringify(customIcons));
+		
+		customStats = {}
+		if(statLife.value != 10){		customStats["life"] = statLife.value}
+		if(statStrength.value != 2){	customStats["strength"] = statStrength.value}
+		if(statDefense.value != 0){		customStats["defense"] = statDefense.value}
+		if(statGold.value != 0){		customStats["gold"] = statGold.value}
+		if(Object.keys(customStats).length > 0){myGames[currentGame]["stats"] = customStats}
+				
 		LEVELS = {};
 		console.log("clearing lists")
 		//clear other data from the page!
@@ -116,17 +124,22 @@ function selectGame(){
 
 	currentGame = gameSelect.value;
 	nameField.value = myGames[currentGame]["title"]
-	console.log("initLevelSet();")
 	initLevelSet();
-	console.log("initCustomIcons()")
 	initCustomIcons()
-	console.log("renderMonsterLibrary()")
+	initCustomStats();
 	renderMonsterLibrary()
-	console.log("renderShopLibrary()	")
 	renderShopLibrary()	
 	//load level one
 }
 
+function initCustomStats(){
+	if(myGames[currentGame]["stats"]){
+		if(myGames[currentGame]["stats"]["life"]){statLife.value = myGames[currentGame]["stats"]["life"]}
+		if(myGames[currentGame]["stats"]["defense"]){statDefense.value = myGames[currentGame]["stats"]["defense"]}
+		if(myGames[currentGame]["stats"]["gold"]){statGold.value = myGames[currentGame]["stats"]["gold"]}
+		if(myGames[currentGame]["stats"]["strength"]){statStrength.value = myGames[currentGame]["stats"]["strength"]}
+	}
+}
 
 function initLevelSet(){
 	newLevels = myGames[currentGame]["levels"];
@@ -584,6 +597,12 @@ function saveLevel(){
 	LEVELS[currentId].items = items
 }
 
+var statLife = document.getElementById("statLife");
+var statStrength = document.getElementById("statStrength");
+var statDefense = document.getElementById("statDefense");
+var statGold = document.getElementById("statGold");
+
+
 function saveSet(){
 	console.log("saving level set")
 	//Save levels in listed order
@@ -597,6 +616,15 @@ function saveSet(){
 	myGame = {"title": myName, "levels": saveLevels}
 	console.log(Object.keys(customIcons));
 	if(Object.keys(customIcons).length > 0){myGame["myIcons"] = customIcons}	
+	
+	customStats = {}
+	if(statLife.value != 10){		customStats["life"] = statLife.value}
+	if(statStrength.value != 2){	customStats["strength"] = statStrength.value}
+	if(statDefense.value != 0){		customStats["defense"] = statDefense.value}
+	if(statGold.value != 0){		customStats["gold"] = statGold.value}
+	if(Object.keys(customStats).length > 0){myGame["stats"] = customStats}
+	
+	//Life: 10 Strength: 2 Defense: 0 Gold: 0
 	jsContent = JSON.stringify(myGame);	
 	var blob = new Blob([jsContent], { type: 'charset=utf-8' });
 	var link = document.createElement('a');

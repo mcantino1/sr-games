@@ -20,7 +20,7 @@
 	border:3px solid; 
 	}
 
-
+.statBox{ width: 4em;}
 #monsterParent{
 	max-height:200px; 
 	overflow:auto; 

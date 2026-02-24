@@ -11,17 +11,24 @@
 <body>
     <div class="container">
         <h1>Level Creator</h1>
-		<div>    
+		<div class="topInfo">    
 		<select id="gameSelect" onChange="selectGame()">
 		
 		</select>
 			<label for="gameName">Game Name: </label>
 			<input type="text" id="gameName" value="Super Dungeon"/>
 	       <button id="btnSave" onclick="saveSet()" >save</button> 
-        </div>
+		
+		   
+		   <label for="statLife">Life</label><input class="statBox" type="number" id="statLife" value="10"/>
+		   <label for="statStrength">Strength</label><input class="statBox" type="number" id="statStrength" value="2"/>
+		   <label for="statDefense">Defense</label><input class="statBox" type="number" id="statDefense" value="0"/>
+		   <label for="statGold">Gold</label><input class="statBox" type="number" id="statGold" value="0"/>
+</div>
+        
 <div class="gridParent">
 <div class="leftPanel">
-<h2>Level List</h2>
+<H2>Level List</h2>
 <select name="levels" onchange="changeLevel()" title="Level List" id="levelSelect" size="20"></select>
 <button id="btnNew" onclick="levelNew()" >New</button>
 <button id="btnCopy" onclick="levelCopy()">Copy</button>
