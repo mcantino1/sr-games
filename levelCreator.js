@@ -101,26 +101,30 @@ function clearList(myList){
 function selectGame(){
 	if(currentGame != ""){
 		//save current changes to loaded game
-		
+		console.log("saving game")
 		myGames[currentGame]["levels"] = JSON.parse(JSON.stringify(LEVELS));
 		myGames[currentGame]["myIcons"] = JSON.parse(JSON.stringify(customIcons));
 		LEVELS = {};
+		console.log("clearing lists")
 		//clear other data from the page!
-		
 		clearList(levelList);
 		clearList(nextLevelList);
 		clearList(keyList);
 		clearList(stairList);
+		console.log("cleared lists")
 	}	
+
 	currentGame = gameSelect.value;
 	nameField.value = myGames[currentGame]["title"]
+	console.log("initLevelSet();")
 	initLevelSet();
+	console.log("initCustomIcons()")
 	initCustomIcons()
+	console.log("renderMonsterLibrary()")
 	renderMonsterLibrary()
+	console.log("renderShopLibrary()	")
 	renderShopLibrary()	
 	//load level one
-	console.log(LEVELS);
-	loadLevel(LEVELS[myKeys[0]])
 }
 
 
@@ -186,6 +190,7 @@ function initLevelSet(){
 		
 	}
 	sortLevelList();
+	loadLevel(LEVELS[myKeys[0]])
 }
 
 monIconSelect = document.getElementById("monIcon")
@@ -503,7 +508,6 @@ function levelDelete(){
 	deleteOption(keyLevelSelect, currentId)
 	deleteOption(stairLevelSelect, currentId)
 	delete LEVELS[deleteMe]
-	
 }
 
 function deleteOption(myList, myValue){
@@ -572,6 +576,7 @@ function loadLevel(level){
 }
 
 function saveLevel(){
+	console.log("saving level")
 	LEVELS[currentId].rows = document.getElementById('inputRows').value
 	LEVELS[currentId].cols = document.getElementById('inputCols').value
 	LEVELS[currentId].nextLevelId = document.getElementById('nextLevelSelect').value
@@ -580,6 +585,7 @@ function saveLevel(){
 }
 
 function saveSet(){
+	console.log("saving level set")
 	//Save levels in listed order
 	saveLevels = {};
 	myList = levelList.children;
