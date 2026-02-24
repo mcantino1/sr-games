@@ -120,6 +120,11 @@ function selectGame(){
 		clearList(keyList);
 		clearList(stairList);
 		console.log("cleared lists")
+		statLife.value = 10
+		statStrength.value = 2
+		statDefense.value = 0
+		statGold.value = 0
+		
 	}	
 
 	currentGame = gameSelect.value;
