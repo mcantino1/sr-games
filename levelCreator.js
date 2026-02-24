@@ -121,7 +121,6 @@ function selectGame(){
 	//load level one
 	console.log(LEVELS);
 	loadLevel(LEVELS[myKeys[0]])
-	
 }
 
 
@@ -476,12 +475,25 @@ function levelCopy(){
 	
 }
 
-function addOption(myList, myValue, myText){
-	let myOption = document.createElement("option");
-	myOption.textContent = myText;
-	myOption.setAttribute("value", myValue);
-	myList.appendChild(myOption);
+function optionMissing(myList, myValue){
+	for(child of myList.children){
+		if (child.value == myValue){
+			return false;
+		}
+		
+	}
+	return true;
 }
+
+function addOption(myList, myValue, myText){
+	if(optionMissing(myList,myValue)){
+		let myOption = document.createElement("option");
+		myOption.textContent = myText;
+		myOption.setAttribute("value", myValue);
+		myList.appendChild(myOption);
+	}
+}
+
 function levelDelete(){
 	deleteMe = document.getElementById('levelSelect').value;
 	myLevels = document.getElementById("levelSelect").children;
@@ -577,7 +589,8 @@ function saveSet(){
 	}
 	myName = nameField.value;
 	myGame = {"title": myName, "levels": saveLevels}
-	if(Object.keys(customIcons) > 0){myGame[myIcons] = customIcons}	
+	console.log(Object.keys(customIcons));
+	if(Object.keys(customIcons).length > 0){myGame["myIcons"] = customIcons}	
 	jsContent = JSON.stringify(myGame);	
 	var blob = new Blob([jsContent], { type: 'charset=utf-8' });
 	var link = document.createElement('a');
