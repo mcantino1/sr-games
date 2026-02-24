@@ -87,10 +87,21 @@ function getFile(num){
 		addGame(num);
 		getFile((parseInt(num) + 1).toString().padStart(2, '0'));
 		})  
-	.catch(error => console.log("no more games")); 
+	.catch(error => {console.log("no more games"); backupDemo();}); 
 }
 
 buttonZone = document.getElementById("gameButtons");
+
+function backupDemo(){
+	if (Object.keys(myGames).length == 0){
+		console.log("oh no!")
+		demoGame = {"title": "Demo", "levels": LEVELS};
+		myGames["game01"] = demoGame;
+		addGame("01")
+	}
+	
+}
+
 
 function addGame(num){
 	console.log("adding button");
@@ -1249,6 +1260,11 @@ function enterCell(prefix) {
 		stats["strength"] = parseInt(stats["strength"]) + 1;
 		defeat = false;
 	}
+	if (voided == true){
+		discoveryMsgs.push("You have fallen into a void. Reloading " + currentLevelId + "... \n")
+		discoveryMsgs.push("You are back in cell " + pos + ".\n")
+		voided = false;
+	}
 
 
 
@@ -1409,31 +1425,24 @@ function enterCell(prefix) {
 
   // The Void: stepping into it immediately restarts the level and returns you to A1.
   if (hasVoid(pos)) {
-    var voidMsg = "You've fallen into the void. Game restarts. ";
-	voidMsg = trimText(voidMsg)
-    announce(voidMsg);
-    
+    //var voidMsg = "You've fallen into the void.";
+	//voidMsg = trimText(voidMsg)
+    //announce(voidMsg);
+    voided = true;
+	preserveStatsOnNextLoad = true;
 	// announce(voidMsg);
     // Preserve most stats across the restart, but reset the key flag.
-    const preserved = { life: stats.life, strength: stats.strength, defense: stats.defense, gold: stats.gold };
+    //const preserved = { life: stats.life, strength: stats.strength, defense: stats.defense, gold: stats.gold };
 	//reload level from file
-    levels[currentLevelId] = JSON.parse(JSON.stringify(LEVELS[currentLevelId]));
-	levels[currentLevelId].foundKey = false;
-    loadLevel(currentLevelId);
-    stats.life = preserved.life;
-    stats.strength = preserved.strength;
-    stats.defense = preserved.defense;
-    stats.gold = preserved.gold;
-    stats.key = false;
+    //levels[currentLevelId] = JSON.parse(JSON.stringify(LEVELS[currentLevelId]));
+	//levels[currentLevelId].foundKey = false;
+    //stats.life = preserved.life;
+    //stats.strength = preserved.strength;
+    //stats.defense = preserved.defense;
+    //stats.gold = preserved.gold;
+    //stats.key = false;
     // Mark all treasures in the reloaded level as empty so players can't farm them by falling into the void.
-    for (const it of level.items) {
-      if (it.type === 'treasure') {
-        it.meta = it.meta || {};
-        it.meta.kind = 'empty';
-        delete it.meta.value;
-      }
-	  else if (it.type === 'potion') {it.pos = "A0"}
-    }
+	loadLevel(currentLevelId);
     updateUI();
     return;
   }
@@ -1486,6 +1495,7 @@ function enterCell(prefix) {
   
 }
 var defeat = false;
+var voided = false;
 /* ---------------- Movement ---------------- */
 function tryMove(dr, dc) {
 	speechSynthesis.cancel();
@@ -1979,7 +1989,6 @@ let preserveStatsOnNextLoad = false;
 
 
 function loadLevel(id, cell = "A1") {
-  
   speechSynthesis.cancel();
   level = levels[id];
   currentLevelId = id;
