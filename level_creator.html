@@ -12,6 +12,9 @@
     <div class="container">
         <h1>Level Creator</h1>
 		<div>    
+		<select id="gameSelect" onChange="selectGame()">
+		
+		</select>
 			<label for="gameName">Game Name: </label>
 			<input type="text" id="gameName" value="Super Dungeon"/>
 	       <button id="btnSave" onclick="saveSet()" >save</button> 
@@ -292,7 +295,7 @@
             <div id="descHelp">Optional. Enter a text description or hint for the currently selected grid cell. This description will be shown to the player when they visit that cell.</div>
         </div></div>
 
-<script src="levels.js"></script>
+
 
 <script src="levelCreator.js"></script>
 

@@ -28,10 +28,10 @@ var editingMonster = "";
 var activeCell;
 var selectedShopIndex = -1;
 var editingShop = "";
-
+var currentGame = "";
 var nameField = document.getElementById("gameName");
 //load level set
-LEVELS = getLevels();
+LEVELS = {};
 try{
 nameField.value = getName();
 }catch(e){console.log("Name not defined in game files")}
@@ -44,8 +44,75 @@ currentId="";
 
 
 
+myGames = {}
+
+const dataPath = "./data/game";
+
+function getFile(num){
+	fetch(dataPath + num + ".json")
+	.then(response => {
+		if (!response.ok) {
+			console.log(`HTTP error! Status: ${response.status}`);
+		}
+		return response.json();  
+	})
+	.then(data => {
+		myGames["game" + num] = data; 
+		addGame(num);
+		getFile((parseInt(num) + 1).toString().padStart(2, '0'));
+		})  
+	.catch(error => {console.log("no more games"); backupDemo();}); 
+}
+
+
+function backupDemo(){
+	if (Object.keys(myGames).length == 0){
+		console.log("oh no!")
+		demoGame = {"title": "New Game", "levels": LEVELS};
+		myGames["game01"] = demoGame;
+		addGame("01")
+	}
+	else{selectGame()}
+}
+
+//<select id="gameSelect">
+//<option value="gold">Gold</option>
+
+var gameSelect = document.getElementById("gameSelect");
+function addGame(num){
+	console.log("adding option");
+	let gameId = "game" + num;
+	let myOption = document.createElement("option");
+	myOption.setAttribute("value", gameId);
+	console.log(gameId)
+	myOption.innerHTML = myGames[gameId]["title"];	
+	gameSelect.appendChild(myOption)
+	console.log("Game Added")
+}
+
+getFile("01");
+
+function selectGame(){
+	if(currentGame != ""){
+		//save current changes to loaded game
+		
+	}
+	
+	currentGame = gameSelect.value;
+	initCustomIcons()
+	initLevelSet();
+	renderMonsterLibrary()
+	renderShopLibrary()
+	//load level one
+	loadLevel(LEVELS[myKeys[0]])
+	
+}
+
 function initLevelSet(){
+	newLevels = myGames[currentGame]["levels"];
+	myKeys = Object.keys(newLevels);
 	for(i = 0; i < myKeys.length; i++){
+		LEVELS[myKeys[i]] = newLevels[myKeys[i]];]
 		addOption(levelList, myKeys[i],  myKeys[i]);
 		addOption(nextLevelList, myKeys[i],  myKeys[i]);
 		addOption(keyList, myKeys[i],  myKeys[i]);
@@ -111,7 +178,7 @@ shopIconSelect = document.getElementById("shopIcon")
 
 function initCustomIcons(){
 	try{
-		newIcons = getIcons()
+		newIcons = myGames[currentGame]["myIcons"];
 		iconNames = Object.keys(newIcons);
 		for(icon of iconNames){
 		itemIcons[icon] = newIcons[icon];
@@ -489,18 +556,14 @@ function saveSet(){
 		thisName = myList[i].value;
 		saveLevels[thisName] = LEVELS[thisName];
 	}
-	
-	jsContent = "function getLevels(){ \nlet LEVELS = "
-	jsContent += JSON.stringify(saveLevels);	
-	jsContent += ";\nreturn LEVELS; } \n"
-	jsContent += "function getIcons(){ \nlet myIcons = "
-	jsContent += JSON.stringify(customIcons);	
-	jsContent += ";\nreturn myIcons; }"
-	jsContent += "function getName(){ return \"" + gameName.value + "\"; }"
+	myName = nameField.value;
+	myGame = {"title": myName, "levels": saveLevels}
+	if(Object.keys(customIcons) > 0){myGame[myIcons] = customIcons}	
+	jsContent = JSON.stringify(myGame);	
 	var blob = new Blob([jsContent], { type: 'charset=utf-8' });
 	var link = document.createElement('a');
 	link.href = URL.createObjectURL(blob);
-	link.download = 'levels.js';
+	link.download = 'game.json';
 	document.body.appendChild(link);
 	link.click();
 	document.body.removeChild(link);
@@ -2048,11 +2111,3 @@ myOption.setAttribute("value", null);
 nextLevelList.appendChild(myOption);
 
 
-initCustomIcons()
-
-
-initLevelSet();
-renderMonsterLibrary()
-renderShopLibrary()
-//load level one
-loadLevel(LEVELS[myKeys[0]])
