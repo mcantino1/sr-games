@@ -92,21 +92,38 @@ function addGame(num){
 
 getFile("01");
 
+function clearList(myList){
+	while(myList.children.length > 0){
+		myList.removeChild(myList.children[0]);
+	}
+}
+
 function selectGame(){
 	if(currentGame != ""){
 		//save current changes to loaded game
 		
-	}
-	
+		myGames[currentGame]["levels"] = JSON.parse(JSON.stringify(LEVELS));
+		myGames[currentGame]["myIcons"] = JSON.parse(JSON.stringify(customIcons));
+		LEVELS = {};
+		//clear other data from the page!
+		
+		clearList(levelList);
+		clearList(nextLevelList);
+		clearList(keyList);
+		clearList(stairList);
+	}	
 	currentGame = gameSelect.value;
-	initCustomIcons()
+	nameField.value = myGames[currentGame]["title"]
 	initLevelSet();
+	initCustomIcons()
 	renderMonsterLibrary()
-	renderShopLibrary()
+	renderShopLibrary()	
 	//load level one
+	console.log(LEVELS);
 	loadLevel(LEVELS[myKeys[0]])
 	
 }
+
 
 function initLevelSet(){
 	newLevels = myGames[currentGame]["levels"];
@@ -200,6 +217,8 @@ function initCustomIcons(){
 	updateWallIcon()
 	updateShopIcon()
 }
+
+
 
 monIconDisplay = document.getElementById("monIconDisplay")
 monAddIcon = document.getElementById("monAddIcon")
@@ -380,7 +399,7 @@ function sortLevelList(){
 	}
 	let myKeys = Object.keys(LEVELS)
 	for (l = 0; l < myKeys.length; l++){
-		myNext = LEVELS[myKeys[l]].nextLevelId;
+		myNext = LEVELS[myKeys[l]].nextLevelId;		
 		if (levelNames.includes(myNext)){
 			levelNames.splice(levelNames.indexOf(myNext), 1);
 		}
