@@ -541,7 +541,7 @@ function initMonsters(){
       let def = 0;
       let name = 'monster';
 	  let rD = "";
-	  let rV = 5;
+	  let rV = 0;
 	  let rK = "gold";
 	  
       if (it.meta) {
@@ -1627,7 +1627,7 @@ function tryMove(dr, dc) {
         stats.life -= monsterDamage;
         msg += `${monsterName} attacks for ${monsterDamage}. `;
       }
-      msg += `Your life: ${Math.max(0, stats.life)}. ${monsterName} life: ${Math.max(0, monster.hp)}. `;
+      msg += `\nYour life: ${Math.max(0, stats.life)}. ${monsterName} life: ${Math.max(0, monster.hp)}. \n`;
 
       // If player dies, reset level.
       if (stats.life <= 0) {
@@ -1689,7 +1689,6 @@ function tryMove(dr, dc) {
 	if (monster.rVal > 0){
 		msg += " You gain " + monster.rVal + " " + monster.rKind + ". "
 		stats[monster.rKind] += monster.rVal;
-		
 	}
 	
     // Do NOT move the player — they remain in their current square after
