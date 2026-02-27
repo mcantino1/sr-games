@@ -2076,6 +2076,7 @@ btnAddMonster.addEventListener('click', function(){
 		monsterLibrary[name] = mon;
 		monsterLibrary[name].meta = {};
 	} else {
+		monsterLibrary[name] = {name: name, meta: {}};
 		libraryFromFields(monsterLibrary[name].meta, metaMap.monster);
 	}
 	if (currentItem == "select"){
@@ -2146,6 +2147,7 @@ btnAddHazard.addEventListener('click', function(){
 		hazardLibrary[name] = mon;
 		hazardLibrary[name].meta = {};
 	} else {
+		hazardLibrary[name] = {name: name, meta: {}};
 		libraryFromFields(hazardLibrary[name].meta, metaMap.hazard);
 	}
 	if (currentItem == "select"){
@@ -2169,6 +2171,7 @@ btnAddShop.addEventListener('click', function(){
 		shopLibrary[name] = mon;
 		shopLibrary[name].meta = {};
 	} else {
+		shopLibrary[name] = {name: name, meta: {}};
 		libraryFromFields(shopLibrary[name].meta, metaMap.shop);
 	}
 	if (currentItem == "select"){
