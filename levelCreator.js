@@ -2047,8 +2047,29 @@ if (btnCancelShop) {
 	});
 }
 
+var btnCancelHazard = document.getElementById('btnCancelHazard');
+
+if (btnCancelHazard) {
+	btnCancelHazard.addEventListener('click', function(){
+		editingHazard = "";
+		btnAddHazard.textContent = 'Add Hazard';
+		btnCancelHazard.style.display = 'none';
+		hazardName.value = '';
+		hazardHint.value = '';
+		hazardText.value = '';
+		hazardVoid.value = false;
+		hazardStars.value = false;
+		hazardKind.value = "life";
+		hazardValue.value = 0;
+		hazardIconSelect.value = "void";
+		updateHazardIcon();
+	});
+}
+
+
 btnCancelEdit.style.display = 'none';
 btnCancelShop.style.display = 'none';
+btnCancelHazard.style.display = 'none';
 
 btnAddHazard.addEventListener('click', function(){
 	var name = hazardName.value.trim() || 'Hazard';
@@ -2089,7 +2110,7 @@ btnAddHazard.addEventListener('click', function(){
 	if (currentItem == "select"){
 		hazardUpdate(name, kind, value, icon, hint, eText, hVoid, hStairs);
 	}
-	hazardNameEl.value = 'hazard';
+	hazardName.value = 'hazard';
 	
 	renderHazardLibrary();
 });
