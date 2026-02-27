@@ -789,6 +789,8 @@ console.log(items);
 function loadLevel(level){
 console.log("loadLevel");
 console.log(LEVELS);
+console.log(level)
+console.log(level.items)
 console.log(items);
 
 	//variables
