@@ -24,6 +24,8 @@
 		   <label for="statStrength">Strength</label><input class="statBox" type="number" id="statStrength" value="2"/>
 		   <label for="statDefense">Defense</label><input class="statBox" type="number" id="statDefense" value="0"/>
 		   <label for="statGold">Gold</label><input class="statBox" type="number" id="statGold" value="0"/>
+		   <label for="baseOpacity">Grid opacity</label><input class="statBox" type="number"  id="baseOpacity" value="100"/>
+		   
 </div>
         
 <div class="gridParent">
@@ -48,6 +50,10 @@
 				<select name="nextLevelId" id="nextLevelSelect"  onchange="updateNext()" ></select>
 			</div>
 			<div class="floatGroup">
+			<label for="levelOpacity">Grid opacity</label>
+			<input class="statBox" type="number" onChange="saveLevel(); updateOpacity()" id="levelOpacity" value="100"/>
+			</div>
+			<div class="floatGroup">
                 <label for="inputRows">Rows:</label>
                 <input type="number" id="inputRows" min="1" max="12" value="6" aria-describedby="rowsHelp">
             </div>
@@ -69,10 +75,9 @@
                 <button class="item-btn" data-item="treasure" >Treasure (T)</button>
                 <button class="item-btn" data-item="key" >Key (K)</button>
                 <button class="item-btn" data-item="door">Door (D)</button>
-                <button class="item-btn" data-item="exit" >Exit (X)</button>
 				<button class="item-btn" data-item="stairs" >Stairs (U)</button>
                 <button class="item-btn" data-item="potion" >Potion (P)</button>
-                <button class="item-btn" data-item="void">Void (V)</button>
+                <button class="item-btn" data-item="hazard">Hazard (H)</button>
                 <button class="item-btn" data-item="shop" >Shop (S)</button>
                 <button class="item-btn" data-item="villager" >Villager (L)</button>
 				<button class="item-btn" data-item="gameEnd" >Game End (N)</button>
@@ -101,7 +106,10 @@
                             <span >DEF</span></label>
                             <input id="monsterDEF"  class="spinbox" type="number" min="0" value="0" />
                     </div>
-					
+					<div class="floatGroup">
+                        <label for="monsterBoss" >Final Boss</label>
+                            <input id="monsterBoss"  type="checkbox"  />
+                    </div>					
                     <div class="floatGroup">
 						<div class="floatGroup">
 							<label for="monsterDesc1">Attack description 1</label>
@@ -222,6 +230,73 @@
             </div>
 
 
+			<div id="hazardConfig">
+			    <div class="floatGroup">
+					<label for="hazardName" > Hazard Name:     </label>
+                    <input id="hazardName" placeholder="void" />
+				</div>
+				<div class="floatGroup">
+					<label for="hazardHint" > Hazard Hint:     </label>
+                    <input id="hazardHint" placeholder="Mysterious fog" />
+				</div>
+				
+				<div class="floatGroup">
+					<label for="hazardText" > Hazard event description:     </label>
+                    <input id="hazardText" placeholder="You have fallen into a void." />
+				</div>
+				
+				<div class="floatGroup">
+                        <label for="hazardVoid" >Reload Level</label>
+                            <input id="hazardVoid"  type="checkbox"  />
+                </div>					
+				<div class="floatGroup">
+                        <label for="hazardStairs" >Teleport</label>
+                         <input id="hazardStairs" onChange="hazardStairToggle();" type="checkbox"/>
+						 
+						 <div id="hazardStairConfig" style="display: none;">
+						 	<label for="hazardLevelSelect">Target Level:</label>
+							<select  id="hazardLevelSelect">
+							</select>
+							<label for="hazardCellSelect">Target Cell:</label>
+							<select id="hazardCellSelect"/></select>
+						 </div>
+                </div>					
+				
+				
+				
+				<div class="floatGroup">
+                <label onchange="hazardUpdate()" for="hazardKind">hazard type:</label>
+                <select  onchange="hazardUpdate()"  id="hazardKind">
+					<option value="life">Life</option>
+					<option value="gold">gold</option>
+                    <option value="strength">Strength</option>
+                    <option value="defense">Defense</option>
+                </select>
+				</div>
+				<div class="floatGroup">
+                <label for="hazardValue">Value:</label>
+				<input  id="hazardValue" type="number"  value="0" />
+				</div>
+                
+				<div style="width: fit-content;">
+				<label for="hazardIcon">Icon</label>
+				<select onChange="updateHazardIcon()"  id="hazardIcon" >
+				<option value="void">void</option>
+				</select>
+				<div id="hazardIconDisplay"></div>
+				<input type="file" onchange="addHazardIcon()" style="width: 10em; height: 3em;" id="hazardAddIcon" accept=".svg" />
+				</div>
+				<div style="clear: both;">
+                        <button id="btnAddHazard">Add Hazard</button>
+                        <button id="btnCancelHazard" >New Hazard</button>
+					</div>
+				<div id="hazardParent">
+                    <table id="hazardList" class="monster-list">
+						
+					</table>
+                </div>
+				
+            </div>
 
             <div id="stairConfig" >
                 <label for="stairLevelSelect">Target Level:</label>

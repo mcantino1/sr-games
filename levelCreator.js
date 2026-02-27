@@ -1,8 +1,5 @@
 //TODO
-//add monster custom icon options
-//combine wall tools
-//combine shops into single tool
-//complicate villagers
+
 var rows = 6;
 var cols = 6;
 var items = [];
@@ -20,29 +17,33 @@ var villagerKind = 'gold';
 var villagerValue = 10;
 // Custom wall display name (editable in UI)
 var customWallName = '';
-// Monster library (persisted to localStorage)
+// Monster library
 var monsterLibrary = {};
+
+
+
 var shopLibrary = {};
+var hazardLibrary = {};
+
 var selectedMonsterIndex = -1;
 var editingMonster = "";
 var activeCell;
 var selectedShopIndex = -1;
+var selectedHazardIndex = -1;
 var editingShop = "";
+var editingHazard = "";
 var currentGame = "";
 var nameField = document.getElementById("gameName");
+
 //load level set
 LEVELS = {};
-try{
-nameField.value = getName();
-}catch(e){console.log("Name not defined in game files")}
+
 myKeys = Object.keys(LEVELS);
 levelList = document.getElementById("levelSelect");
 nextLevelList = document.getElementById("nextLevelSelect");
 stairList = document.getElementById("stairLevelSelect");
 keyList = document.getElementById("keyLevelSelect");
 currentId="";
-
-
 
 myGames = {}
 
@@ -66,13 +67,11 @@ function getFile(num){
 
 
 function backupDemo(){
-	if (Object.keys(myGames).length == 0){
-		console.log("oh no!")
-		demoGame = {"title": "New Game", "levels": LEVELS};
-		myGames["game01"] = demoGame;
-		addGame("01")
-	}
-	else{selectGame()}
+	demoGame = {"title": "New Game", "levels": LEVELS};	
+	myGames["game01"] = demoGame;
+	addGame("01")
+	selectGame()
+	
 }
 
 //<select id="gameSelect">
@@ -111,7 +110,7 @@ function selectGame(){
 		if(statDefense.value != 0){		customStats["defense"] = statDefense.value}
 		if(statGold.value != 0){		customStats["gold"] = statGold.value}
 		if(Object.keys(customStats).length > 0){myGames[currentGame]["stats"] = customStats}
-				
+		if(baseOpacity.value != 100){	myGames[currentGame]["gridOpacity"] = baseOpacity.value;}
 		LEVELS = {};
 		console.log("clearing lists")
 		//clear other data from the page!
@@ -124,17 +123,25 @@ function selectGame(){
 		statStrength.value = 2
 		statDefense.value = 0
 		statGold.value = 0
-		
+		baseOpacity.value = 100;
+		monsterLibrary = {};
+		shopLibrary = {};
+		hazardLibrary = {};
 	}	
 
 	currentGame = gameSelect.value;
 	nameField.value = myGames[currentGame]["title"]
+
 	initLevelSet();
 	initCustomIcons()
 	initCustomStats();
+
+	//TODO - library separation
 	renderMonsterLibrary()
 	renderShopLibrary()	
-	//load level one
+	renderHazardLibrary()	
+
+
 }
 
 function initCustomStats(){
@@ -144,6 +151,7 @@ function initCustomStats(){
 		if(myGames[currentGame]["stats"]["gold"]){statGold.value = myGames[currentGame]["stats"]["gold"]}
 		if(myGames[currentGame]["stats"]["strength"]){statStrength.value = myGames[currentGame]["stats"]["strength"]}
 	}
+	if(myGames[currentGame]["gridOpacity"]){baseOpacity.value = myGames[currentGame]["gridOpacity"]}
 }
 
 function initLevelSet(){
@@ -165,15 +173,14 @@ function initLevelSet(){
 			else if(item.type == "weapon_shop"){
 				//Welcome to the weapon shop! Press Space to upgrade your strength 2 points for 18 gold.
 				item.type = "shop";
-				var myMeta = {name: "weapon shop", value: 2, kind: "strength", cost: 18 , currency: "gold", icon: "weapon_shop"}
+				var myMeta = {name: "weapon shop", value: 1, kind: "strength", cost: 18 , currency: "gold", icon: "weapon"}
 				item.meta = myMeta;
 			}
 			else if(item.type == "armor_shop"){
 				//Welcome to the armor shop! Press Space to upgrade your defense 1 points for 14 gold.
 				item.type = "shop";
-				var myMeta = {name: "armor shop", value: 1, kind: "defense", cost: 14 , currency: "gold", icon: "armor_shop"}
-				item.meta = myMeta;
-				
+				var myMeta = {name: "armor shop", value: 1, kind: "defense", cost: 14 , currency: "gold", icon: "armor"}
+				item.meta = myMeta;				
 			}
 			else if(item.type == "inn"){
 				//Welcome to the inn! Press Space to rest and heal 8 points for 10 gold.
@@ -181,7 +188,13 @@ function initLevelSet(){
 				var myMeta = {name: "inn", value: 8, kind: "life", cost: 10 , currency: "gold", icon: "inn"}
 				item.meta = myMeta;
 			}
-			
+			else if(item.type == "void"){
+				//Void
+				//hazardLibrary["void"] =  {"name": "Void", "meta": { "name": "Void", "hint": "Mysterious fog", "text": "You  have fallen into a void.", "void": true, "icon": "void" } };
+				item.type = "hazard"
+				var myMeta = { "name": "Void", "hint": "Mysterious fog", "text": "You  have fallen into a void.", "void": true, "icon": "void" };
+				item.meta = myMeta;
+			}
 		}
 		
 		//get all monsters
@@ -214,6 +227,7 @@ function initLevelSet(){
 monIconSelect = document.getElementById("monIcon")
 wallIconSelect = document.getElementById("wallIcon")
 shopIconSelect = document.getElementById("shopIcon")
+hazardIconSelect = document.getElementById("hazardIcon")
 
 function initCustomIcons(){
 	try{
@@ -234,20 +248,52 @@ function initCustomIcons(){
 		if(icon != "villager"){
 			addOption(shopIconSelect, icon, icon)
 		}
+		if(icon != "void"){
+			addOption(hazardIconSelect, icon, icon)
+		}
 	}
 	updateMonIcon()
 	updateWallIcon()
 	updateShopIcon()
+	updateHazardIcon()
 }
 
 
 
-monIconDisplay = document.getElementById("monIconDisplay")
-monAddIcon = document.getElementById("monAddIcon")
-wallIconDisplay = document.getElementById("wallIconDisplay")
-wallAddIcon = document.getElementById("wallAddIcon")
-shopIconDisplay = document.getElementById("shopIconDisplay")
-shopAddIcon = document.getElementById("shopAddIcon")
+monIconDisplay = document.getElementById("monIconDisplay");
+monAddIcon = document.getElementById("monAddIcon");
+wallIconDisplay = document.getElementById("wallIconDisplay");
+wallAddIcon = document.getElementById("wallAddIcon");
+shopIconDisplay = document.getElementById("shopIconDisplay");
+shopAddIcon = document.getElementById("shopAddIcon");
+
+hazardAddIcon = document.getElementById('hazardAddIcon');
+
+hazardIcon = document.getElementById('hazardIcon');
+hazardIconDisplay = document.getElementById('hazardIconDisplay');
+hazardList = document.getElementById('hazardList');
+
+hazardName = document.getElementById('hazardName'); //void
+hazardHint = document.getElementById('hazardHint'); //mysterious fog
+hazardText = document.getElementById('hazardText'); //You have fallen into a void
+
+hazardVoid = document.getElementById('hazardVoid'); //checkbox (void behavior
+hazardStairs = document.getElementById('hazardStairs'); //checkbox (stairs behavior)
+hazardStairsConfig = document.getElementById('hazardStairsConfig'); 
+hazardKind = document.getElementById('hazardKind'); //select box
+hazardValue = document.getElementById('hazardValue'); //numeric - positive or negative
+
+
+
+function hazardStairToggle(){
+	if(hazardStairs.checked){
+		hazardStairConfig.style = "";
+	}
+	else{
+		hazardStairConfig.style = "display: none";
+	}
+}
+
 
 
 function updateMonIcon(){
@@ -262,6 +308,14 @@ function updateMonIcon(){
 function updateShopIcon(){
 	myIcon = shopIconSelect.value
 	shopIconDisplay.innerHTML = itemIcons[myIcon];	
+	if(currentId.length > 0){
+		refreshCells();
+	}
+}
+
+function updateHazardIcon(){
+	myIcon = hazardIconSelect.value
+	hazardIconDisplay.innerHTML = itemIcons[myIcon];	
 	if(currentId.length > 0){
 		refreshCells();
 	}
@@ -308,6 +362,18 @@ function addShopIcon(){
 		newIcon(reader.result, fileName);
 	});
 	reader.readAsText(shopAddIcon.files[0]);
+}
+
+
+function addHazardIcon(){
+	const reader = new FileReader();
+	let fileName = hazardAddIcon.files[0].name.split(".")[0].split("-")[0]
+	
+	reader.addEventListener("load", () => {
+    // this will then display a text file
+		newIcon(reader.result, fileName);
+	});
+	reader.readAsText(hazardAddIcon.files[0]);
 }
 
 
@@ -439,6 +505,7 @@ function sortLevelList(){
 		nextLevel = LEVELS[nextLevel].nextLevelId;
 		
 	}
+	
 	while (levelList.children[0].getAttribute("value") != firstLevel){
 		levelList.append(levelList.children[0]);
 		
@@ -469,19 +536,24 @@ function shopExists(shopName){
 }
 
 function levelNew(){
-	newId = "newLevel"
+	myList = document.getElementById("levelSelect");
+	
+	myNum = (myList.children.length + 1).toString().padStart(2, '0');
+	newId = "level" + myNum
 	LEVELS[newId] = {};
 	LEVELS[newId].id = newId
 	LEVELS[newId].rows = 6
 	LEVELS[newId].cols = 6
+	LEVELS[newId].items = [];
+	LEVELS[newId].scenes = {};
 	
-	myList = document.getElementById("levelSelect");
 	myOtherList = document.getElementById("nextLevelSelect");
 	addOption(myList, newId, newId);
 	addOption(myOtherList, newId, newId);
 	addOption(stairLevelSelect, newId, newId);
 	addOption(keyLevelSelect, newId, newId);
 	myKeys = Object.keys(LEVELS);
+	
 
 }
 
@@ -578,6 +650,7 @@ function changeLevel(){
 
 function loadLevel(level){
 	//variables
+	levelOpacity.value =  baseOpacity.value;
 	document.getElementById('inputRows').value = level.rows
 	document.getElementById('inputCols').value = level.cols
 	document.getElementById('inputLevelId').value = level.id;
@@ -585,28 +658,45 @@ function loadLevel(level){
 	document.getElementById('nextLevelSelect').value = level.nextLevelId;
 	document.getElementById('btnCreateGrid').click();
 	//arrays
+	if(level.items){
 	for (i = 0; i < level.items.length; i++) {
 		items.push(level.items[i])
-	}
+	}}
 	scenes = level.scenes
 	document.getElementById('btnSelect').click();
 	document.getElementById('cell_A1').click();
+	
+	if (LEVELS[currentId]["gridOpacity"]){levelOpacity.value =  LEVELS[currentId]["gridOpacity"]; }
+	updateOpacity();
 }
 
 function saveLevel(){
-	console.log("saving level")
-	LEVELS[currentId].rows = document.getElementById('inputRows').value
-	LEVELS[currentId].cols = document.getElementById('inputCols').value
-	LEVELS[currentId].nextLevelId = document.getElementById('nextLevelSelect').value
-	LEVELS[currentId].scenes = scenes
-	LEVELS[currentId].items = items
+	console.log("saving level");
+	LEVELS[currentId].rows = document.getElementById('inputRows').value;
+	LEVELS[currentId].cols = document.getElementById('inputCols').value;
+	LEVELS[currentId].nextLevelId = document.getElementById('nextLevelSelect').value;
+	LEVELS[currentId].scenes = scenes;
+	LEVELS[currentId].items = items;
+	if (levelOpacity.value != baseOpacity.value) {
+		LEVELS[currentId]["gridOpacity"] = levelOpacity.value;
+	}
+
 }
+
+var root = document.querySelector(':root')
+
+function updateOpacity(){
+	console.log(levelOpacity.value);
+	root.style.setProperty("--gridAlpha", (levelOpacity.value / 100));
+}
+
 
 var statLife = document.getElementById("statLife");
 var statStrength = document.getElementById("statStrength");
 var statDefense = document.getElementById("statDefense");
 var statGold = document.getElementById("statGold");
-
+var baseOpacity = document.getElementById("baseOpacity");
+var levelOpacity = document.getElementById("levelOpacity");
 
 function saveSet(){
 	console.log("saving level set")
@@ -619,6 +709,8 @@ function saveSet(){
 	}
 	myName = nameField.value;
 	myGame = {"title": myName, "levels": saveLevels}
+	
+	//TODO - Only save used custom icons
 	console.log(Object.keys(customIcons));
 	if(Object.keys(customIcons).length > 0){myGame["myIcons"] = customIcons}	
 	
@@ -640,6 +732,8 @@ function saveSet(){
 	document.body.removeChild(link);
 }
 
+var monsterBoss = document.getElementById("monsterBoss");
+
 function selectMonster(monsterName){
 	if (monsterName.length > 0){
 	monsterClass(monsterName);
@@ -649,6 +743,10 @@ function selectMonster(monsterName){
 	monsterHPEl.value = m.hp || 6;
 	monsterATKEl.value = m.atk || 2;
 	monsterDefEl.value = m.def || 0;
+	//monsterBoss.checked
+	if(m.boss){monsterBoss.checked = true}
+	else{monsterBoss.checked = false}
+	
 	document.getElementById('monsterDesc1').value = (m.descriptions && m.descriptions[0]) || '';
 	document.getElementById('monsterDesc2').value = (m.descriptions && m.descriptions[1]) || '';
 	document.getElementById('monsterDesc3').value = (m.descriptions && m.descriptions[2]) || '';
@@ -663,6 +761,7 @@ function selectMonster(monsterName){
 	if(cancel) cancel.style.display='inline-block';
 	var message = "monster " + monsterName + " selected.";
 	document.getElementById('gridAnnouncer').textContent = message;}
+	
 }
 
 function monsterClass(name){
@@ -674,6 +773,20 @@ function monsterClass(name){
 		}
 		else{
 			monsterRows[i].setAttribute("class","");
+		}
+		
+	}
+}
+
+function hazardClass(name){
+	hazardRows = hazardListEl.getElementsByTagName("tr");
+	for (let i = 0; i < hazardRows.length; i++) {
+		if(hazardRows[i].getAttribute("m") == name){
+			hazardRows[i].setAttribute("class","selected");
+			hazardRows[i].scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
+		}
+		else{
+			hazardRows[i].setAttribute("class","");
 		}
 		
 	}
@@ -702,8 +815,25 @@ function treasureUpdate(){
 		items[existingIdx].meta.value = treasureValueEl.value;				 
 	 }
 	 refreshCells()
-	 
- }
+}
+
+function hazardUpdate(name, kind, value, icon, hint, eText, hVoid, hStairs){
+	if(currentItem == 'select'){
+		var pos = activeCell.dataset.pos;
+		var existingIdx = getItemIndex(pos);
+		myHazard = items[existingIdx].meta;
+		myHazard.name = name;
+		myHazard.kind = kind;
+		myHazard.value = value;
+		myHazard.icon = icon;
+		myHazard.hint = hint;
+		myHazard.text = eText;
+		myHazard.void = hVoid;
+		myHazard.stairs = hStairs;	
+	 }
+}
+
+
  
 function keyUpdate(){
 	 if(currentItem == 'select'){
@@ -809,9 +939,8 @@ var symbols = {
 	treasure: 'T',
 	key: 'K',
 	door: 'D',
-	exit: 'X',
 	potion: 'P',
-	void: 'V',
+	hazard: 'H',
 	shop: 'S',
 	armor_shop: 'A',
 	inn: 'N',
@@ -1012,6 +1141,7 @@ function getItemNameForAnnouncement(itemType) {
 		potion: 'potion',
 		eraser: 'eraser',
 		void: 'void',
+		hazard: "hazard",
 		stairs: 'stairs'
 	};
 	
@@ -1062,6 +1192,7 @@ function enterGridMode(startPos) {
 }
 
 document.getElementById('btnCreateGrid').onclick = function() {
+
 	rows = parseInt(document.getElementById('inputRows').value);
 	cols = parseInt(document.getElementById('inputCols').value);
 	items = [];
@@ -1069,6 +1200,7 @@ document.getElementById('btnCreateGrid').onclick = function() {
 	selectedPos = null;
 	makeGrid();
 	setupGridKeyboard();
+	saveLevel();
 };
 
 var itemButtons = document.querySelectorAll('.item-btn');
@@ -1109,6 +1241,7 @@ var keyConfigEl = document.getElementById('keyConfig');
 var stairLevelSelect = document.getElementById('stairLevelSelect');
 var stairCellSelect = document.getElementById('stairCellSelect');
 var shopConfigEl = document.getElementById('shopConfig');
+var hazardConfigEl = document.getElementById('hazardConfig');
 var shopKindEl = document.getElementById('shopKind');
 var shopNameEl = document.getElementById('shopName');
 var shopValueEl = document.getElementById('shopValue');
@@ -1133,6 +1266,13 @@ function updateTreasureUI() {
 		shopConfigEl.focus;
 	} else {
 		shopConfigEl.style.display = 'none';
+	}
+	if (currentItem === 'hazard') {
+		hazardConfigEl.style.display = 'block';
+		message = "hazard properties expanded";
+		hazardConfigEl.focus;
+	} else {
+		hazardConfigEl.style.display = 'none';
 	}
 	
 	if (currentItem == 'stairs') {
@@ -1203,9 +1343,8 @@ for (var i = 0; i < itemButtons.length; i++) {
 		't': 'treasure',
 		'k': 'key',
 		'd': 'door',
-		'x': 'exit',
 			'p': 'potion',
-			'v': 'void',
+			'h': 'hazard',
 			's': 'shop',
 			'n': 'gameEnd',
 			'l': 'villager',
@@ -1310,6 +1449,7 @@ var monsterRewKindEl = document.getElementById('monRewKind');
 var monsterRewValueEl = document.getElementById('monRewValue');
 var monsterRewDescEl = document.getElementById('monRewDesc');
 var monsterListEl = document.getElementById('monsterList');
+var hazardListEl = document.getElementById('hazardList');
 var monsterSoundEl = document.getElementById('monSound');
 var btnAddMonster = document.getElementById('btnAddMonster');
 var btnAddShop = document.getElementById('btnAddShop');
@@ -1318,8 +1458,17 @@ var shopListEl = document.getElementById('shopList');
 
 function renderMonsterLibrary(){
 	monsterListEl.innerHTML = '';
-	//TODO monster library DRAW
+	
 	monsters = Object.keys(monsterLibrary)
+	
+	//TODO: base library for new game
+	if (monsters.length == 0){
+	monsterLibrary.Grunt = {"name": "Grunt", "meta": {"name": "Grunt", "hp": 6, "atk": 2, "def": 0}};
+	monsters = Object.keys(monsterLibrary);}
+
+	
+	
+	
 	//createheader row
 	if(monsters.length > 0){
 	var row = document.createElement("thead")
@@ -1369,12 +1518,80 @@ function renderMonsterLibrary(){
 }
 
 
+function renderHazardLibrary(){
+	hazardListEl.innerHTML = '';
+	
+	hazards = Object.keys(hazardLibrary)
+	
+	if(hazards.length == 0){
+		hazardLibrary["void"] =  {"name": "Void", "meta": { "name": "Void", "hint": "Mysterious fog", "text": "You  have fallen into a void.", "void": true, "icon": "void" } };
+		hazards = Object.keys(hazardLibrary);
+	}
+	
+	//createheader row
+	if(hazards.length > 0){
+
+	var row = document.createElement("thead")
+	metaKeys = Object.keys(hazardLibrary[hazards[0]].meta);
+	for (let i = 0; i < metaKeys.length; i++){
+		var cell = document.createElement("th");
+		cell.innerText = metaKeys[i]
+		cell.setAttribute("scope","col");
+		row.appendChild(cell);
+	}
+	hazardListEl.appendChild(row);
+	var body = document.createElement("tbody");
+	//create other rows
+	for (let m = 0; m < hazards.length; m++){
+		var row = document.createElement("tr")
+		hazardListEl.appendChild(row);
+		var cell = document.createElement("th");
+		cell.setAttribute("scope","row");
+		cell.innerText = hazardLibrary[hazards[m]].meta[metaKeys[0]];
+		row.appendChild(cell);
+		for (let i = 1; i < metaKeys.length; i++){
+			var cell = document.createElement("td");
+		if(Array.isArray(hazardLibrary[hazards[m]].meta[metaKeys[i]])){
+			//make a list!
+			var descs = hazardLibrary[hazards[m]].meta[metaKeys[i]];
+			var list = document.createElement("ul");
+			for (let d = 0; d < descs.length; d++){
+				var litem = document.createElement("li");
+				litem.innerText = descs[d]
+				list.appendChild(litem);
+			}
+			cell.appendChild(list)
+		}
+		else{
+			cell.innerHTML = hazardLibrary[hazards[m]].meta[metaKeys[i]]
+		}
+			row.appendChild(cell);
+		}
+		body.appendChild(row);
+		row.setAttribute("m", hazards[m]);
+		row.setAttribute('onclick', "selectHazard(\"" + hazards[m] + "\")");
+		
+	}
+	hazardListEl.appendChild(body);
+	}
+	selectHazard(editingHazard);
+}
+
 function renderShopLibrary(){
 	shopListEl.innerHTML = '';
-	//TODO shop library DRAW
+	
 	shops = Object.keys(shopLibrary)
+	
+	if(shops.length == 0){
+		shopLibrary["armor shop"] =  { "name": "armor shop", "meta": { "name": "armor shop", "value": 1, "kind": "defense", "cost": 14, "currency": "gold", "icon": "armor" } }
+		shopLibrary["weapon shop"] 	=  { "name": "weapon shop", "meta": { "name": "weapon shop", "value": 1, "kind": "strength", "cost": 18, "currency": "gold", "icon": "weapon" } }
+		shopLibrary["inn"] = { "name": "inn", "meta": { "name": "inn", "value": 8, "kind": "life", "cost": 10, "currency": "gold", "icon": "inn" } } 
+		shops = Object.keys(shopLibrary);
+	}	
+	
 	//createheader row
 	if(shops.length > 0){
+
 	var row = document.createElement("thead")
 	metaKeys = Object.keys(shopLibrary[shops[0]].meta);
 	for (let i = 0; i < metaKeys.length; i++){
@@ -1421,8 +1638,9 @@ function renderShopLibrary(){
 	selectShop(editingShop);
 }
 
+
+
 function selectShop(shopName){
-	
 	if (shopName.length > 0){
 		shopClass(shopName);
 		editingShop = shopName;
@@ -1440,6 +1658,29 @@ function selectShop(shopName){
 		var message = "shop " + shopName + " selected.";
 		document.getElementById('gridAnnouncer').textContent = message;
 	}	
+}
+
+
+function selectHazard(myHazard){
+	if (myHazard.length > 0){
+		hazardClass(myHazard);
+		editingHazard = myHazard;
+		hazard = hazardLibrary[myHazard].meta;
+		hazardName.value = hazard.name || 'hazard';
+		hazardHint.value = hazard.hint || '';
+		hazardText.value = hazard.text || '';
+		hazardKind.value = hazard.kind || 'life';
+		hazardVoid.checked = hazard.void || false;
+		hazardStairs.checked = hazard.stairs || false;
+		hazardValue.value = hazard.value || 0;
+		hazardIconSelect.value = hazard.icon || 'void';
+		updateHazardIcon();
+		btnAddHazard.textContent = 'Save Hazard';
+		var cancel = document.getElementById('btnCancelHazard'); 
+		if(cancel) cancel.style.display='inline-block';
+		var message = "hazard " + myHazard + " selected.";
+		document.getElementById('gridAnnouncer').textContent = message;
+	}
 }
 
 
@@ -1477,6 +1718,8 @@ btnAddMonster.addEventListener('click', function(){
 		var mon = {name: name};
 		monsterLibrary[name] = mon;
 		monsterLibrary[name].meta = {name:name, hp:hp, atk:atk, def:def, rKind: rKind, rVal: rValue, rDesc: rDesc, descriptions: descriptions};
+		if(monsterBoss.checked = true){monsterLibrary[name].boss = true;}
+		else{monsterLibrary[name].boss = false;}
 		selectMonster(name);
 	}
 	if (currentItem == "select"){
@@ -1491,9 +1734,6 @@ btnAddMonster.addEventListener('click', function(){
 });
 
 // Load persisted library, or initialize with one default if empty
-loadMonsterLibrary();
-if(monsterLibrary.length===0){ monsterLibrary.push({name:'Grunt', hp:6, atk:2, def:0}); saveMonsterLibrary(); }
-renderMonsterLibrary();
 
 // Cancel edit button behavior
 var btnCancelEdit = document.getElementById('btnCancelEdit');
@@ -1538,6 +1778,52 @@ if (btnCancelShop) {
 
 btnCancelEdit.style.display = 'none';
 btnCancelShop.style.display = 'none';
+
+btnAddHazard.addEventListener('click', function(){
+	var name = hazardName.value.trim() || 'Hazard';
+	var kind = hazardKind.value;
+	var value = hazardValue.value;
+	var icon = hazardIconSelect.value;
+	
+	var hint = 	hazardHint.value;
+	var eText = hazardText.value;
+	var hVoid = hazardVoid.checked;
+    var hStairs = hazardStairs.checked;
+
+
+	
+	if (editingHazard.length > 0) {
+		// Save edits to existing hazard
+		var hazard = hazardLibrary[editingHazard];
+		hazardMeta = hazard.meta;
+		hazardMeta.name = name; 
+		hazardMeta.kind = kind;
+		hazardMeta.value = value;
+		hazardMeta.icon = icon;
+		hazardMeta.hint = hint
+		hazardMeta.text = eText;
+		hazardMeta.void = hVoid;
+		hazardMeta.stairs = hStairs;
+		
+		btnAddHazard.textContent = 'Add Hazard';
+		var cancel = document.getElementById('btnCancelHazard'); if(cancel) cancel.style.display='none';
+	} else {
+		//adding new hazard to the library
+		//hazardLibrary.push({name:name, hp:hp, atk:atk, def:def, rKind: rKind, rVal: rValue, rDesc: rDesc, descriptions: descriptions});
+		var hazard = {name: name};
+		hazardLibrary[name] = hazard;
+		hazardLibrary[name].meta = {name: name, kind: kind, value: value, icon: icon, hint: hint, text: eText, void: hVoid, stairs: hStairs};
+		selectHazard(name);
+	}
+	if (currentItem == "select"){
+		hazardUpdate(name, kind, value, icon, hint, eText, hVoid, hStairs);
+	}
+	hazardNameEl.value = 'hazard';
+	
+	renderHazardLibrary();
+});
+
+
 
 btnAddShop.addEventListener('click', function(){
 	var name = shopNameEl.value.trim() || 'Shop';
@@ -1716,6 +2002,7 @@ document.getElementById('grid').onclick = function(e) {
 
 		var pos = cell.dataset.pos;
 		selectedPos = pos;
+		
 		document.getElementById('inputDesc').value = scenes[pos] || '';
 		
 		var existingIdx = getItemIndex(pos);
@@ -2182,3 +2469,6 @@ myOption.setAttribute("value", null);
 nextLevelList.appendChild(myOption);
 
 
+renderMonsterLibrary();
+renderShopLibrary();
+renderHazardLibrary();

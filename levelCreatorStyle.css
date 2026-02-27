@@ -1,5 +1,23 @@
-:root{color-scheme: light dark;}
-.cell { width: 50px; height: 50px; border: 1px solid light-dark(#666, #E6E6E6); align-items: center; justify-content: center; cursor: pointer; background: light-dark(#fff, #000); font-weight: bold; transition: background 0.2s; }
+:root{
+	color-scheme: light dark;
+		--colDark: #000000;
+	--colLight: #ffffff;
+	--colEmDark: #227733;
+	--colEmLight: #FFFF00;
+	--colDarkR: 0, 0, 0;
+	--colLightR: 255, 255, 255;
+	--colEmDarkR: 34, 119, 51;
+	--colEmLightR: 255, 255, 0;
+	--colAlphaBorder: 0.5;
+	--colAlphaSwitch: 0.5;
+	--colAlphaUnknown: 0.35;
+	--colAlphaSettings: 0.8;
+	--gridAlpha: 1;	
+	
+}
+.cell { width: 50px; height: 50px; 
+	border: 1px solid light-dark(rgba(var(--colDarkR), var(--gridAlpha)), rgba(var(--colLightR), var(--gridAlpha))); 
+	align-items: center; justify-content: center; cursor: pointer; background: light-dark(#fff, #000); font-weight: bold; transition: background 0.2s; }
 .cell:focus { outline: 3px solid light-dark(#4A90E2, #0B2646); outline-offset: 2px; background: light-dark(#e0f7ff, #00759E); }
 .cell:hover { background: light-dark(#e8e8e8, #696969); }
 .cell.player { color: light-dark(#231f20, #938589); }
