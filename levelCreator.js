@@ -2155,7 +2155,7 @@ btnAddHazard.addEventListener('click', function(){
 	var cancel = document.getElementById('btnCancelEdit'); 
 	if(cancel) cancel.style.display='none';
 	resetFields(metaMap.hazard);
-	saveHazardLibrary();
+	
 	renderHazardLibrary();
 });
 
@@ -2179,7 +2179,7 @@ btnAddShop.addEventListener('click', function(){
 	var cancel = document.getElementById('btnCancelEdit'); 
 	if(cancel) cancel.style.display='none';
 	resetFields(metaMap.shop);
-	saveShopLibrary();
+	
 	renderShopLibrary();
 });
 
