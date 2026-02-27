@@ -787,11 +787,11 @@ console.log(items);
 }
 
 function loadLevel(level){
-console.log("loadLevel");
-console.log(LEVELS);
-console.log(level)
-console.log(level.items)
-console.log(items);
+	console.log("loadLevel");
+	console.log(LEVELS);
+	console.log(level)
+	console.log(level.items)
+	console.log(items);
 
 	//variables
 	console.log(level)
@@ -808,6 +808,8 @@ console.log(items);
 	for (i = 0; i < level.items.length; i++) {
 		items.push(level.items[i])
 	}}
+	console.log("wow")
+	console.log(items);
 	scenes = level.scenes
 	document.getElementById('btnSelect').click();
 	document.getElementById('cell_A1').click();
@@ -1442,7 +1444,6 @@ document.getElementById('btnCreateGrid').onclick = function() {
 	selectedPos = null;
 	makeGrid();
 	setupGridKeyboard();
-	saveLevel();
 };
 
 var itemButtons = document.querySelectorAll('.item-btn');
