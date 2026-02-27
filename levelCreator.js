@@ -50,6 +50,10 @@ myGames = {}
 const dataPath = "./data/game";
 
 function getFile(num){
+console.log("getFile");
+console.log(LEVELS);
+console.log(items);
+
 	fetch(dataPath + num + ".json")
 	.then(response => {
 		if (!response.ok) {
@@ -67,6 +71,10 @@ function getFile(num){
 
 
 function backupDemo(num){
+console.log("backupDemo");
+console.log(LEVELS);
+console.log(items);
+
 	demoGame = {"title": "New Game", "levels": LEVELS};	
 	myGames["game" + num] = demoGame;
 	addGame(num)
@@ -79,28 +87,40 @@ function backupDemo(num){
 
 var gameSelect = document.getElementById("gameSelect");
 function addGame(num){
-	console.log("adding option");
+console.log("addGame");
+console.log(LEVELS);
+console.log(items);
+
+	
 	let gameId = "game" + num;
 	let myOption = document.createElement("option");
 	myOption.setAttribute("value", gameId);
-	console.log(gameId)
+	
 	myOption.innerHTML = myGames[gameId]["title"];	
 	gameSelect.appendChild(myOption)
-	console.log("Game Added")
+	
 }
 
 getFile("01");
 
 function clearList(myList){
+console.log("clearList");
+console.log(LEVELS);
+console.log(items);
+
 	while(myList.children.length > 0){
 		myList.removeChild(myList.children[0]);
 	}
 }
 
 function selectGame(){
+console.log("selectGame");
+console.log(LEVELS);
+console.log(items);
+
 	if(currentGame != ""){
 		//save current changes to loaded game
-		console.log("saving game")
+		
 		myGames[currentGame]["levels"] = JSON.parse(JSON.stringify(LEVELS));
 		myGames[currentGame]["myIcons"] = JSON.parse(JSON.stringify(customIcons));
 		
@@ -112,13 +132,13 @@ function selectGame(){
 		if(Object.keys(customStats).length > 0){myGames[currentGame]["stats"] = customStats}
 		if(baseOpacity.value != 100){	myGames[currentGame]["gridOpacity"] = baseOpacity.value;}
 		LEVELS = {};
-		console.log("clearing lists")
+		
 		//clear other data from the page!
 		clearList(levelList);
 		clearList(nextLevelList);
 		clearList(keyList);
 		clearList(stairList);
-		console.log("cleared lists")
+		
 		statLife.value = 10
 		statStrength.value = 2
 		statDefense.value = 0
@@ -145,6 +165,10 @@ function selectGame(){
 }
 
 function initCustomStats(){
+console.log("initCustomStats");
+console.log(LEVELS);
+console.log(items);
+
 	if(myGames[currentGame]["stats"]){
 		if(myGames[currentGame]["stats"]["life"]){statLife.value = myGames[currentGame]["stats"]["life"]}
 		if(myGames[currentGame]["stats"]["defense"]){statDefense.value = myGames[currentGame]["stats"]["defense"]}
@@ -155,6 +179,10 @@ function initCustomStats(){
 }
 
 function initLevelSet(){
+console.log("initLevelSet");
+console.log(LEVELS);
+console.log(items);
+
 	newLevels = myGames[currentGame]["levels"];
 	myKeys = Object.keys(newLevels);
 	for(i = 0; i < myKeys.length; i++){
@@ -230,6 +258,10 @@ shopIconSelect = document.getElementById("shopIcon")
 hazardIconSelect = document.getElementById("hazardIcon")
 
 function initCustomIcons(){
+console.log("initCustomIcons");
+console.log(LEVELS);
+console.log(items);
+
 	try{
 		newIcons = myGames[currentGame]["myIcons"];
 		iconNames = Object.keys(newIcons);
@@ -238,6 +270,7 @@ function initCustomIcons(){
 		customIcons[icon] = newIcons[icon];
 	}}
 	catch(e){console.log(e)}
+	
 	myIcons = Object.keys(itemIcons);
 	for(icon of myIcons){
 		if(icon != "monster"){
@@ -286,6 +319,10 @@ hazardValue = document.getElementById('hazardValue'); //numeric - positive or ne
 
 
 function hazardStairToggle(){
+console.log("hazardStairToggle");
+console.log(LEVELS);
+console.log(items);
+
 	if(hazardStairs.checked){
 		hazardStairConfig.style = "";
 	}
@@ -297,6 +334,10 @@ function hazardStairToggle(){
 
 
 function updateMonIcon(){
+console.log("updateMonIcon");
+console.log(LEVELS);
+console.log(items);
+
 	myIcon = monIconSelect.value
 	monIconDisplay.innerHTML = itemIcons[myIcon];	
 	if(currentId.length > 0){
@@ -306,6 +347,10 @@ function updateMonIcon(){
 
 
 function updateShopIcon(){
+console.log("updateShopIcon");
+console.log(LEVELS);
+console.log(items);
+
 	myIcon = shopIconSelect.value
 	shopIconDisplay.innerHTML = itemIcons[myIcon];	
 	if(currentId.length > 0){
@@ -314,6 +359,10 @@ function updateShopIcon(){
 }
 
 function updateHazardIcon(){
+console.log("updateHazardIcon");
+console.log(LEVELS);
+console.log(items);
+
 	myIcon = hazardIconSelect.value
 	hazardIconDisplay.innerHTML = itemIcons[myIcon];	
 	if(currentId.length > 0){
@@ -322,6 +371,10 @@ function updateHazardIcon(){
 }
 
 function updateWallIcon(){
+console.log("updateWallIcon");
+console.log(LEVELS);
+console.log(items);
+
 	myIcon = wallIconSelect.value
 	wallIconDisplay.innerHTML = itemIcons[myIcon];
 
@@ -343,6 +396,10 @@ function updateWallIcon(){
 }
 
 function addMonIcon(){
+console.log("addMonIcon");
+console.log(LEVELS);
+console.log(items);
+
 	const reader = new FileReader();
 	let fileName = monAddIcon.files[0].name.split(".")[0].split("-")[0]
 	
@@ -354,6 +411,10 @@ function addMonIcon(){
 }
 
 function addShopIcon(){
+console.log("addShopIcon");
+console.log(LEVELS);
+console.log(items);
+
 	const reader = new FileReader();
 	let fileName = shopAddIcon.files[0].name.split(".")[0].split("-")[0]
 	
@@ -366,6 +427,10 @@ function addShopIcon(){
 
 
 function addHazardIcon(){
+console.log("addHazardIcon");
+console.log(LEVELS);
+console.log(items);
+
 	const reader = new FileReader();
 	let fileName = hazardAddIcon.files[0].name.split(".")[0].split("-")[0]
 	
@@ -379,6 +444,10 @@ function addHazardIcon(){
 
 
 function addWallIcon(){
+console.log("addWallIcon");
+console.log(LEVELS);
+console.log(items);
+
 	
 	const reader = new FileReader();
 	let fileName = wallAddIcon.files[0].name.split(".")[0].split("-")[0]
@@ -393,6 +462,10 @@ function addWallIcon(){
 
 
 function newIcon(content, name){
+console.log("newIcon");
+console.log(LEVELS);
+console.log(items);
+
 	monIconDisplay.innerHTML = content;
 	shopIconDisplay.innerHTML = content;
 	wallIconDisplay.innerHTML = content;
@@ -417,6 +490,10 @@ function newIcon(content, name){
 }
 	
 function vectorStyler(myParts){
+console.log("vectorStyler");
+console.log(LEVELS);
+console.log(items);
+
 	for (part of myParts){
 		// fill="none" stroke="currentColor" stroke-width="4"
 		part.setAttribute("fill", "none");
@@ -434,6 +511,10 @@ function vectorStyler(myParts){
 
 
 function updateID(){
+console.log("updateID");
+console.log(LEVELS);
+console.log(items);
+
 	newId = document.getElementById('inputLevelId').value
 	LEVELS[currentId].id = newId;
 	LEVELS[newId] = LEVELS[currentId]
@@ -462,6 +543,10 @@ function updateID(){
 	}
 
 function updateOption(myList, oldValue, newValue, newText){
+console.log("updateOption");
+console.log(LEVELS);
+console.log(items);
+
 	for (let l = 0; l < myList.length; l++){
 		if(myList[l].getAttribute("value") == oldValue){
 			myList[l].setAttribute("value", newValue);
@@ -473,6 +558,10 @@ function updateOption(myList, oldValue, newValue, newText){
 }
 
 function sortLevelList(){
+console.log("sortLevelList");
+console.log(LEVELS);
+console.log(items);
+
 	//TODO
 	let myLevels = {}
 	let levelNames = []
@@ -515,11 +604,19 @@ function sortLevelList(){
 
 
 function updateNext(){
+console.log("updateNext");
+console.log(LEVELS);
+console.log(items);
+
 	newNext = document.getElementById('nextLevelSelect').value
 	LEVELS[currentId].nextLevelId = newNext;
 }
 
 function monsterExists(monsterName){
+console.log("monsterExists");
+console.log(LEVELS);
+console.log(items);
+
 	monsters = Object.keys(monsterLibrary);
 	if(monsters.includes(monsterName)){
 			return true;
@@ -528,6 +625,10 @@ function monsterExists(monsterName){
 }
 
 function shopExists(shopName){
+console.log("shopExists");
+console.log(LEVELS);
+console.log(items);
+
 	shops = Object.keys(shopLibrary);
 	if(shops.includes(shopName)){
 			return true;
@@ -536,6 +637,10 @@ function shopExists(shopName){
 }
 
 function levelNew(){
+console.log("levelNew");
+console.log(LEVELS);
+console.log(items);
+
 	myList = document.getElementById("levelSelect");
 	
 	myNum = (myList.children.length + 1).toString().padStart(2, '0');
@@ -558,6 +663,10 @@ function levelNew(){
 }
 
 function levelCopy(){
+console.log("levelCopy");
+console.log(LEVELS);
+console.log(items);
+
 	newId = currentId + "copy"
 	LEVELS[newId] = structuredClone(LEVELS[currentId])
 	LEVELS[newId].id = newId
@@ -571,6 +680,10 @@ function levelCopy(){
 }
 
 function optionMissing(myList, myValue){
+console.log("optionMissing");
+console.log(LEVELS);
+console.log(items);
+
 	for(child of myList.children){
 		if (child.value == myValue){
 			return false;
@@ -581,6 +694,10 @@ function optionMissing(myList, myValue){
 }
 
 function addOption(myList, myValue, myText){
+console.log("addOption");
+console.log(LEVELS);
+console.log(items);
+
 	if(optionMissing(myList,myValue)){
 		let myOption = document.createElement("option");
 		myOption.textContent = myText;
@@ -590,6 +707,10 @@ function addOption(myList, myValue, myText){
 }
 
 function levelDelete(){
+console.log("levelDelete");
+console.log(LEVELS);
+console.log(items);
+
 	deleteMe = document.getElementById('levelSelect').value;
 	myLevels = document.getElementById("levelSelect").children;
 	myNextLevels = document.getElementById("nextLevelSelect");
@@ -601,6 +722,10 @@ function levelDelete(){
 }
 
 function deleteOption(myList, myValue){
+console.log("deleteOption");
+console.log(LEVELS);
+console.log(items);
+
 	for (let l = 0; l < myList.length; l++){
 		if(myList[l].getAttribute("value") == myValue){
 			myList[l].remove();
@@ -609,6 +734,10 @@ function deleteOption(myList, myValue){
 }
 
 function updateStairCellList(){
+console.log("updateStairCellList");
+console.log(LEVELS);
+console.log(items);
+
 	//clear the cell list First
 	stairCellSelect.innerHTML = "";
 	targetLevel = stairLevelSelect.value
@@ -630,6 +759,10 @@ function updateStairCellList(){
 }
 
 function updateWallName(){
+console.log("updateWallName");
+console.log(LEVELS);
+console.log(items);
+
 	
 	var existingIdx = getItemIndex(selectedPos);
 	newName =  customWallNameEl.value;
@@ -645,11 +778,21 @@ function updateWallName(){
 }
 
 function changeLevel(){
+console.log("changeLevel");
+console.log(LEVELS);
+console.log(items);
+
+	console.log(document.getElementById('levelSelect').value)
 	loadLevel(LEVELS[document.getElementById('levelSelect').value])
 }
 
 function loadLevel(level){
+console.log("loadLevel");
+console.log(LEVELS);
+console.log(items);
+
 	//variables
+	console.log(level)
 	levelOpacity.value =  baseOpacity.value;
 	document.getElementById('inputRows').value = level.rows
 	document.getElementById('inputCols').value = level.cols
@@ -658,6 +801,7 @@ function loadLevel(level){
 	document.getElementById('nextLevelSelect').value = level.nextLevelId;
 	document.getElementById('btnCreateGrid').click();
 	//arrays
+	
 	if(level.items){
 	for (i = 0; i < level.items.length; i++) {
 		items.push(level.items[i])
@@ -671,7 +815,11 @@ function loadLevel(level){
 }
 
 function saveLevel(){
-	console.log("saving level");
+console.log("saveLevel");
+console.log(LEVELS);
+console.log(items);
+
+	
 	LEVELS[currentId].rows = document.getElementById('inputRows').value;
 	LEVELS[currentId].cols = document.getElementById('inputCols').value;
 	LEVELS[currentId].nextLevelId = document.getElementById('nextLevelSelect').value;
@@ -686,7 +834,11 @@ function saveLevel(){
 var root = document.querySelector(':root')
 
 function updateOpacity(){
-	console.log(levelOpacity.value);
+console.log("updateOpacity");
+console.log(LEVELS);
+console.log(items);
+
+	
 	root.style.setProperty("--gridAlpha", (levelOpacity.value / 100));
 }
 
@@ -699,7 +851,11 @@ var baseOpacity = document.getElementById("baseOpacity");
 var levelOpacity = document.getElementById("levelOpacity");
 
 function saveSet(){
-	console.log("saving level set")
+console.log("saveSet");
+console.log(LEVELS);
+console.log(items);
+
+	
 	//Save levels in listed order
 	saveLevels = {};
 	myList = levelList.children;
@@ -711,7 +867,7 @@ function saveSet(){
 	myGame = {"title": myName, "levels": saveLevels}
 	
 	//TODO - Only save used custom icons
-	console.log(Object.keys(customIcons));
+	
 	if(Object.keys(customIcons).length > 0){myGame["myIcons"] = customIcons}	
 	
 	customStats = {}
@@ -735,6 +891,10 @@ function saveSet(){
 var monsterBoss = document.getElementById("monsterBoss");
 
 function selectMonster(monsterName){
+console.log("selectMonster");
+console.log(LEVELS);
+console.log(items);
+
 	if (monsterName.length > 0){
 	monsterClass(monsterName);
 	editingMonster = monsterName;
@@ -765,6 +925,10 @@ function selectMonster(monsterName){
 }
 
 function monsterClass(name){
+console.log("monsterClass");
+console.log(LEVELS);
+console.log(items);
+
 	monsterRows = monsterListEl.getElementsByTagName("tr");
 	for (let i = 0; i < monsterRows.length; i++) {
 		if(monsterRows[i].getAttribute("m") == name){
@@ -779,6 +943,10 @@ function monsterClass(name){
 }
 
 function hazardClass(name){
+console.log("hazardClass");
+console.log(LEVELS);
+console.log(items);
+
 	hazardRows = hazardListEl.getElementsByTagName("tr");
 	for (let i = 0; i < hazardRows.length; i++) {
 		if(hazardRows[i].getAttribute("m") == name){
@@ -793,6 +961,10 @@ function hazardClass(name){
 }
 
 function shopClass(name){
+console.log("shopClass");
+console.log(LEVELS);
+console.log(items);
+
 	shopRows = shopListEl.getElementsByTagName("tr");
 	for (let i = 0; i < shopRows.length; i++) {
 		if(shopRows[i].getAttribute("m") == name){
@@ -807,6 +979,10 @@ function shopClass(name){
 }
 
 function treasureUpdate(){
+console.log("treasureUpdate");
+console.log(LEVELS);
+console.log(items);
+
 	 if(currentItem == 'select'){
 		 //editing an existing treasure Cell
 		var pos = activeCell.dataset.pos;
@@ -818,6 +994,10 @@ function treasureUpdate(){
 }
 
 function hazardUpdate(name, kind, value, icon, hint, eText, hVoid, hStairs){
+console.log("hazardUpdate");
+console.log(LEVELS);
+console.log(items);
+
 	if(currentItem == 'select'){
 		var pos = activeCell.dataset.pos;
 		var existingIdx = getItemIndex(pos);
@@ -836,6 +1016,10 @@ function hazardUpdate(name, kind, value, icon, hint, eText, hVoid, hStairs){
 
  
 function keyUpdate(){
+console.log("keyUpdate");
+console.log(LEVELS);
+console.log(items);
+
 	 if(currentItem == 'select'){
 		 //editing an existing treasure Cell
 		var pos = activeCell.dataset.pos;
@@ -846,6 +1030,10 @@ function keyUpdate(){
 } 
  
 function stairUpdate(target){
+console.log("stairUpdate");
+console.log(LEVELS);
+console.log(items);
+
 	 if(currentItem == 'select'){
 		 //editing an existing treasure Cell
 		var pos = activeCell.dataset.pos;
@@ -858,6 +1046,10 @@ function stairUpdate(target){
 
 
 function villagerUpdate(){
+console.log("villagerUpdate");
+console.log(LEVELS);
+console.log(items);
+
 	 if(currentItem == 'select'){
 		 //editing an existing villager Cell
 		var pos = activeCell.dataset.pos;
@@ -871,6 +1063,10 @@ function villagerUpdate(){
  }
 
 function monsterUpdate(name, hp, atk, def, rKind, rVal, rDesc, descriptions){
+console.log("monsterUpdate");
+console.log(LEVELS);
+console.log(items);
+
 	if(currentItem == 'select'){
 		var pos = activeCell.dataset.pos;
 		var existingIdx = getItemIndex(pos);
@@ -887,6 +1083,10 @@ function monsterUpdate(name, hp, atk, def, rKind, rVal, rDesc, descriptions){
 }
 
 function shopUpdate(name, kind, value, cost, currency, icon){
+console.log("shopUpdate");
+console.log(LEVELS);
+console.log(items);
+
 	if(currentItem == 'select'){
 		var pos = activeCell.dataset.pos;
 		var existingIdx = getItemIndex(pos);
@@ -898,10 +1098,13 @@ function shopUpdate(name, kind, value, cost, currency, icon){
 		myShop.currency = currency;
 		myShop.icon = icon;
 	}
-	
 }
 
 function getItemIndex(pos){
+console.log("getItemIndex");
+console.log(LEVELS);
+console.log(items);
+
 		for (var i = 0; i < items.length; i++) {
 			if (items[i].pos === pos) {
 				return(i);
@@ -909,7 +1112,12 @@ function getItemIndex(pos){
 		}
 		return(-1)
 }
+
 function loadMonsterLibrary() {
+console.log("loadMonsterLibrary");
+console.log(LEVELS);
+console.log(items);
+
 //            try {
 //                var raw = localStorage.getItem('monsterLibrary');
 //                if (raw) {
@@ -924,6 +1132,10 @@ function loadMonsterLibrary() {
 }
 
 function saveMonsterLibrary() {
+console.log("saveMonsterLibrary");
+console.log(LEVELS);
+console.log(items);
+
 	try {
 		localStorage.setItem('monsterLibrary', JSON.stringify(monsterLibrary || []));
 		localStorage.setItem('selectedMonsterIndex', String(selectedMonsterIndex));
@@ -1009,6 +1221,10 @@ itemIcons.custom_wall = itemIcons.wall;
 itemIcons.gameEnd = itemIcons.door;
 
 function makeGrid() {
+console.log("makeGrid");
+console.log(LEVELS);
+console.log(items);
+
 	var grid = document.getElementById('grid');
 	grid.innerHTML = '';
 	grid.style.gridTemplateColumns = 'repeat(' + cols + ', 50px)';
@@ -1053,11 +1269,19 @@ function makeGrid() {
 }
 
 function addIcon(){
+console.log("addIcon");
+console.log(LEVELS);
+console.log(items);
+
 	
 	
 }
 
 function refreshCells() {
+console.log("refreshCells");
+console.log(LEVELS);
+console.log(items);
+
 	var allCells = document.querySelectorAll('.cell');
 	for (var i = 0; i < allCells.length; i++) {
 		var cell = allCells[i];
@@ -1131,6 +1355,10 @@ function refreshCells() {
 }
 
 function getItemNameForAnnouncement(itemType) {
+console.log("getItemNameForAnnouncement");
+console.log(LEVELS);
+console.log(items);
+
 	var itemNames = {
 		empty: 'empty',
 		wall: 'wall',
@@ -1150,6 +1378,10 @@ function getItemNameForAnnouncement(itemType) {
 }
 
 function announceCell(pos) {
+console.log("announceCell");
+console.log(LEVELS);
+console.log(items);
+
 	var found = null;
 	for (var j = 0; j < items.length; j++) {
 		if (items[j].pos === pos) {
@@ -1177,6 +1409,10 @@ function announceCell(pos) {
 }
 
 function focusCellByPosition(pos) {
+console.log("focusCellByPosition");
+console.log(LEVELS);
+console.log(items);
+
 	var cell = document.getElementById('cell_' + pos);
 	if (cell) {
 		//cell.tabIndex = 0;
@@ -1186,6 +1422,10 @@ function focusCellByPosition(pos) {
 }
 
 function enterGridMode(startPos) {
+console.log("enterGridMode");
+console.log(LEVELS);
+console.log(items);
+
 	startPos = startPos || 'A1';
 	focusCellByPosition(startPos);
 	document.getElementById('gridAnnouncer').textContent = 'Entered grid mode at cell ' + startPos + '. Use arrow keys to navigate. Press Enter to place ' + getItemNameForAnnouncement(currentItem) + '.';
@@ -1250,6 +1490,10 @@ var shopCostEl = document.getElementById('shopCost');
 
 
 function updateTreasureUI() {
+console.log("updateTreasureUI");
+console.log(LEVELS);
+console.log(items);
+
 	var message = "";
 	
 	if (currentItem === 'treasure') {
@@ -1355,6 +1599,10 @@ for (var i = 0; i < itemButtons.length; i++) {
 	};
 
 	function isEditing() {
+console.log("isEditing");
+console.log(LEVELS);
+console.log(items);
+
 		var ae = document.activeElement;
 		if (!ae) return false;
 		var tag = ae.tagName;
@@ -1457,6 +1705,10 @@ var btnAddShop = document.getElementById('btnAddShop');
 var shopListEl = document.getElementById('shopList');
 
 function renderMonsterLibrary(){
+console.log("renderMonsterLibrary");
+console.log(LEVELS);
+console.log(items);
+
 	monsterListEl.innerHTML = '';
 	
 	monsters = Object.keys(monsterLibrary)
@@ -1519,6 +1771,10 @@ function renderMonsterLibrary(){
 
 
 function renderHazardLibrary(){
+console.log("renderHazardLibrary");
+console.log(LEVELS);
+console.log(items);
+
 	hazardListEl.innerHTML = '';
 	
 	hazards = Object.keys(hazardLibrary)
@@ -1578,6 +1834,10 @@ function renderHazardLibrary(){
 }
 
 function renderShopLibrary(){
+console.log("renderShopLibrary");
+console.log(LEVELS);
+console.log(items);
+
 	shopListEl.innerHTML = '';
 	
 	shops = Object.keys(shopLibrary)
@@ -1641,6 +1901,10 @@ function renderShopLibrary(){
 
 
 function selectShop(shopName){
+console.log("selectShop");
+console.log(LEVELS);
+console.log(items);
+
 	if (shopName.length > 0){
 		shopClass(shopName);
 		editingShop = shopName;
@@ -1662,6 +1926,10 @@ function selectShop(shopName){
 
 
 function selectHazard(myHazard){
+console.log("selectHazard");
+console.log(LEVELS);
+console.log(items);
+
 	if (myHazard.length > 0){
 		hazardClass(myHazard);
 		editingHazard = myHazard;
@@ -1864,6 +2132,10 @@ btnAddShop.addEventListener('click', function(){
 
 // Handle grid keyboard navigation
 function setupGridKeyboard() {
+console.log("setupGridKeyboard");
+console.log(LEVELS);
+console.log(items);
+
 	var allCells = document.querySelectorAll('.cell');
 	for (var i = 0; i < allCells.length; i++) {
 		allCells[i].addEventListener('keydown', function(e) {
@@ -2337,11 +2609,19 @@ setupGridKeyboard();
 	if(!importFileEl || !importBtn) return;
 
 	function showMessage(msg){
+console.log("showMessage");
+console.log(LEVELS);
+console.log(items);
+
 		// Use alert for now; could be replaced with in-UI notification
 		try { alert(msg); } catch(e){ console.log(msg); }
 	}
 
 	function importLevelFromHtmlText(text){
+console.log("importLevelFromHtmlText");
+console.log(LEVELS);
+console.log(items);
+
 
 
 	}
@@ -2393,6 +2673,10 @@ setupGridKeyboard();
 	if(!importInput || !importBtn) return;
 
 	function parseCsv(text){
+console.log("parseCsv");
+console.log(LEVELS);
+console.log(items);
+
 		// Simple CSV parser: split lines, handle quoted fields
 		var rows = [];
 		var lines = text.split(/\r?\n/);
