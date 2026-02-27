@@ -62,14 +62,14 @@ function getFile(num){
 		addGame(num);
 		getFile((parseInt(num) + 1).toString().padStart(2, '0'));
 		})  
-	.catch(error => {console.log("no more games"); backupDemo();}); 
+	.catch(error => {console.log("no more games"); backupDemo(num);}); 
 }
 
 
-function backupDemo(){
+function backupDemo(num){
 	demoGame = {"title": "New Game", "levels": LEVELS};	
-	myGames["game01"] = demoGame;
-	addGame("01")
+	myGames["game" + num] = demoGame;
+	addGame(num)
 	selectGame()
 	
 }
