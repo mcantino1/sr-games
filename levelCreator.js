@@ -895,38 +895,73 @@ console.log(items);
 var monsterBoss = document.getElementById("monsterBoss");
 
 function selectMonster(monsterName){
-console.log("selectMonster");
-console.log(LEVELS);
-console.log(items);
 
 	if (monsterName.length > 0){
+	
 	monsterClass(monsterName);
 	editingMonster = monsterName;
+
 	m = monsterLibrary[monsterName].meta;
-	monsterNameEl.value = m.name || '';
-	monsterHPEl.value = m.hp || 6;
-	monsterATKEl.value = m.atk || 2;
-	monsterDefEl.value = m.def || 0;
-	//monsterBoss.checked
-	if(m.boss){monsterBoss.checked = true}
-	else{monsterBoss.checked = false}
-	
-	document.getElementById('monsterDesc1').value = (m.descriptions && m.descriptions[0]) || '';
-	document.getElementById('monsterDesc2').value = (m.descriptions && m.descriptions[1]) || '';
-	document.getElementById('monsterDesc3').value = (m.descriptions && m.descriptions[2]) || '';
-	monsterRewDescEl.value = m.rDesc || "";
-	monsterRewKindEl.value  = m.rKind || "gold";
-	monsterRewValueEl.value  = m.rVal || 5;
-	monSound.value = m.sound || "growling";
-	monIconSelect.value = m.icon || "monster";
+	myFields = metaMap.monster;
+	populateFromLibrary(m, myFields);
+
 	updateMonIcon();
 	btnAddMonster.textContent = 'Save Monster';
 	var cancel = document.getElementById('btnCancelEdit'); 
 	if(cancel) cancel.style.display='inline-block';
 	var message = "monster " + monsterName + " selected.";
 	document.getElementById('gridAnnouncer').textContent = message;}
+}
+
+function populateFromLibrary(m, myFields){
+	arrayIndex = {};
+	for(field of myFields){
+		fieldMeta = field.getAttribute("meta");
+		console.log(fieldMeta)
+		if(field.getAttribute("instance")){
+			//instance only field, doens't load from library;
+			//reset to default
+			if(field.getAttribute("value")){field.value = field.getAttribute("value");}
+			else {field.value = "";}
+		}
+		else if(field.getAttribute("type") == "checkbox"){
+			//checkbox field
+			field.checked = m[fieldMeta];
+		}
+		else if(field.getAttribute("array")){
+			//Part of an array'd variable
+			//uuuuuuuuh
+			if (Object.keys(arrayIndex).includes(fieldMeta)){
+				arrayIndex[fieldMeta] += 1;	
+			}
+			else{
+				console.log("new array index")
+				arrayIndex[fieldMeta] = 0;
+			}
+			if(m[fieldMeta] && m[fieldMeta][arrayIndex[fieldMeta]]){
+					field.value = m[fieldMeta][arrayIndex[fieldMeta]]
+				}
+				else{field.value = ""}
+		}
+		else{
+			//all other types
+			if(m[fieldMeta]){
+
+				console.log(m[fieldMeta])
+				field.value = m[fieldMeta];
+			}
+			else{
+				//no value for this meta
+				//reset to default
+				if(field.getAttribute("value")){field.value = field.getAttribute("value")}
+				else {field.value = "";}
+			}
+			
+		}
+	}
 	
 }
+
 
 function monsterClass(name){
 console.log("monsterClass");
@@ -1912,12 +1947,12 @@ console.log(items);
 		shopClass(shopName);
 		editingShop = shopName;
 		shop = shopLibrary[shopName].meta;
-		shopNameEl.value = shop.name || 'shop';
-		shopKindEl.value = shop.kind || 'defense';
-		shopValueEl.value = shop.value || 1;
-		shopCostEl.value = shop.cost || 14;
-		shopCurrencyEl.value = shop.currency || 'gold';
-		shopIconSelect.value = shop.icon || 'villager';
+		
+		
+		myFields = metaMap.shop;
+		populateFromLibrary(shop, myFields);
+
+		
 		updateShopIcon();
 		btnAddShop.textContent = 'Save Shop';
 		var cancel = document.getElementById('btnCancelShop'); 
@@ -1937,14 +1972,12 @@ console.log(items);
 		hazardClass(myHazard);
 		editingHazard = myHazard;
 		hazard = hazardLibrary[myHazard].meta;
-		hazardName.value = hazard.name || 'hazard';
-		hazardHint.value = hazard.hint || '';
-		hazardText.value = hazard.text || '';
-		hazardKind.value = hazard.kind || 'life';
-		hazardVoid.checked = hazard.void || false;
-		hazardStairs.checked = hazard.stairs || false;
-		hazardValue.value = hazard.value || 0;
-		hazardIconSelect.value = hazard.icon || 'void';
+		
+		
+		myFields = metaMap.hazard;
+
+		populateFromLibrary(hazard, myFields);
+
 		updateHazardIcon();
 		btnAddHazard.textContent = 'Save Hazard';
 		var cancel = document.getElementById('btnCancelHazard'); 
@@ -2770,12 +2803,53 @@ console.log(items);
 	});
 })();
 
+var metaMap = {};
+
+function initForms(){
+	
+	var inputs = document.getElementsByTagName("input");
+	var selects = document.getElementsByTagName("select");
+	var objectKeys = [];
+	for(input of inputs){	
+		myObject = input.getAttribute("object");
+		if (myObject && !objectKeys.includes(myObject)) {
+			objectKeys.push(myObject);
+		}
+	}
+	for(select of selects){
+		myObject = select.getAttribute("object");
+		if (myObject && !objectKeys.includes(myObject)) {
+			objectKeys.push(myObject);
+		}
+	}
+	
+	for(key of objectKeys){
+		metaMap[key] = [];
+	}
+	
+	for(input of inputs){	
+		myObject = input.getAttribute("object");
+		if(myObject){
+		metaMap[myObject].push(input);}
+	}
+	for(select of selects){	
+		myObject = select.getAttribute("object");
+		if(myObject){metaMap[myObject].push(select);}
+	}
+
+	console.log(metaMap);
+	
+}
+
+
+
 
 myOption = document.createElement("option");
 myOption.textContent = "Finish"
 myOption.setAttribute("value", null);
 nextLevelList.appendChild(myOption);
 
+initForms();
 
 renderMonsterLibrary();
 renderShopLibrary();

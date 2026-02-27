@@ -16,15 +16,15 @@
 		
 		</select>
 			<label for="gameName">Game Name: </label>
-			<input type="text" id="gameName" value="Super Dungeon"/>
+			<input object="game" meta="name" type="text" id="gameName" value="Super Dungeon"/>
 	       <button id="btnSave" onclick="saveSet()" >save</button> 
 		
 		   
-		   <label for="statLife">Life</label><input class="statBox" type="number" id="statLife" value="10"/>
-		   <label for="statStrength">Strength</label><input class="statBox" type="number" id="statStrength" value="2"/>
-		   <label for="statDefense">Defense</label><input class="statBox" type="number" id="statDefense" value="0"/>
-		   <label for="statGold">Gold</label><input class="statBox" type="number" id="statGold" value="0"/>
-		   <label for="baseOpacity">Grid opacity</label><input class="statBox" type="number"  id="baseOpacity" value="100"/>
+		   <label for="statLife">Life</label><input  object="game" meta="life" class="statBox" type="number" id="statLife" value="10"/>
+		   <label for="statStrength">Strength</label><input  object="game" meta="strength" class="statBox" type="number" id="statStrength" value="2"/>
+		   <label  for="statDefense">Defense</label><input object="game" meta="defense" class="statBox" type="number" id="statDefense" value="0"/>
+		   <label for="statGold">Gold</label><input  object="game" meta="gold"  class="statBox" type="number" id="statGold" value="0"/>
+		   <label  for="baseOpacity">Grid opacity</label><input object="game" meta="gridOpacity" class="statBox" type="number"  id="baseOpacity" value="100"/>
 		   
 </div>
         
@@ -42,24 +42,24 @@
 		<h2>Level Settings</h2>
 		<div>
 			<div class="floatGroup">
-				<label for="inputLevelId">Level ID:</label>
-                <input type="text" onchange="updateID()" id="inputLevelId" placeholder="uniqueIdentifier" >
+				<label  for="inputLevelId">Level ID:</label>
+                <input meta="id" object="level" type="text" onchange="updateID()" id="inputLevelId" placeholder="uniqueIdentifier" >
 			</div>
 			<div class="floatGroup">
 				<label for="nextLevelSelect">Next level:</label>
-				<select name="nextLevelId" id="nextLevelSelect"  onchange="updateNext()" ></select>
+				<select object="level" meta="nextLevelId" name="nextLevelId" id="nextLevelSelect"  onchange="updateNext()" ></select>
 			</div>
 			<div class="floatGroup">
 			<label for="levelOpacity">Grid opacity</label>
-			<input class="statBox" type="number" onChange="saveLevel(); updateOpacity()" id="levelOpacity" value="100"/>
+			<input object="level" meta="gridOpacity" class="statBox" type="number" onChange="saveLevel(); updateOpacity()" id="levelOpacity" value="100"/>
 			</div>
 			<div class="floatGroup">
                 <label for="inputRows">Rows:</label>
-                <input type="number" id="inputRows" min="1" max="12" value="6" aria-describedby="rowsHelp">
+                <input meta="rows" object="level" type="number" id="inputRows" min="1" max="12" value="6" aria-describedby="rowsHelp">
             </div>
 			<div class="floatGroup">
 			<label for="inputCols">Cols:</label>
-                <input type="number" id="inputCols" min="1" max="12" value="6" aria-describedby="colsHelp">
+                <input  object="level" meta="cols" type="number" id="inputCols" min="1" max="12" value="6" aria-describedby="colsHelp">
             </div>
 			<div class="floatGroup">
 			<button id="btnCreateGrid">Create Grid</button>
@@ -88,46 +88,46 @@
 				
                     <div class="floatGroup">
                         <label for="monsterName" > monster Name:     </label>
-                            <input id="monsterName" placeholder="Name" />
+                            <input object="monster" meta="name"  id="monsterName" placeholder="Name" />
 					</div>
                     <div class="floatGroup">
                         <label for="monsterHP" >
                             <span >HP</span></label>
-                            <input class="spinbox" id="monsterHP" type="number" min="1" value="6"  />
+                            <input object="monster" meta="hp" class="spinbox" id="monsterHP" type="number" min="1" value="6"  />
                     </div>
 					<div class="floatGroup">
                         <label for="monsterATK" >
                             <span >ATK</span></label>
-                            <input class="spinbox" id="monsterATK" type="number" min="0" value="2" />
+                            <input object="monster" meta="atk" class="spinbox" id="monsterATK" type="number" min="0" value="2" />
                     </div>
 					
 					<div class="floatGroup">
                         <label for="monsterDEF" >
                             <span >DEF</span></label>
-                            <input id="monsterDEF"  class="spinbox" type="number" min="0" value="0" />
+                            <input object="monster" meta="def" id="monsterDEF"  class="spinbox" type="number" min="0" value="0" />
                     </div>
 					<div class="floatGroup">
                         <label for="monsterBoss" >Final Boss</label>
-                            <input id="monsterBoss"  type="checkbox"  />
+                            <input object="monster" meta="boss" id="monsterBoss"  type="checkbox"  />
                     </div>					
                     <div class="floatGroup">
 						<div class="floatGroup">
-							<label for="monsterDesc1">Attack description 1</label>
-							<input id="monsterDesc1" placeholder="Description 1 (attacked)" />
+							<label  for="monsterDesc1">Attack description 1</label>
+							<input object="monster" meta="descriptions" array="true" id="monsterDesc1" placeholder="Description 1 (attacked)" />
 						</div>
 						<div class="floatGroup">
 							<label for="monsterDesc2">Description 2</label>
-							<input id="monsterDesc2" placeholder="Description 2 (attacked)"  />
+							<input object="monster" meta="descriptions" array="true" id="monsterDesc2" placeholder="Description 2 (attacked)"  />
 						</div>
 						<div class="floatGroup">
 							<label for="monsterDesc3">Description 3</label>
-							<input id="monsterDesc3" placeholder="Description 3 (attacked)"  />
+							<input object="monster" meta="descriptions" array="true" id="monsterDesc3" placeholder="Description 3 (attacked)"  />
 						</div>
                     </div>	
 					<div class="floatGroup">
 						<div class="floatGroup">
 						<label for="monRewKind">Reward type:</label>
-						<select id="monRewKind">
+						<select object="monster" meta="rKind" id="monRewKind">
 							<option value="gold">Gold</option>
 							<option value="strength">Strength</option>
 							<option value="defense">Defense</option>
@@ -136,22 +136,22 @@
 						</div>
 						<div class="floatGroup">
 						<label for="monRewValue">Value:</label>
-						<input  id="monRewValue" type="number" min="1" class="number" value="25" />
+						<input object="monster" meta="rVal" id="monRewValue" type="number" min="1" class="number" value="25" />
 						</div>
 						<div class="floatGroup">
 						<label for="monRewDesc">Reward description: </label>
-						<input id="monRewDesc"/>
+						<input object="monster" meta="rDesc" id="monRewDesc"/>
 					</div></div>
 					<div class="floatGroup">
 						<div class="floatGroup">
 						<label for="monSound">sound clue</label>
-						<input id="monSound" value="growling"></input>
+						<input object="monster" meta="sound" id="monSound" value="growling"></input>
 						</div>
 						
 						<div class="floatGroup">
 						
 						<label for="monIcon">Icon</label>
-						<select onChange="updateMonIcon()"  id="monIcon" >
+						<select object="game" value="monster" meta="icon" onChange="updateMonIcon()"  id="monIcon" >
 						<option  value="monster">monster</option>
 						</select>
 						<div id="monIconDisplay"></div>
@@ -175,43 +175,42 @@
 
             <div id="treasureConfig">
                 <label onchange="treasureUpdate()" for="treasureKind">Treasure type:</label>
-                <select  onchange="treasureUpdate()"  id="treasureKind">
+                <select object="game" meta="kind" onchange="treasureUpdate()"  id="treasureKind">
                     <option value="gold">Gold</option>
                     <option value="strength">Strength</option>
                     <option value="defense">Defense</option>
                 </select>
                 <label for="treasureValue">Value:</label>
-                <input  onchange="treasureUpdate()" id="treasureValue" type="number" min="1" value="25" />
+                <input object="treasure" meta="value" onchange="treasureUpdate()" id="treasureValue" type="number" min="1" value="25" />
                 <span >Set the amount of gold or the buff amount.</span>
             </div>
 
 			<div id="shopConfig">
 			    <div class="floatGroup">
 					<label for="shopName" > Shop Name:     </label>
-                    <input id="shopName" placeholder="the ..." />
+                    <input object="shop" meta="name" id="shopName" placeholder="the ..." />
 					</div>
                 <label onchange="shopUpdate()" for="shopKind">shop type:</label>
-                <select  onchange="shopUpdate()"  id="shopKind">
+                <select object="shop" meta="kind" onchange="shopUpdate()"  id="shopKind">
 					<option value="gold">gold</option>
                     <option value="strength">Strength</option>
                     <option value="defense">Defense</option>
 					<option value="life">Life</option>
                 </select>
                 <label for="shopValue">Value:</label>
-                <input  onchange="shopUpdate()" class="number" id="shopValue" type="number" min="1" value="25" />
+                <input object="shop" meta="value"  onchange="shopUpdate()" class="number" id="shopValue" type="number" min="1" value="25" />
 				  <label for="shopCost">cost:</label>
-                <input  onchange="shopUpdate()" class="number" id="shopCost" type="number" min="1" value="25" />
+                <input  object="shop" meta="cost" onchange="shopUpdate()" class="number" id="shopCost" type="number" min="1" value="25" />
 				<label onchange="shopUpdate()" for="shopCurrency">Currency:</label>
-                <select  onchange="shopUpdate()"  id="shopCurrency">
+                <select object="shop" meta="currency" onchange="shopUpdate()"  id="shopCurrency">
 					<option value="gold">gold</option>
                     <option value="strength">Strength</option>
                     <option value="defense">Defense</option>
 					<option value="life">Life</option>
-					
                 </select>
 				<div style="width: fit-content;">
 				<label for="shopIcon">Icon</label>
-				<select onChange="updateShopIcon()"  id="shopIcon" >
+				<select object="shop" meta="gold" onChange="updateShopIcon()"  id="shopIcon" >
 				<option  value="villager">villager</option>
 				</select>
 				<div id="shopIconDisplay"></div>
@@ -233,32 +232,32 @@
 			<div id="hazardConfig">
 			    <div class="floatGroup">
 					<label for="hazardName" > Hazard Name:     </label>
-                    <input id="hazardName" placeholder="void" />
+                    <input object="hazard" meta="name" id="hazardName" placeholder="void" />
 				</div>
 				<div class="floatGroup">
 					<label for="hazardHint" > Hazard Hint:     </label>
-                    <input id="hazardHint" placeholder="Mysterious fog" />
+                    <input object="hazard" meta="hint" id="hazardHint" placeholder="Mysterious fog" />
 				</div>
 				
 				<div class="floatGroup">
 					<label for="hazardText" > Hazard event description:     </label>
-                    <input id="hazardText" placeholder="You have fallen into a void." />
+                    <input object="hazard" meta="text" id="hazardText" placeholder="You have fallen into a void." />
 				</div>
 				
 				<div class="floatGroup">
                         <label for="hazardVoid" >Reload Level</label>
-                            <input id="hazardVoid"  type="checkbox"  />
+                            <input object="hazard" meta="void" id="hazardVoid"  type="checkbox"  />
                 </div>					
 				<div class="floatGroup">
                         <label for="hazardStairs" >Teleport</label>
-                         <input id="hazardStairs" onChange="hazardStairToggle();" type="checkbox"/>
+                         <input object="hazard" meta="stairs" id="hazardStairs" onChange="hazardStairToggle();" type="checkbox"/>
 						 
 						 <div id="hazardStairConfig" style="display: none;">
 						 	<label for="hazardLevelSelect">Target Level:</label>
-							<select  id="hazardLevelSelect">
+							<select object="hazard" meta="level" instance="true" id="hazardLevelSelect">
 							</select>
 							<label for="hazardCellSelect">Target Cell:</label>
-							<select id="hazardCellSelect"/></select>
+							<select object="hazard" meta="cell" instance="true" id="hazardCellSelect"/></select>
 						 </div>
                 </div>					
 				
@@ -266,7 +265,7 @@
 				
 				<div class="floatGroup">
                 <label onchange="hazardUpdate()" for="hazardKind">hazard type:</label>
-                <select  onchange="hazardUpdate()"  id="hazardKind">
+                <select object="hazard" meta="kind"  onchange="hazardUpdate()"  id="hazardKind">
 					<option value="life">Life</option>
 					<option value="gold">gold</option>
                     <option value="strength">Strength</option>
@@ -275,12 +274,12 @@
 				</div>
 				<div class="floatGroup">
                 <label for="hazardValue">Value:</label>
-				<input  id="hazardValue" type="number"  value="0" />
+				<input object="hazard" meta="value" id="hazardValue" type="number"  value="0" />
 				</div>
                 
 				<div style="width: fit-content;">
 				<label for="hazardIcon">Icon</label>
-				<select onChange="updateHazardIcon()"  id="hazardIcon" >
+				<select  object="hazard" meta="icon" onChange="updateHazardIcon()"  id="hazardIcon" >
 				<option value="void">void</option>
 				</select>
 				<div id="hazardIconDisplay"></div>
@@ -300,46 +299,46 @@
 
             <div id="stairConfig" >
                 <label for="stairLevelSelect">Target Level:</label>
-                <select  onchange="stairUpdate('level')"  id="stairLevelSelect">
+                <select  object="stairs" meta="level" onchange="stairUpdate('level')"  id="stairLevelSelect">
                 </select>
                 <label for="stairCellSelect">Target Cell:</label>
-                <select  onchange="stairUpdate('cell')" id="stairCellSelect"/></select>
+                <select  object="stairs" meta="cell" onchange="stairUpdate('cell')" id="stairCellSelect"/></select>
           </div>
 
             <div id="keyConfig" >
                 <label for="keyLevelSelect">Key Level:</label>
-                <select  onchange="keyUpdate()"  id="keyLevelSelect">
+                <select  object="key" meta="level" onchange="keyUpdate()"  id="keyLevelSelect">
                 </select>
             </div>
 
 
             <div  id="potionConfig" >
                 <label for="potionHeal">Potion heal:</label>
-                <input id="potionHeal" type="number" min="1" value="10" />
+                <input object="potion" meta="heal" id="potionHeal" type="number" min="1" value="10" />
                 <span >Amount of life restored when drinking this potion.</span>
             </div>
 
             <div  id="villagerConfig" >
                 <label for="villagerText">Villager text:</label>
-                <input id="villagerText" onchange="villagerUpdate()" type="text" placeholder="Villager says..."  />
+                <input object="villager" meta="text" id="villagerText" onchange="villagerUpdate()" type="text" placeholder="Villager says..."  />
                 <label for="villagerKind">Reward type:</label>
-                <select id="villagerKind" onchange="villagerUpdate()" >
+                <select  object="villager" meta="kind" id="villagerKind" onchange="villagerUpdate()" >
                     <option value="gold">Gold</option>
                     <option value="strength">Strength</option>
                     <option value="defense">Defense</option>
                 </select>
                 <label for="villagerValue">Value:</label>
-                <input onchange="villagerUpdate()" id="villagerValue" type="number" min="1" value="25" />
+                <input object="villager" meta="value" onchange="villagerUpdate()" id="villagerValue" type="number" min="1" value="25" />
                 <span >Villager spoken text and an optional reward amount.</span>
             </div>
 
             <div  id="customWallConfig" >
                 <label for="customWallName">Custom wall name:</label>
-                <input id="customWallName" onchange="updateWallName()" type="text" placeholder="e.g. Stone Hedge"  />
+                <input object="wall" meta="name" id="customWallName" onchange="updateWallName()" type="text" placeholder="e.g. Stone Hedge"  />
                 <span >Optional name shown in the editor and exports.</span>
 				<div style="width: fit-content;">
 				<label for="wallIcon">Icon</label>
-				<select onChange="updateWallIcon()"  id="wallIcon" >
+				<select  object="wall" meta="icon" meta="icon" onChange="updateWallIcon()"  id="wallIcon" >
 				<option  value="wall">wall</option>
 				</select>
 				<div id="wallIconDisplay"></div>
@@ -348,7 +347,7 @@
             </div>
 			<div class="floatGroup">
                 <label for="inputDesc">Cell description:</label>
-                <input type="text" id="inputDesc" placeholder="Enter description for selected cell"  aria-describedby="descHelp">
+                <input object="scene" type="text" id="inputDesc" placeholder="Enter description for selected cell"  aria-describedby="descHelp">
                 <button id="btnSetDesc">Set Description</button>
             </div>
         </div>
