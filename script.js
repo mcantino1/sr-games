@@ -1457,7 +1457,7 @@ function enterCell(prefix) {
 	  //{"type":"hazard","pos":"D6","meta":{"name":"Void","hint":"Mysterious fog","text":"You  have fallen into a void.","void":true,"icon":"void"}}
 	  haz = itemsAt(pos)[0];
 	  effectMessage = ""
-	  if (haz.meta.value != 0){
+	  if (haz.meta.value && haz.meta.value != 0){
 		  word = "lost"
 		  if (haz.meta.value > 0) {word = "gained"}
 		  effectMessage = "You have " + word + " " + Math.abs(haz.meta.value) + " " + haz.meta.kind + "."
