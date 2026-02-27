@@ -1988,51 +1988,104 @@ console.log(items);
 }
 
 
+function resetFields(myFields){
+	arrayIndex = {};
+	for(field of myFields){
+
+		if(field.getAttribute("type") == "checkbox"){
+			//checkbox field
+			field.checked = false;
+		}
+		else {
+			field.value = field.getAttribute("value") || '';
+		}
+	}
+}
+
+
+
+function libraryFromFields(m, myFields){
+	arrayIndex = {};
+	for(field of myFields){
+		fieldMeta = field.getAttribute("meta");
+		console.log(fieldMeta)
+		if(field.getAttribute("instance")){
+			//instance only field, doens't load from library;
+			//Just skip	
+		}
+		else if(field.getAttribute("type") == "checkbox"){
+			//checkbox field
+			m[fieldMeta] = field.checked;
+			field.checked = false;
+		}
+		else if(field.getAttribute("array")){
+			//Part of an array'd variable
+			//uuuuuuuuh
+			if (Object.keys(arrayIndex).includes(fieldMeta)){
+				arrayIndex[fieldMeta] += 1;
+			}
+			else{
+				console.log("new array index");
+				arrayIndex[fieldMeta] = 0;
+			}
+			if(m[fieldMeta][arrayIndex[fieldMeta]]){
+				m[fieldMeta][arrayIndex[fieldMeta]] = field.value;
+			}
+			else if(field.value != ""){m[fieldMeta].push(field.value)}
+		}
+		else{
+			//all other types
+			if(m[fieldMeta] || field.value){
+				m[fieldMeta] = field.value;
+			}
+		}
+		field.value = field.getAttribute("value") || '';
+	}
+}
+
+
+
+function getMetas(myFields){
+	meta = {};
+	for(field of myFields){
+		fieldMeta = field.getAttribute("meta");
+		console.log(fieldMeta)
+		if(field.getAttribute("type") == "checkbox"){
+			//checkbox field
+			meta[fieldMeta] = field.checked;
+		}
+		else if(field.getAttribute("array")){
+			//Part of an array'd variable
+			//uuuuuuuuh
+			if(meta[fieldMeta]){meta[fieldMeta].push(field.value);}
+			else{meta[fieldMeta] = [field.value];}
+		}
+		else{
+			meta[fieldMeta] = field.value;		
+		}
+	}	
+	return meta;
+}
+
+
 
 btnAddMonster.addEventListener('click', function(){
 	var name = monsterNameEl.value.trim() || 'Monster';
-	var hp = parseInt(monsterHPEl.value) || 6;
-	var atk = parseInt(monsterATKEl.value) || 2;
-	var def = parseInt(monsterDefEl.value) || 0;
-	var d1 = (document.getElementById('monsterDesc1')||{value:''}).value.trim();
-	var d2 = (document.getElementById('monsterDesc2')||{value:''}).value.trim();
-	var d3 = (document.getElementById('monsterDesc3')||{value:''}).value.trim();
-	var descriptions = [];
-	var rKind = monsterRewKindEl.value
-	var rValue = monsterRewValueEl.value
-	var rDesc = monsterRewDescEl.value
-	var icon = monIconSelect.value;
-	var sound = monSound.value;
-	if (d1) descriptions.push(d1);
-	if (d2) descriptions.push(d2);
-	if (d3) descriptions.push(d3);
-	if (editingMonster.length > 0) {
-		// Save edits to existing monster
-		var m = monsterLibrary[editingMonster];
-		mm = m.meta;
-		mm.name = name; mm.hp = hp; mm.atk = atk; mm.def = def; mm.descriptions = descriptions;
-		mm.rKind = rKind; mm.rVal = rValue; mm.rDesc = rDesc;
-		mm.sound = sound;
-		mm.icon = icon;
-		btnAddMonster.textContent = 'Add Monster';
-		var cancel = document.getElementById('btnCancelEdit'); if(cancel) cancel.style.display='none';
-	} else {
-		//adding new monster to the library
-		//monsterLibrary.push({name:name, hp:hp, atk:atk, def:def, rKind: rKind, rVal: rValue, rDesc: rDesc, descriptions: descriptions});
+	if (!editingMonster.length > 0) {
 		var mon = {name: name};
 		monsterLibrary[name] = mon;
-		monsterLibrary[name].meta = {name:name, hp:hp, atk:atk, def:def, rKind: rKind, rVal: rValue, rDesc: rDesc, descriptions: descriptions};
-		if(monsterBoss.checked = true){monsterLibrary[name].boss = true;}
-		else{monsterLibrary[name].boss = false;}
-		selectMonster(name);
+		monsterLibrary[name].meta = {};
+	} else {
+		libraryFromFields(monsterLibrary[name].meta, metaMap.monster);
 	}
 	if (currentItem == "select"){
-		monsterUpdate(name, hp, atk, def, rKind, rValue, rDesc, descriptions);
+		monsterUpdate();
 	}
-	monsterNameEl.value = '';
-	document.getElementById('monsterDesc1').value = '';
-	document.getElementById('monsterDesc2').value = '';
-	document.getElementById('monsterDesc3').value = '';
+	
+	btnAddMonster.textContent = 'Add Monster';
+	var cancel = document.getElementById('btnCancelEdit'); 
+	if(cancel) cancel.style.display='none';
+	resetFields(metaMap.monster);
 	saveMonsterLibrary();
 	renderMonsterLibrary();
 });
@@ -2046,20 +2099,9 @@ if (btnCancelEdit) {
 		editingMonster = "";
 		btnAddMonster.textContent = 'Add Monster';
 		btnCancelEdit.style.display = 'none';
-		monsterNameEl.value = '';
-		monsterHPEl.value = 6;
-		monsterATKEl.value = 2;
-		monsterDefEl.value = 0;
-		monsterRewDescEl.value = '';
-		monsterRewKindEl.value = "Gold";
-		monsterRewValueEl.value = 25;
 		monsterClass("");
-		monIconSelect.value = "monster"
-		monSound.value = "growling"
+		resetFields(metaMap.monster);
 		updateMonIcon();
-		document.getElementById('monsterDesc1').value = '';
-		document.getElementById('monsterDesc2').value = '';
-		document.getElementById('monsterDesc3').value = '';
 	});
 }
 
@@ -2070,12 +2112,9 @@ if (btnCancelShop) {
 		editingShop = "";
 		btnAddShop.textContent = 'Add Shop';
 		btnCancelShop.style.display = 'none';
-		shopNameEl.value = '';
-		shopKindEl.value = "defense";
-		shopValueEl.value = 0;
-		shopCostEl.value = 0;
-		shopIconSelect.value = "villager";
-		shopCurrencyEl.value = "gold";
+		
+		resetFields(metaMap.shop);
+
 		updateShopIcon();
 	});
 }
@@ -2087,14 +2126,10 @@ if (btnCancelHazard) {
 		editingHazard = "";
 		btnAddHazard.textContent = 'Add Hazard';
 		btnCancelHazard.style.display = 'none';
-		hazardName.value = '';
-		hazardHint.value = '';
-		hazardText.value = '';
-		hazardVoid.value = false;
-		hazardStars.value = false;
-		hazardKind.value = "life";
-		hazardValue.value = 0;
-		hazardIconSelect.value = "void";
+
+		resetFields(metaMap.hazard);
+
+
 		updateHazardIcon();
 	});
 }
@@ -2106,45 +2141,21 @@ btnCancelHazard.style.display = 'none';
 
 btnAddHazard.addEventListener('click', function(){
 	var name = hazardName.value.trim() || 'Hazard';
-	var kind = hazardKind.value;
-	var value = hazardValue.value;
-	var icon = hazardIconSelect.value;
-	
-	var hint = 	hazardHint.value;
-	var eText = hazardText.value;
-	var hVoid = hazardVoid.checked;
-    var hStairs = hazardStairs.checked;
-
-
-	
-	if (editingHazard.length > 0) {
-		// Save edits to existing hazard
-		var hazard = hazardLibrary[editingHazard];
-		hazardMeta = hazard.meta;
-		hazardMeta.name = name; 
-		hazardMeta.kind = kind;
-		hazardMeta.value = value;
-		hazardMeta.icon = icon;
-		hazardMeta.hint = hint
-		hazardMeta.text = eText;
-		hazardMeta.void = hVoid;
-		hazardMeta.stairs = hStairs;
-		
-		btnAddHazard.textContent = 'Add Hazard';
-		var cancel = document.getElementById('btnCancelHazard'); if(cancel) cancel.style.display='none';
+	if (!editingHazard.length > 0) {
+		var mon = {name: name};
+		hazardLibrary[name] = mon;
+		hazardLibrary[name].meta = {};
 	} else {
-		//adding new hazard to the library
-		//hazardLibrary.push({name:name, hp:hp, atk:atk, def:def, rKind: rKind, rVal: rValue, rDesc: rDesc, descriptions: descriptions});
-		var hazard = {name: name};
-		hazardLibrary[name] = hazard;
-		hazardLibrary[name].meta = {name: name, kind: kind, value: value, icon: icon, hint: hint, text: eText, void: hVoid, stairs: hStairs};
-		selectHazard(name);
+		libraryFromFields(hazardLibrary[name].meta, metaMap.hazard);
 	}
 	if (currentItem == "select"){
-		hazardUpdate(name, kind, value, icon, hint, eText, hVoid, hStairs);
+		hazardUpdate();
 	}
-	hazardName.value = 'hazard';
-	
+	btnAddHazard.textContent = 'Add Hazard';
+	var cancel = document.getElementById('btnCancelEdit'); 
+	if(cancel) cancel.style.display='none';
+	resetFields(metaMap.hazard);
+	saveHazardLibrary();
 	renderHazardLibrary();
 });
 
@@ -2152,36 +2163,23 @@ btnAddHazard.addEventListener('click', function(){
 
 btnAddShop.addEventListener('click', function(){
 	var name = shopNameEl.value.trim() || 'Shop';
-	var kind = shopKindEl.value;
-	var value = shopValueEl.value;
-	var cost = shopCostEl.value;
-	var currency = shopCurrencyEl.value;
-	var icon = shopIconSelect.value;
-	if (editingShop.length > 0) {
-		// Save edits to existing shop
-		var shop = shopLibrary[editingShop];
-		shopMeta = shop.meta;
-		shopMeta.name = name; 
-		shopMeta.kind = kind;
-		shopMeta.value = value;
-		shopMeta.cost = cost;
-		shopMeta.currency = currency;
-		shopMeta.icon = icon;
-		btnAddShop.textContent = 'Add Shop';
-		var cancel = document.getElementById('btnCancelShop'); if(cancel) cancel.style.display='none';
+	
+	if (!editingShop.length > 0) {
+		var mon = {name: name};
+		shopLibrary[name] = mon;
+		shopLibrary[name].meta = {};
 	} else {
-		//adding new shop to the library
-		//shopLibrary.push({name:name, hp:hp, atk:atk, def:def, rKind: rKind, rVal: rValue, rDesc: rDesc, descriptions: descriptions});
-		var shop = {name: name};
-		shopLibrary[name] = shop;
-		shopLibrary[name].meta = {name:name, kind: kind, value: value, cost: cost, currency: currency, icon: icon };
-		selectShop(name);
+		libraryFromFields(shopLibrary[name].meta, metaMap.shop);
 	}
 	if (currentItem == "select"){
-		shopUpdate(name, kind, value, cost, currency, icon);
+		shopUpdate();
 	}
-	shopNameEl.value = 'shop';
 	
+	btnAddShop.textContent = 'Add Shop';
+	var cancel = document.getElementById('btnCancelEdit'); 
+	if(cancel) cancel.style.display='none';
+	resetFields(metaMap.shop);
+	saveShopLibrary();
 	renderShopLibrary();
 });
 
@@ -2339,65 +2337,7 @@ document.getElementById('grid').onclick = function(e) {
 		if (currentItem === 'empty') {
 			if (existingIdx >= 0) {
 				items.splice(existingIdx, 1);
-			}
-		} else if (currentItem === 'treasure') {
-			var treasureObj = {type: 'treasure', pos: pos, meta: {kind: treasureKind, value: treasureValue}};
-			if (existingIdx >= 0) {
-				items[existingIdx] = treasureObj;
-			} else {
-				items.push(treasureObj);
-			}
-		} else if (currentItem === 'stairs') {
-			var stairsObj = {type: 'stairs', pos: pos, meta: {level: stairLevelSelect.value, cell: stairCellSelect.value}};
-			if (existingIdx >= 0) {
-				items[existingIdx] = stairsObj;
-			} else {
-				items.push(stairsObj);
-			}
-		} else if (currentItem === 'monster') {
-			var monsterMeta = null;
-			if (editingMonster.length >0 && monsterLibrary[editingMonster]) {
-				monsterMeta = monsterLibrary[editingMonster].meta;
-				if (m.descriptions && m.descriptions.length) monsterMeta.descriptions = m.descriptions.slice();
-			}
-			var monsterObj = {type: 'monster', pos: pos};
-			if (monsterMeta) monsterObj.meta = monsterMeta;
-			if (existingIdx >= 0) {
-				items[existingIdx] = monsterObj;
-			} else {
-				items.push(monsterObj);
-			}
-		} else if (currentItem === 'potion') {
-			var potionObj = {type: 'potion', pos: pos, meta: {heal: potionHeal}};
-			if (existingIdx >= 0) {
-				items[existingIdx] = potionObj;
-			} else {
-				items.push(potionObj);
-			}
-		} else if (currentItem === 'villager') {
-			var villagerObj = {type: 'villager', pos: pos, meta: {text: villagerText, kind: villagerKind, value: villagerValue}};
-			if (existingIdx >= 0) {
-				items[existingIdx] = villagerObj;
-			} else {
-				items.push(villagerObj);
-			}
-		} else if (currentItem === 'wall') {
-			var cwObj = {type: 'wall', pos: pos, meta: {name: customWallNameEl.value, icon: wallIconSelect.value}};
-			if (existingIdx >= 0) {
-				items[existingIdx] = cwObj;
-			} else {
-				items.push(cwObj);
-			}
-		} else if (currentItem === 'shop') {
-			
-			var cwObj = {type: 'shop', pos: pos, meta: {name: shopNameEl.value, kind: shopKind.value, value: shopValue.value, cost: shopCost.value, currency: shopCurrency.value, icon: shopIconSelect.value}};
-			
-			if (existingIdx >= 0) {
-				items[existingIdx] = cwObj;
-			} else {
-				items.push(cwObj);
-			}
-			
+			} 
 		} else if (currentItem === 'eraser') {
 			if (existingIdx >= 0) {
 				items.splice(existingIdx, 1);
@@ -2487,11 +2427,11 @@ document.getElementById('grid').onclick = function(e) {
 				if (message != ""){document.getElementById('gridAnnouncer').textContent = message;}
 		}}
 		else {
+			newObj = {type: currentItem, pos: pos, meta: getMetas(metaMap[currentItem])};
 			if (existingIdx >= 0) {
-				items[existingIdx].type = currentItem;
-				if (items[existingIdx].meta) delete items[existingIdx].meta;
+				items[existingIdx] = newObj;				
 			} else {
-				items.push({type: currentItem, pos: pos});
+				items.push(newObj);
 			}
 		}
 
