@@ -1,4 +1,5 @@
-
+//TODO - count keys per level, determine door or exit behavior for each door/Exit
+//
 
 /*
   NOTE: Fix for ReferenceError: MAX_SIZE is not defined
@@ -523,6 +524,7 @@ function hasStairs(pos){ return itemsAt(pos).some(it => it.type === "stairs"); }
 function hasTreasure(pos){ return itemsAt(pos).some(it => it.type === "treasure"); }
 function hasPotion(pos){ return itemsAt(pos).some(it => it.type === "potion"); }
 function hasVoid(pos){ return itemsAt(pos).some(it => it.type === "void"); }
+function hasHazard(pos){ return itemsAt(pos).some(it => it.type === "hazard"); }
 function hasMonster(pos){ return itemsAt(pos).some(it => it.type === "monster"); }
 function hasWeaponShop(pos){ return itemsAt(pos).some(it => it.type === "weapon_shop"); }
 function hasShop(pos){ return itemsAt(pos).some(it => it.type === "shop"); }
@@ -595,6 +597,7 @@ function revealNeighbors(pos) {
 	else if (hasStairs(npos)) revealedSpecial.set(npos, "stairs");
     else if (hasMonster(npos)) revealedSpecial.set(npos, "monster");
     else if (hasVoid(npos)) revealedSpecial.set(npos, "void");
+	else if (hasHazard(npos)) revealedSpecial.set(npos, "hazard");
     else if (hasPotion(npos)) revealedSpecial.set(npos, "potion");
     else if (hasVillager(npos)) revealedSpecial.set(npos, "villager");
     else if (hasWeaponShop(npos)) revealedSpecial.set(npos, "weapon_shop");
@@ -623,6 +626,7 @@ function revealMap(){
 	else if (hasStairs(pos)){ revealedSpecial.set(pos, "stairs")}
     else if (hasMonster(pos)){ revealedSpecial.set(pos, "monster")}
     else if (hasVoid(pos)) {revealedSpecial.set(pos, "void")}
+    else if (hasHazard(pos)) {revealedSpecial.set(pos, "hazard")}
     else if (hasPotion(pos)) {revealedSpecial.set(pos, "potion")}
     else if (hasVillager(pos)) {revealedSpecial.set(pos, "villager")}
     else if (hasWeaponShop(pos)) {revealedSpecial.set(pos, "weapon_shop")}
@@ -942,6 +946,7 @@ if (customWall) {
   if (items.some(i=>i.type==="door")) return ["You see the exit", 1];
   if (items.some(i=>i.type==="exit")) return ["Dungeon entrance", 1];
   if (items.some(i=>i.type==="void")) return ["mysterious fog", 2];
+  if (items.some(i=>i.type==="hazard")) return [items[0].meta.hint, 2];
   if (items.some(i=>i.type==="weapon_shop")) return ["weapon shop", 4];
     if (items.some(i=>i.type==="shop")){ return [items[0].meta.name, 4]};
   if (items.some(i=>i.type==="armor_shop")) return ["armor shop", 4];
@@ -1194,7 +1199,7 @@ function describeCurrentLocation() {
 /* ---------------- Discovery + entering a cell ---------------- */
 
 function enterCell(prefix) {
-	
+  spoken = [];	
   const pos = toPos(player.row, player.col);
   const firstVisit = !visited.has(pos);
   visited.add(pos);
@@ -1261,7 +1266,7 @@ function enterCell(prefix) {
 		defeat = false;
 	}
 	if (voided == true){
-		discoveryMsgs.push("You have fallen into a void. Reloading " + currentLevelId + "... \n")
+		discoveryMsgs.push(voidMessage + " Reloading " + currentLevelId + "... \n")
 		discoveryMsgs.push("You are back in cell " + pos + ".\n")
 		voided = false;
 	}
@@ -1429,6 +1434,7 @@ function enterCell(prefix) {
 	//voidMsg = trimText(voidMsg)
     //announce(voidMsg);
     voided = true;
+	voidMessage = "You've fallen into the void.";
 	preserveStatsOnNextLoad = true;
 	// announce(voidMsg);
     // Preserve most stats across the restart, but reset the key flag.
@@ -1446,12 +1452,41 @@ function enterCell(prefix) {
     updateUI();
     return;
   }
+  if (hasHazard(pos)){
+	  //TODO - Hazard Handling
+	  //{"type":"hazard","pos":"D6","meta":{"name":"Void","hint":"Mysterious fog","text":"You  have fallen into a void.","void":true,"icon":"void"}}
+	  haz = itemsAt(pos)[0];
+	  effectMessage = ""
+	  if (haz.meta.value != 0){
+		  word = "lost"
+		  if (haz.meta.value > 0) {word = "gained"}
+		  effectMessage = "You have " + word + " " + Math.abs(haz.meta.value) + " " + haz.meta.kind + "."
+	  }
+	  
+	  if (haz.meta.void){
+		  //it's void behavior!
+		voided = true;
+		voidMessage = haz.meta.text + " " + effectMessage;
+		preserveStatsOnNextLoad = true;
+		loadLevel(currentLevelId);
+		updateUI();
+		return;
+	  }
+	  
+	  if(haz.meta.stairs){
+		  console.log("We haven't prepared for this kind of hazard yet.")
+		  
+	  }
+	  spoken.push(haz.meta.text);
+	  spoken.push(effectMessage);
+	  
+  }
 
   // Update visuals/stats before speaking
  
 
   // Build spoken sequence. If a prefix (combat text) was provided, include it first.
-  var spoken = [];
+  
   // Prepare final text by removing redundant "A ... is here. " sentences when
   // discovery messages already describe the item (prevents duplicates).
   var finalText = String(text || '');
@@ -1496,8 +1531,10 @@ function enterCell(prefix) {
 }
 var defeat = false;
 var voided = false;
+var voidMessage = "";
 /* ---------------- Movement ---------------- */
 function tryMove(dr, dc) {
+	var spoken = [];
 	speechSynthesis.cancel();
 	if(live.innerHTML != ""){announce("");}
  
