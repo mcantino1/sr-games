@@ -32,7 +32,7 @@ var volBoxTone = document.getElementById("toneVol");
 
 let stats = { life: baseLife, strength: 2, defense: 0, gold: 0, key: false };
 
-
+var controlLock = false;
 
 
 
@@ -168,6 +168,7 @@ function initGame(myButton){
  }
  
  function mainMenu(){
+	 gameFinished = false;
 	 welcomeDiv.classList.remove("hideMe");
 	 gameDiv.classList.add("hideMe");
 	 footDiv.classList.add("hideMe");
@@ -1457,7 +1458,7 @@ function enterCell(prefix) {
     return;
   }
   if (hasHazard(pos)){
-	  //TODO - Hazard Handling
+	  
 	  //{"type":"hazard","pos":"D6","meta":{"name":"Void","hint":"Mysterious fog","text":"You  have fallen into a void.","void":true,"icon":"void"}}
 	  haz = itemsAt(pos)[0];
 	  effectMessage = ""
@@ -1466,8 +1467,11 @@ function enterCell(prefix) {
 		  if (haz.meta.value > 0) {word = "gained"}
 		  hval = haz.meta.value;
 		  hstat = haz.meta.kind;
-		  effectMessage = "You have " + word + " " + Math.abs(hval) + " " + hstat + "."
-		  stats[hstat] = parseInt(stats[hstat]) + parseInt(hval); 
+		  if(hval && hval != 0){
+			effectMessage = "You have " + word + " " + Math.abs(hval) + " " + hstat + "."
+			stats[hstat] = parseInt(stats[hstat]) + parseInt(hval); 
+		  }
+		  
 		  //allow death
 		  if (stats.life < 1){
 			playSound("fall");
@@ -1479,6 +1483,14 @@ function enterCell(prefix) {
 			preserveStatsOnNextLoad = true;
 			loadLevel(currentLevelId);
 			return;
+		  }
+		  
+		  //not dead - hold up a second
+		  if(hval < 0){
+		  controlLock = true;
+		  setTimeout(() => {
+			controlLock = false;
+			}, 1000);
 		  }
 	  }
 	  
@@ -1997,6 +2009,7 @@ function toggleSettings(){
 // List visible objects
 gameEl.addEventListener("keydown", (e) => {
   // Press S to hear current location + full stats.
+  if(controlLock){return};
 	if(gameFinished){
 		if (e.key === ' ' || e.key === 'Spacebar' || e.code === 'Space' || e.code == "Enter" || e.key == "Enter" || e.code == "NumpadEnter"){
 		mainMenu();
