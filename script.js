@@ -1267,6 +1267,7 @@ function enterCell(prefix) {
 	if (defeat == true){
 		discoveryMsgs.push("You have died. Reloading " + currentLevelId + "... \n")
 		discoveryMsgs.push("You are back in cell " + pos + ".\n")
+		discoveryMsgs.push("You have learned from your mistakes and feel a little stronger.");
 		stats["strength"] = parseInt(stats["strength"]) + 1;
 		defeat = false;
 	}
