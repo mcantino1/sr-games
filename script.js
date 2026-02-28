@@ -1460,7 +1460,10 @@ function enterCell(prefix) {
 	  if (haz.meta.value && haz.meta.value != 0){
 		  word = "lost"
 		  if (haz.meta.value > 0) {word = "gained"}
-		  effectMessage = "You have " + word + " " + Math.abs(haz.meta.value) + " " + haz.meta.kind + "."
+		  hval = haz.meta.value;
+		  hstat = haz.meta.kind;
+		  effectMessage = "You have " + word + " " + Math.abs(hval) + " " + hstat + "."
+		  stats[hstat] += hval;
 	  }
 	  
 	  if (haz.meta.void){
