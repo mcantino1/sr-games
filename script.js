@@ -1493,7 +1493,7 @@ function enterCell(prefix) {
 		  setTimeout(() => {
 			  console.log("unlock")
 			controlLock = false;
-			}, 1000);
+			}, 500);
 		  }
 	  }
 	  
