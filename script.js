@@ -167,6 +167,13 @@ function initGame(myButton){
 	 gameDiv.focus();
  }
  
+ function mainMenu(){
+	 welcomeDiv.classList.remove("hideMe");
+	 gameDiv.classList.add("hideMe");
+	 footDiv.classList.add("hideMe");
+
+ }
+ 
 var wallPhrases = ["The wall is gross. Your hands are sticky. ", "The wall tastes delicious! ", "Wall, my old friend! ", "A wall blocks your way. ", "The wall sneaks up on you.", "The wall squeaks when you touch it. Strange.", "The wall smells wet and soupy."]
 var wallCount = 0;
 
@@ -436,7 +443,7 @@ let LEVELS = {
       {type:"wall", pos:"B1"},
       {type:"wall", pos:"B2"},
       {type:"wall", pos:"B3"},
-      {type:"monster", pos:"D3"},
+      {type:"monster", pos:"D3", meta: {boss: true}},
       {type:"treasure", pos:"C4"},
       {type:"potion", pos:"E2"},
       {type:"key", pos:"C5"},
@@ -538,26 +545,22 @@ function initMonsters(){
   for (const it of level.items) {
     if (it.type === "monster") {
       // Use metadata from the level creator when available, otherwise fall back to defaults
-      let hp = 6;
-      let attack = 2;
-      let def = 0;
-      let name = 'monster';
-	  let rD = "";
-	  let rV = 0;
-	  let rK = "gold";
-	  
-      if (it.meta) {
-        if (typeof it.meta.hp !== 'undefined') hp = Number(it.meta.hp) || hp;
-        if (typeof it.meta.atk !== 'undefined') attack = Number(it.meta.atk) || attack;
-        if (typeof it.meta.def !== 'undefined') def = Number(it.meta.def) || def;
-        if (typeof it.meta.name !== 'undefined') name = String(it.meta.name) || name;
-		if (typeof it.meta.rDesc !== 'undefined') rD = String(it.meta.rDesc) || rD;
-		if (typeof it.meta.rVal !== 'undefined') rV = Number(it.meta.rVal) || rV;
-		if (typeof it.meta.rKind !== 'undefined') rK = String(it.meta.rKind) || rK;
-      }
+
+	  let defaults = {hp: 6, atk: 2, def : 0, name: "monster"}
+		if(!it.meta){it.meta = {defaults}}
+		deKeys = Object.keys(defaults)
+		for (key of deKeys){
+			if(!it.meta[key]){it.meta[key] = defaults[key]}
+		}
+		
       var descs = [];
-      if (it.meta && Array.isArray(it.meta.descriptions)) descs = it.meta.descriptions.slice();
-		monsters.set(it.pos, { hp: hp, attack: attack, defense: def, name: name, rDesc: rD, rKind: rK, rVal: rV, descriptions: descs, nextDescIndex: 0 });
+      if (it.meta && Array.isArray(it.meta.descriptions)) it.meta.descriptions = it.meta.descriptions.slice();
+		metKeys = Object.keys(it.meta);
+		myMeta = {}
+		for (key of metKeys){
+			myMeta[key] = it.meta[key]
+		}
+		monsters.set(it.pos, myMeta);
     }
   }
 }
@@ -665,6 +668,7 @@ function mapTouch(pos){
 			} else {
 				speechSynthesis.cancel();
 				announce("You have completed the final level. Congratulations!");
+				finishGame();
 			}
 			}
 	}
@@ -1634,8 +1638,8 @@ function tryMove(dr, dc) {
     }
     const monster = getMonster(nextPos);
 
-    // Player attacks first. Account for monster defense and include the monster's name.
-    const monsterDef = monster.defense || 0;
+    // Player attacks first. Account for monster.def and include the monster's name.
+    const monsterDef = monster.def || 0;
     const monsterName = monster.name || 'the monster';
 
     // Cycle and read a description for this attack if available
@@ -1668,8 +1672,8 @@ function tryMove(dr, dc) {
     }
 
     if (monster.hp > 0) {
-      // Monster attacks back.
-      const raw = monster.attack || 0;
+      // monster.atks back.
+      const raw = monster.atk || 0;
       // Miss chance: 5% for both player and monster.
       const monsterMiss = Math.random() < 0.05;
       if (monsterMiss) {
@@ -1751,6 +1755,13 @@ function tryMove(dr, dc) {
     // is spoken first, followed by a critical notice when appropriate.
     const prefix = (attackDesc ? attackDesc + ' ' : '') + (isCrit ? 'Critical hit! ' : '') + msg + ` You are in ${posNow}. `;
     enterCell(prefix);
+	console.log(monster);
+	if(monster.boss){
+		//FINAL boss
+		msg += "CONGRATULATIONS"
+		finishGame()
+	}
+	
     return;
   }
 //hasKey(pos)
@@ -1770,6 +1781,13 @@ function tryMove(dr, dc) {
   updateUI();
   enterCell();
 }
+var gameFinished = false;
+function finishGame(){
+	announce("You have beaten " + myGame.title + "!. Press <kbd>enter</kbd> to return to the game selection screen.");
+	gameFinished = true;
+	
+}
+
 
 function speakStatus() {
   speechSynthesis.cancel();
@@ -1979,6 +1997,13 @@ function toggleSettings(){
 // List visible objects
 gameEl.addEventListener("keydown", (e) => {
   // Press S to hear current location + full stats.
+	if(gameFinished){
+		if (e.key === ' ' || e.key === 'Spacebar' || e.code === 'Space' || e.code == "Enter" || e.key == "Enter" || e.code == "NumpadEnter"){
+		mainMenu();
+	}
+	return
+	}
+	
   if (e.key === "s" || e.key === "S") {
     e.preventDefault();
     speakStatus();
@@ -2006,6 +2031,9 @@ gameEl.addEventListener("keydown", (e) => {
   // Spacebar: drink potion if present on current square
 if (e.key === ' ' || e.key === 'Spacebar' || e.code === 'Space' || e.code == "Enter" || e.key == "Enter" || e.code == "NumpadEnter") {
     e.preventDefault();
+	if(gameFinished){
+		mainMenu();
+	}
     const pos = toPos(player.row, player.col);
 	activateCell(pos);
     return;
