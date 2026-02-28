@@ -1463,7 +1463,7 @@ function enterCell(prefix) {
 		  hval = haz.meta.value;
 		  hstat = haz.meta.kind;
 		  effectMessage = "You have " + word + " " + Math.abs(hval) + " " + hstat + "."
-		  stats[hstat] += hval;
+		  stats[hstat] = parseInt(stats[hstat]) + parseInt(hval); 
 	  }
 	  
 	  if (haz.meta.void){
