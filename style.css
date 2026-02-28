@@ -13,6 +13,7 @@
 	--colAlphaSwitch: 0.5;
 	--colAlphaUnknown: 0.35;
 	--colAlphaSettings: 0.8;
+	--gridAlpha: 1;	
   }
 
 
@@ -112,7 +113,7 @@ h1 strong{font-size: 1.25em; margin-left: 0.25em}
   #map div{max-width: 100px; aspect-ratio: 1/1;}
 
   .cell {
-    border: 2px solid  light-dark(rgba(var(--colDarkR), var(--colAlphaBorder)), rgba(var(--colLightR), var(--colAlphaBorder)));
+    border: 2px solid  light-dark(rgba(var(--colDarkR), var(--gridAlpha)), rgba(var(--colLightR), var(--gridAlpha)));
     border-radius: 8px;
     display: flex;
     align-items: center;
