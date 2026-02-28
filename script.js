@@ -1486,9 +1486,12 @@ function enterCell(prefix) {
 		  }
 		  
 		  //not dead - hold up a second
+		  console.log(hval)
 		  if(hval < 0){
+			  console.log("lock")
 		  controlLock = true;
 		  setTimeout(() => {
+			  console.log("unlock")
 			controlLock = false;
 			}, 1000);
 		  }
