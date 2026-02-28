@@ -12,7 +12,7 @@
     <div class="container">
         <h1>Level Creator</h1>
 		<div class="topInfo">    
-		<select id="gameSelect" onChange="selectGame()">
+		<select id="gameSelect" onChange="selectGame();">
 		
 		</select>
 			<label for="gameName">Game Name: </label>
@@ -31,7 +31,7 @@
 <div class="gridParent">
 <div class="leftPanel">
 <H2>Level List</h2>
-<select name="levels" onchange="changeLevel()" title="Level List" id="levelSelect" size="20"></select>
+<select name="levels" onchange="changeLevel();" title="Level List" id="levelSelect" size="20"></select>
 <button id="btnNew" onclick="levelNew()" >New</button>
 <button id="btnCopy" onclick="levelCopy()">Copy</button>
 <button id="btnDelete" onclick="levelDelete()">Delete</button>
@@ -43,15 +43,15 @@
 		<div>
 			<div class="floatGroup">
 				<label  for="inputLevelId">Level ID:</label>
-                <input meta="id" object="level" type="text" onchange="updateID()" id="inputLevelId" placeholder="uniqueIdentifier" >
+                <input meta="id" object="level" type="text" onchange="updateID();" id="inputLevelId" placeholder="uniqueIdentifier" >
 			</div>
 			<div class="floatGroup">
 				<label for="nextLevelSelect">Next level:</label>
-				<select object="level" meta="nextLevelId" name="nextLevelId" id="nextLevelSelect"  onchange="updateNext()" ></select>
+				<select object="level" meta="nextLevelId" name="nextLevelId" id="nextLevelSelect"  onchange="updateNext();" ></select>
 			</div>
 			<div class="floatGroup">
 			<label for="levelOpacity">Grid opacity</label>
-			<input object="level" meta="gridOpacity" class="statBox" type="number" onChange="saveLevel(); updateOpacity()" id="levelOpacity" value="100"/>
+			<input object="level" meta="gridOpacity" class="statBox" type="number" onChange="saveLevel(); updateOpacity();" id="levelOpacity" value="100"/>
 			</div>
 			<div class="floatGroup">
                 <label for="inputRows">Rows:</label>
@@ -84,7 +84,7 @@
          </div>
 		<div>		 
 			<h2>Cell Properties</h2>
-            <div id="monsterLibraryContainer" >
+            <div object="monster" class="configDiv" id="monsterLibraryContainer" >
 				
                     <div class="floatGroup">
                         <label for="monsterName" > monster Name:     </label>
@@ -151,11 +151,11 @@
 						<div class="floatGroup">
 						
 						<label for="monIcon">Icon</label>
-						<select object="game" value="monster" meta="icon" onChange="updateMonIcon()"  id="monIcon" >
+						<select object="monster" value="monster" meta="icon" onChange="updateMonIcon();"  id="monIcon" >
 						<option  value="monster">monster</option>
 						</select>
 						<div id="monIconDisplay"></div>
-						<input type="file" onchange="addMonIcon()" style="width: 10em; height: 3em;" id="monAddIcon" accept=".svg" />
+						<input type="file" onchange="addMonIcon();" style="width: 10em; height: 3em;" id="monAddIcon" accept=".svg" />
 						</div>
 						
 					</div>
@@ -173,36 +173,36 @@
             </div>
 
 
-            <div id="treasureConfig">
-                <label onchange="treasureUpdate()" for="treasureKind">Treasure type:</label>
-                <select object="game" meta="kind" onchange="treasureUpdate()"  id="treasureKind">
+            <div object="treasure" class="configDiv" id="treasureConfig">
+                <label " for="treasureKind">Treasure type:</label>
+                <select object="game" meta="kind"   id="treasureKind">
                     <option value="gold">Gold</option>
                     <option value="strength">Strength</option>
                     <option value="defense">Defense</option>
                 </select>
                 <label for="treasureValue">Value:</label>
-                <input object="treasure" meta="value" onchange="treasureUpdate()" id="treasureValue" type="number" min="1" value="25" />
+                <input object="treasure" meta="value"   type="number" min="1" value="25" />
                 <span >Set the amount of gold or the buff amount.</span>
-            </div>
+			</div>
 
-			<div id="shopConfig">
+			<div object="shop" class="configDiv"id="shopConfig">
 			    <div class="floatGroup">
 					<label for="shopName" > Shop Name:     </label>
                     <input object="shop" meta="name" id="shopName" placeholder="the ..." />
 					</div>
-                <label onchange="shopUpdate()" for="shopKind">shop type:</label>
-                <select object="shop" meta="kind" onchange="shopUpdate()"  id="shopKind">
+                <label  for="shopKind">shop type:</label>
+                <select object="shop" meta="kind"   id="shopKind">
 					<option value="gold">gold</option>
                     <option value="strength">Strength</option>
                     <option value="defense">Defense</option>
 					<option value="life">Life</option>
                 </select>
                 <label for="shopValue">Value:</label>
-                <input object="shop" meta="value"  onchange="shopUpdate()" class="number" id="shopValue" type="number" min="1" value="25" />
+                <input object="shop" meta="value"   class="number" id="shopValue" type="number" min="1" value="25" />
 				  <label for="shopCost">cost:</label>
-                <input  object="shop" meta="cost" onchange="shopUpdate()" class="number" id="shopCost" type="number" min="1" value="25" />
-				<label onchange="shopUpdate()" for="shopCurrency">Currency:</label>
-                <select object="shop" meta="currency" onchange="shopUpdate()"  id="shopCurrency">
+                <input  object="shop" meta="cost"  class="number" id="shopCost" type="number" min="1" value="25" />
+				<label  for="shopCurrency">Currency:</label>
+                <select object="shop" meta="currency"   id="shopCurrency">
 					<option value="gold">gold</option>
                     <option value="strength">Strength</option>
                     <option value="defense">Defense</option>
@@ -210,11 +210,11 @@
                 </select>
 				<div style="width: fit-content;">
 				<label for="shopIcon">Icon</label>
-				<select object="shop" meta="gold" onChange="updateShopIcon()"  id="shopIcon" >
+				<select object="shop" meta="gold" onChange="updateShopIcon();"  id="shopIcon" >
 				<option  value="villager">villager</option>
 				</select>
 				<div id="shopIconDisplay"></div>
-				<input type="file" onchange="addShopIcon()" style="width: 10em; height: 3em;" id="shopAddIcon" accept=".svg" />
+				<input type="file" onchange="addShopIcon();" style="width: 10em; height: 3em;" id="shopAddIcon" accept=".svg" />
 				</div>
 				<div style="clear: both;">
                         <button id="btnAddShop">Add Shop</button>
@@ -229,7 +229,7 @@
             </div>
 
 
-			<div id="hazardConfig">
+			<div object="hazard" class="configDiv" id="hazardConfig">
 			    <div class="floatGroup">
 					<label for="hazardName" > Hazard Name:     </label>
                     <input object="hazard" meta="name" id="hazardName" placeholder="void" />
@@ -254,7 +254,7 @@
 						 
 						 <div id="hazardStairConfig" style="display: none;">
 						 	<label for="hazardLevelSelect">Target Level:</label>
-							<select object="hazard" meta="level" instance="true" id="hazardLevelSelect">
+							<select object="hazard" meta="level" cellSelect="hazardCellSelect" instance="true" id="hazardLevelSelect">
 							</select>
 							<label for="hazardCellSelect">Target Cell:</label>
 							<select object="hazard" meta="cell" instance="true" id="hazardCellSelect"/></select>
@@ -264,8 +264,8 @@
 				
 				
 				<div class="floatGroup">
-                <label onchange="hazardUpdate()" for="hazardKind">hazard type:</label>
-                <select object="hazard" meta="kind"  onchange="hazardUpdate()"  id="hazardKind">
+                <label  for="hazardKind">hazard type:</label>
+                <select object="hazard" meta="kind"    id="hazardKind">
 					<option value="life">Life</option>
 					<option value="gold">gold</option>
                     <option value="strength">Strength</option>
@@ -279,11 +279,11 @@
                 
 				<div style="width: fit-content;">
 				<label for="hazardIcon">Icon</label>
-				<select  object="hazard" meta="icon" onChange="updateHazardIcon()"  id="hazardIcon" >
+				<select  object="hazard" meta="icon" onChange="updateHazardIcon();"  id="hazardIcon" >
 				<option value="void">void</option>
 				</select>
 				<div id="hazardIconDisplay"></div>
-				<input type="file" onchange="addHazardIcon()" style="width: 10em; height: 3em;" id="hazardAddIcon" accept=".svg" />
+				<input type="file" onchange="addHazardIcon();" style="width: 10em; height: 3em;" id="hazardAddIcon" accept=".svg" />
 				</div>
 				<div style="clear: both;">
                         <button id="btnAddHazard">Add Hazard</button>
@@ -297,54 +297,55 @@
 				
             </div>
 
-            <div id="stairConfig" >
+            <div  object="stairs" class="configDiv" id="stairConfig" >
                 <label for="stairLevelSelect">Target Level:</label>
-                <select  object="stairs" meta="level" onchange="stairUpdate('level')"  id="stairLevelSelect">
+                <select  object="stairs" meta="level" cellSelect="stairCellSelect"  id="stairLevelSelect">
                 </select>
                 <label for="stairCellSelect">Target Cell:</label>
-                <select  object="stairs" meta="cell" onchange="stairUpdate('cell')" id="stairCellSelect"/></select>
+                <select  object="stairs" meta="cell" id="stairCellSelect"/></select>
           </div>
 
-            <div id="keyConfig" >
+            <div object="key" class="configDiv" id="keyConfig" >
                 <label for="keyLevelSelect">Key Level:</label>
-                <select  object="key" meta="level" onchange="keyUpdate()"  id="keyLevelSelect">
+                <select  object="key" meta="level"  id="keyLevelSelect">
                 </select>
             </div>
 
 
-            <div  id="potionConfig" >
+            <div object="potion" class="configDiv" id="potionConfig" >
                 <label for="potionHeal">Potion heal:</label>
                 <input object="potion" meta="heal" id="potionHeal" type="number" min="1" value="10" />
                 <span >Amount of life restored when drinking this potion.</span>
             </div>
 
-            <div  id="villagerConfig" >
+            <div object="villager" class="configDiv" id="villagerConfig" >
                 <label for="villagerText">Villager text:</label>
-                <input object="villager" meta="text" id="villagerText" onchange="villagerUpdate()" type="text" placeholder="Villager says..."  />
+                <input object="villager" meta="text" id="villagerText" type="text" placeholder="Villager says..."  />
                 <label for="villagerKind">Reward type:</label>
-                <select  object="villager" meta="kind" id="villagerKind" onchange="villagerUpdate()" >
+                <select  object="villager" meta="kind" id="villagerKind" >
                     <option value="gold">Gold</option>
                     <option value="strength">Strength</option>
                     <option value="defense">Defense</option>
                 </select>
                 <label for="villagerValue">Value:</label>
-                <input object="villager" meta="value" onchange="villagerUpdate()" id="villagerValue" type="number" min="1" value="25" />
+                <input object="villager" meta="value"  id="villagerValue" type="number" min="1" value="25" />
                 <span >Villager spoken text and an optional reward amount.</span>
             </div>
 
-            <div  id="customWallConfig" >
+            <div object="wall" class="configDiv" id="customWallConfig" >
                 <label for="customWallName">Custom wall name:</label>
-                <input object="wall" meta="name" id="customWallName" onchange="updateWallName()" type="text" placeholder="e.g. Stone Hedge"  />
+                <input object="wall" meta="name" id="customWallName"  type="text" placeholder="e.g. Stone Hedge"  />
                 <span >Optional name shown in the editor and exports.</span>
 				<div style="width: fit-content;">
 				<label for="wallIcon">Icon</label>
-				<select  object="wall" meta="icon" meta="icon" onChange="updateWallIcon()"  id="wallIcon" >
+				<select  object="wall" meta="icon" meta="icon" onChange="updateWallIcon();"  id="wallIcon" >
 				<option  value="wall">wall</option>
 				</select>
 				<div id="wallIconDisplay"></div>
-				<input type="file" onchange="addWallIcon()" style="width: 10em; height: 3em;" id="wallAddIcon" accept=".svg" />
+				<input type="file" onchange="addWallIcon();" style="width: 10em; height: 3em;" id="wallAddIcon" accept=".svg" />
 				</div>
             </div>
+			
 			<div class="floatGroup">
                 <label for="inputDesc">Cell description:</label>
                 <input object="scene" type="text" id="inputDesc" placeholder="Enter description for selected cell"  aria-describedby="descHelp">

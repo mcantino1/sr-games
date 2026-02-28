@@ -1,58 +1,73 @@
 //TODO
 
+var metaMap = {};
+var configMap = {}
+
+
 var rows = 6;
 var cols = 6;
 var items = [];
 var scenes = {};
 var selectedPos = null;
+var activeCell;
 var currentItem = 'empty';
-// Treasure configuration
-var treasureKind = 'gold';
-var treasureValue = 25;
-// Potion configuration
-var potionHeal = 3;
-// Villager configuration (custom spoken text + optional reward)
-var villagerText = '';
-var villagerKind = 'gold';
-var villagerValue = 10;
-// Custom wall display name (editable in UI)
-var customWallName = '';
-// Monster library
 var monsterLibrary = {};
-
-
-
 var shopLibrary = {};
 var hazardLibrary = {};
-
 var selectedMonsterIndex = -1;
 var editingMonster = "";
-var activeCell;
 var selectedShopIndex = -1;
 var selectedHazardIndex = -1;
 var editingShop = "";
 var editingHazard = "";
 var currentGame = "";
+
 var nameField = document.getElementById("gameName");
 
-//load level set
-LEVELS = {};
+var LEVELS = {level1: { "id": "level1", "rows": "2", "cols": "2", "items": [ { "type": "wall", "pos": "B1" }, { "type": "door", "pos": "B2" }, { "type": "key", "pos": "A2" } ], "scenes": { "A1": "You wake up in a small room." }, "nextLevelId": null }};
 
-myKeys = Object.keys(LEVELS);
-levelList = document.getElementById("levelSelect");
-nextLevelList = document.getElementById("nextLevelSelect");
-stairList = document.getElementById("stairLevelSelect");
-keyList = document.getElementById("keyLevelSelect");
-currentId="";
+var myKeys = Object.keys(LEVELS);
+var levelList = document.getElementById("levelSelect");
+var nextLevelList = document.getElementById("nextLevelSelect");
+var stairList = document.getElementById("stairLevelSelect");
+var keyList = document.getElementById("keyLevelSelect");
+var currentId = "";
+var myGames = {}
 
-myGames = {}
+// Custom wall display name (editable in UI)
+var customWallName = '';
+var gameSelect = document.getElementById("gameSelect");
+var root = document.querySelector(':root')
+var statLife = document.getElementById("statLife");
+var statStrength = document.getElementById("statStrength");
+var statDefense = document.getElementById("statDefense");
+var statGold = document.getElementById("statGold");
+var baseOpacity = document.getElementById("baseOpacity");
+var levelOpacity = document.getElementById("levelOpacity");
+var symbols = { empty: '', wall: 'W', monster: 'M', treasure: 'T', key: 'K', door: 'D', potion: 'P', hazard: 'H', shop: 'S', armor_shop: 'A', inn: 'N', villager: 'L', stairs: 'U' };
+
+// SVG icons for each item type
+var customIcons = {}
+var itemIcons = { wall: '<svg viewBox="0 0 88.19 88.19" style="width: 100%; height: 100%; display: block;"><rect x="1" y="1" width="86.19" height="86.19" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="2"/><line x1="1" y1="65.64" x2="87.19" y2="65.64" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="2"/><line x1="1" y1="44.09" x2="87.19" y2="44.09" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="2"/><line x1="1" y1="22.55" x2="87.19" y2="22.55" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="2"/><line x1="33.93" y1="1" x2="33.93" y2="22.55" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="2"/><line x1="64.74" y1="1" x2="64.74" y2="22.55" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="2"/><line x1="12.59" y1="22.55" x2="12.59" y2="44.09" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="2"/><line x1="44.69" y1="22.55" x2="44.69" y2="44.09" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="2"/><line x1="79.26" y1="22.55" x2="79.26" y2="44.09" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="2"/><line x1="19.41" y1="44.09" x2="19.41" y2="65.64" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="2"/><line x1="53.48" y1="44.09" x2="53.48" y2="65.64" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="2"/><line x1="71.85" y1="65.64" x2="71.85" y2="87.19" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="2"/><line x1="30.07" y1="65.64" x2="30.07" y2="87.19" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="2"/><path d="M21.73,23.25c.57,2.12,3.27,3.14,3.81,5.27.37,1.46-.38,3.19.48,4.43.32.46.81.76,1.25,1.11,1.38,1.07,2.38,2.64,2.75,4.35" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="2"/><path d="M70.94,51.36c.69-2.36,2.19-4.47,4.18-5.9.55.04.73.08,1.27.13.44.04.88.07,1.31-.03s.84-.36,1.01-.76" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="2"/><path d="M47.63,87.2c-.55-2.12-1.3-4.18-2.24-6.16" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="2"/><path d="M73.03,1.7c.92,2.16,2.6,4.86,3.51,7.02" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="2"/><path d="M12.4,1.37c.52,2.3-.47,5.69-2.26,7.23" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="2"/><path d="M10.89,5.91l3.37,2.03c.17.69.68,1.3,1.33,1.59" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="2"/></svg>', monster: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 88.2 88.2" style="width: 100%; height: 100%; display: block;" aria-hidden="true" focusable="false">' + '<g stroke="currentColor" stroke-miterlimit="10" stroke-width="4" fill="none">' + '<path d="M77.9,37.4c0,11.5-5.7,21.7-14.5,27.8v18.2H24.8v-18.2c-8.8-6.1-14.5-16.3-14.5-27.8C10.3,18.7,25.4,3.6,44.1,3.6s33.8,15.1,33.8,33.8Z"/>' + '<polyline points="63.4 72.9 63.4 83.4 24.8 83.4 24.8 72.9"/>' + '<line x1="53.8" y1="72.9" x2="53.8" y2="83.4"/>' + '<line x1="44.1" y1="72.9" x2="44.1" y2="83.4"/>' + '<line x1="34.4" y1="72.9" x2="34.4" y2="83.4"/>' + '</g>' + '<g fill="currentColor" stroke="currentColor" stroke-miterlimit="10" stroke-width="4">' + '<path d="M25.9,31.9c0-2.4,2.1-5.3,4.3-4.3s3.1,2.2,4.3,4.3-1.9,4.3-4.3,4.3-4.3-1.9-4.3-4.3Z"/>' + '<path d="M62.3,31.9c0-2.4-2.1-5.3-4.3-4.3s-3.1,2.2-4.3,4.3,1.9,4.3,4.3,4.3,4.3-1.9,4.3-4.3Z"/>' + '<path d="M42.7,43.5l-1.5,2.6c-.6,1.1.2,2.5,1.4,2.5h3c1.3,0,2-1.4,1.4-2.5l-1.5-2.6c-.6-1.1-2.2-1.1-2.8,0Z"/>' + '</g>' + '</svg>', treasure: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 88.2 88.2" style="width: 100%; height: 100%; display: block;" aria-hidden="true" focusable="false">' + '<path d="M52,34.7c-.5.9-1.3,1.3-2.3,2.1l4.1,11.4h-19.6,0c0,0,4.1-11.4,4.1-11.4-.7-.6-1.3-1.3-1.8-2.1H3.5v46.1h81.2v-46.1h-32.7Z"' + ' fill="currentColor" stroke="currentColor" stroke-width="2" stroke-miterlimit="10"/>' + '<path d="M44,21.3c4.9,0,8.8,3.9,8.8,8.8s0,1.6-.1,2.2h31.9v-9.9c0-8.3-6.7-15-15-15H18.5c-8.3,0-15,6.7-15,15v9.9h32c-.2-.7-.3-1.4-.3-2.2,0-4.9,3.9-8.8,8.8-8.8Z"' + ' fill="currentColor" stroke="currentColor" stroke-width="2" stroke-miterlimit="10"/>' + '</svg>', door: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 88.2 88.2" style="width: 100%; height: 100%; display: block;" aria-hidden="true" focusable="false">' + '<g fill="none" stroke="currentColor" stroke-width="4" stroke-miterlimit="10">' + '<rect x="15.8" y="3.2" width="56.7" height="81.8"/>' + '<circle cx="62.1" cy="46.9" r="4.6"/>' + '</g>' + '</svg>', exit: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 88.2 88.2" style="width: 100%; height: 100%; display: block;" aria-hidden="true" focusable="false"><g fill="none" stroke="currentColor" stroke-width="4" stroke-miterlimit="10"><rect x="15.8" y="3.2" width="56.7" height="81.8"/><path d="M30 44 L58 44" stroke-width="6" stroke-linecap="round"/></g></svg>', key: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 88.2 88.2" style="width: 100%; height: 100%; display: block;" aria-hidden="true" focusable="false">' + '<path d="M31,15.9c-.7,3.4-2.7,7.4-5.6,10.9-6.1,7.4-13.2,9.5-15.4,7.7-2.2-1.8-1.5-9.2,4.7-16.6,6.1-7.4,13.2-9.5,15.4-7.7,1.1.9,1.4,3,.9,5.7Z" fill="none"/>' + '<path d="M85,69.1L34,26.9c2-3.2,3.3-6.5,3.9-9.7,1-5.4-.1-9.8-3.3-12.4-1.9-1.5-4.1-2.3-6.7-2.3-5.8,0-12.8,3.9-18.6,10.9C1.1,23.4-.5,34.8,5.6,39.9c1.9,1.5,4.1,2.3,6.7,2.3,4.6,0,10-2.5,14.9-7l38.6,31.9-6.1,7.4c-.5.6-.4,1.4.2,1.9l1.7,1.4c.6.5,1.4.4,1.9-.2l6.1-7.4,6.6,5.5-6.1,7.4c-.4.5-.4,1.3.2,1.8l1.3,1.1c.5.4,1.3.4,1.8-.2l11.9-14.4c.6-.7.5-1.7-.2-2.2ZM14.7,17.9c6.1-7.4,13.2-9.5,15.4-7.7,1.1.9,1.4,3,.9,5.7-.7,3.4-2.7,7.4-5.6,10.9-6.1,7.4-13.2,9.5-15.4,7.7-2.2-1.8-1.5-9.2,4.7-16.6Z"' + ' fill="currentColor" stroke="currentColor" stroke-width="2" stroke-miterlimit="10"/>' + '</svg>', potion: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 88.2 88.2" style="width: 100%; height: 100%; display: block;" aria-hidden="true" focusable="false">' + '<path d="M68.2,65c0,10.8-10.8,19.5-24.1,19.5s-24.1-8.7-24.1-19.5c0-8.7,7-16.1,16.7-18.6V5.7h14.8v40.8c9.7,2.5,16.7,9.9,16.7,18.6Z"' + ' fill="currentColor" stroke="currentColor" stroke-width="2" stroke-miterlimit="10"/>' + '<path d="M44.1,5.7c-5.1,0-9.2-.5-9.2-1s4.1-1,9.2-1,9.2.5,9.2,1-4.1,1-9.2,1Z"' + ' fill="none" stroke="currentColor" stroke-width="2" stroke-miterlimit="10"/>' + '</svg>', weapon:"<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\" viewBox=\"0 0 88 88\">\n \n <!-- Generator: Adobe Illustrator 28.7.10, SVG Export Plug-In . SVG Version: 1.2.0 Build 236) -->\n <g fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\">\n <g id=\"Layer_2\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\">\n <path d=\"M49.8,21.7c-13.7,15.8-27.5,31.6-41.2,47.4-.4.5-.8,1.1-1,1.7-.4,1.4,0,2.4,1.4,3.2.9.5,2.2.3,3.1-.6.2-.2.4-.4.6-.6,13.8-15.8,27.5-31.7,41.3-47.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\"></path>\n <path d=\"M76.9,36.4c-3.5,5.4-8,9.5-13.7,12.4-5,2.6-10.4,3.6-16.1,1.8.6-.6,1.2-1.2,1.8-1.7,2.8-2.4,5.3-5,7.3-8.1,1.7-2.7,3.2-5.5,3.1-8.8v-.7c-.4-2.4-1.7-4.3-3.6-5.7l5-6c.4-.2.8-.2,1.5,0,3.9,1.2,7.8,1.3,11.2-1.5,1.4-1.2,2.5-2.8,3.7-4.2,0,0,0,0,0,0,0,0,0,0,.2,0,1.1,1.8,2,3.8,2.5,5.8,1.4,6,.4,11.5-2.9,16.7h0Z\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\"></path>\n <path d=\"M55.7,25.5c1.9,1.4,3.2,3.3,3.6,5.7v.7c.2,3.4-1.3,6.2-3,8.8-2,3.1-4.5,5.7-7.3,8.1-.6.5-1.1,1.1-1.8,1.7,5.7,1.8,11.1.8,16.1-1.8,5.6-2.9,10.2-7.1,13.7-12.4,3.3-5.2,4.3-10.7,2.9-16.7-.5-2.1-1.3-4-2.5-5.8,0,0-.1,0-.2,0s0,0,0,0c-1.2,1.4-2.3,3-3.7,4.2-3.4,2.8-7.3,2.8-11.2,1.5-.7-.2-1.1-.2-1.5,0-.3.1-.5.3-.8.6-1.6,1.9-3.3,3.8-5,5.7l-5.8-5,6.3-7.3c1.7,1.5,3.3,2.9,4.9,4.3.4.3.8.6.5,1.3\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\"></path>\n <circle id=\"Filll\" cx=\"55.4\" cy=\"19.7\" r=\"3.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\"></circle>\n <path id=\"Filll-2\" data-name=\"Filll\" d=\"M55.4,13.7c3.3,0,6,2.7,6,6\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\"></path>\n </g>\n </g>\n</svg>", armor: "<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\" viewBox=\"0 0 88 88\">\n \n <!-- Generator: Adobe Illustrator 28.7.10, SVG Export Plug-In . SVG Version: 1.2.0 Build 236) -->\n <g fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\">\n <g id=\"Layer_2\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\">\n <g fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\">\n <g id=\"Fills\" style='opacity: 0.5;' stroke='none' fill='currentColor'>\n <path d=\"M20,29.2c0,3.2,0,6.4.6,9.5.2,1.1.4,2.2.6,3.3h22.9V15.2h0c-.4,0-.8,0-1.2,0-3.2.9-6.3,1.7-9.5,2.6-3.8,1.1-7.5,2.2-11.3,3.3-.8.2-1.2.7-1.4,1.5-.4,2.1-.7,4.3-.7,6.5h0Z\"></path>\n <path d=\"M44.1,71.5h0c.3.1.5,0,.8,0,1-.5,2.1-.9,3-1.5,4.2-2.5,7.7-5.8,10.7-9.6,3.6-4.6,6.2-9.8,7.7-15.5.3-.9.5-1.9.7-2.8h-22.9v29.5h0Z\"></path>\n </g>\n <g fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\">\n <path d=\"M44.1,15.2c.8-.3,1.6.1,2.4.3,4.3,1.2,8.6,2.5,12.9,3.8,2.2.6,4.5,1.2,6.7,1.8.8.2,1.3.9,1.4,1.6.2,1.5.4,3.1.5,4.7.1,2.1.2,4.2.1,6.3,0,1.5-.3,3-.5,4.5-.1,1.2-.4,2.5-.6,3.7-.2.9-.4,1.9-.7,2.8-1.5,5.7-4.1,10.8-7.7,15.5-3,3.8-6.5,7.1-10.7,9.6-1,.6-2,1-3,1.5-.3.1-.5.2-.8.2s-.7-.1-1.1-.3c-3.3-1.5-6.1-3.5-8.7-5.9-3.4-3.1-6.2-6.7-8.4-10.6-1.9-3.4-3.3-6.9-4.2-10.7-.2-.7-.3-1.4-.4-2.1-.2-1.1-.4-2.2-.6-3.3-.6-3.2-.6-6.3-.6-9.5,0-2.2.3-4.4.7-6.5.2-.8.6-1.3,1.4-1.5,3.8-1.1,7.5-2.2,11.3-3.3,3.1-.9,6.3-1.8,9.5-2.6.4-.1.8,0,1.2,0\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\"></path>\n <path d=\"M44.1,15.3v56.2\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\"></path>\n <path d=\"M45,7.6c1.4.4,2.7.8,4.1,1.2,2.4.7,4.9,1.4,7.3,2.1,2.8.8,5.6,1.6,8.4,2.4,2.2.6,4.4,1.3,6.6,1.9.8.2,1.6.3,2.2,1,.6.7.6,1.6.7,2.4.3,1.8.6,3.7.6,5.6.1,1.9,0,3.9,0,5.8s0,.6,0,.9c-.1,1.6-.2,3.2-.4,4.7-.2,1.6-.3,3.3-.7,4.9-.5,2.3-1.1,4.6-1.7,6.9-.7,2.8-1.7,5.4-3,8-1.4,2.8-3,5.6-4.8,8.2-2.6,3.6-5.5,6.9-8.8,9.8-2.9,2.6-6.1,4.7-9.6,6.4-.2.1-.4.2-.7.3-.9.5-1.8.4-2.8,0-3.6-1.7-6.8-3.8-9.8-6.4-2.6-2.2-4.9-4.5-7-7.2-2.4-3-4.5-6.3-6.3-9.7-1.9-3.8-3.4-7.7-4.4-11.8-.4-1.7-.8-3.4-1.2-5.1-.3-1.3-.4-2.6-.5-3.9-.4-3.1-.6-6.3-.5-9.5,0-1.5,0-3,.3-4.5.2-1.7.5-3.4.8-5.1.2-1,.9-1.5,1.8-1.8,1.7-.5,3.5-1,5.2-1.5,2.7-.8,5.5-1.6,8.2-2.4,3.2-.9,6.3-1.8,9.5-2.7,1.4-.4,2.9-.9,4.3-1.2.6-.1,1.4,0,2,0\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\"></path>\n <polyline points=\"66.9 42 44.1 42 21.2 42\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\"></polyline>\n </g>\n </g>\n </g>\n </g>\n</svg>", inn: "<svg id=\"Layer_2\" data-name=\"Layer 2\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 62.55 56.26\">\n <path style=\" scale: 0.9; transform: translate(4px, 4px);\" d=\"M55.07,34.69c-6.57,8.54-15.36,15.02-23.79,21.57-8.44-6.55-17.23-13.03-23.8-21.57C1.5,26.92-3.44,15.54,3.11,6.55,10.06-2.99,24.82-1.93,30.27,8.54c.36.7.59,1.57.94,2.24l.07.14.07-.14c.34-.67.57-1.54.94-2.24,5.45-10.47,20.21-11.53,27.15-1.99,6.56,8.99,1.62,20.37-4.37,28.14Z\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\"></path>\n</svg>", villager: "<svg id=\"Layer_2\" data-name=\"Layer 2\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 88 88\">\n \n <path style=\" scale: 0.9; transform: translate(4px, 4px);\" id=\"path966\" d=\"M69.79,80.5c-2.54-25.58-6.66-33.2-13.41-37.4-6.8-.3-15.35,0-23.63,0-7.33,3.9-11.78,11.65-14.55,37.4h51.59Z\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\"></path>\n <path id=\"path710\" d=\"M59.43,22.93c0,8.52-6.91,15.43-15.43,15.43s-15.43-6.91-15.43-15.43,6.91-15.43,15.43-15.43,15.43,6.91,15.43,15.43Z\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\"></path>\n <line x1=\"60.48\" y1=\"80.5\" x2=\"56.9\" y2=\"62.96\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\"></line>\n <line x1=\"27.61\" y1=\"80.5\" x2=\"31.34\" y2=\"62.96\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\"></line>\n</svg>", void: "<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\" viewBox=\"0 0 88.2 88.2\">\n \n <!-- Generator: Adobe Illustrator 28.7.10, SVG Export Plug-In . SVG Version: 1.2.0 Build 236) -->\n <g fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\">\n <g id=\"Layer_1\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\">\n <path d=\"M86.4,54.4c.9-2.3.6-4.8.3-7.3-1-7.2-2-14.4-3-21.5-.3-2.5-.7-5-2.3-7-2.6-3.2-7.9-3.8-9.7-7.6-.8-1.7-.8-3.7-1.7-5.3-.9-1.5-2.4-2.4-4-3.2-2-1-4.2-1.9-6.4-1.8-3.1.2-5.9,2.3-9,2.6-3,.3-5.8-1.1-8.6-2s-6.3-1.3-8.5.7c-.9.8-1.5,2-2.5,2.9-2.2,2-5.5,1.9-8.4,1.9-4.7,0-9.9.7-13.3,4-3.1,3-4,7.5-4.2,11.8s.4,8.6-.3,12.8c-.6,3.5-1.9,6.8-2.8,10.3s-1.2,7.2.2,10.5c1.6,3.5,5,5.9,6.7,9.3,1.8,3.6,1.5,7.9,3,11.5,2.2,5,8.1,8,13.4,6.9,2.8-.6,5.7-2.2,8.4-1.2,1.9.7,3.1,2.6,4.8,3.7,3.2,2.1,7.5.9,11-.7s7-3.8,10.8-3.5c2.1.2,4.1,1.1,6.3,1.1,2.6,0,5.2-1.3,6.6-3.5,1.5-2.4,1.9-5.2,3.5-7.6s2.9-3.3,3.6-5.6.7-3.6,1.5-5.3c1.2-2.5,3.5-4.3,4.6-6.9Z\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\"></path>\n <path d=\"M12.1,52.5c-.8-2.5,1-5.1,1.2-7.6.6-3.8-.7-7.9-2.4-11.1-.5-1-1-2.1-1-3.1.3-3.2,4.5-3.7,6.7-5.2,2.9-1.5,5.8-4,7.9-6.7,1.6-1.8,2.7-4.3,5.1-5,2.9-.7,5.8-.2,8.7-.2,6,.4,12.6-1.3,18.2-2.7,2-.4,5.1-1.1,6.7,0,2,2.1,2.5,5.9,3.4,8.6.8,3.3,3.8,7.7,7,10.5,1.4,1.4,1.8,3,1.6,4.9-.2,3,.1,6.8,1.5,9.9.7,2.4,3.1,4.4,3.2,7-.6,2.5-4.1,3.9-5.5,6.1-1.7,2.2-2.7,4.5-3.3,6.6-.5,1.5-1.2,3.1-2.5,4.1-3.9,2.1-8.6,3.5-14.4,5.9-3.4,1.2-5.3,2.7-8.6,2.9-2.9-.2-6.6-2.2-10-2.3-4.4,0-8.3-1.8-12.8-2.8-2.2-.6-2.4-2.8-2.7-4.7-.6-3.2-2.1-6.5-3.8-9-1.3-2.1-3.3-3.7-4.2-6v-.2Z\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\"></path>\n <path d=\"M28.9,60.3c-.6-.7-1-1.6-1.4-2.5-1.2-2.8-2.8-5.3-4.9-7.6-1.2-1.3-2.9-2.6-2.2-4.6,1.1-3,2.3-6,2.8-9.2.4-4.7,1.7-5.3,5.4-7.3,4.7-2.8,8.8-6.5,12.1-9.9.9-.9,2-1.3,3.2-.6,3.4,2.6,7.5,4.8,11.4,5.9,1.5.4,2.8,1.2,3.7,2.5,1.8,2.5,4.2,5.3,6.7,7.2,1.6,1.1,2.1,2.9,1.9,4.8-.1,2.3,0,4.7.3,6.6.3,1.5.3,3.1-.6,4.5-2,2.8-4.1,5.5-6.2,8.5-1.5,2.1-2.8,4.4-5.5,5-4,.9-7.4,3.4-11.3,4.4-1.6.4-3.1-.2-4.2-1.2-2.7-2.1-5.9-3.9-9.1-5.2-.7-.3-1.4-.7-1.9-1.2h-.1Z\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\"></path>\n </g>\n </g>\n</svg>", stairs: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 88.2 88.2" style="width: 100%; height: 100%; display: block;" aria-hidden="true" focusable="false"> <polyline class="cls-1" fill="none" stroke="currentColor" stroke-width="4" points="88.1 24 68 24 68 40 52 40 52 56 36 56 36 72 18 72 18 88.1"/> </svg>', stairsD: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 88.2 88.2" style="width: 100%; height: 100%; display: block;" aria-hidden="true" focusable="false"> <polyline class="cls-1" fill="none" stroke="currentColor" stroke-width="4" points=".2 24 20.3 24 20.3 40 36.3 40 36.3 56 52.3 56 52.3 72 70.3 72 70.3 88.1"/> </svg>' };
+itemIcons.custom_wall = itemIcons.wall;
+itemIcons.gameEnd = itemIcons.door;
+
+
+
+
+
 
 const dataPath = "./data/game";
 
+
+initForms();
+
+
+
 function getFile(num){
-console.log("getFile");
-console.log(LEVELS);
-console.log(items);
+//console.log("getFile");
+//console.log(LEVELS);
+//console.log(items);
 
 	fetch(dataPath + num + ".json")
 	.then(response => {
@@ -70,10 +85,11 @@ console.log(items);
 }
 
 
+
 function backupDemo(num){
-console.log("backupDemo");
-console.log(LEVELS);
-console.log(items);
+//console.log("backupDemo");
+//console.log(LEVELS);
+//console.log(items);
 
 	demoGame = {"title": "New Game", "levels": LEVELS};	
 	myGames["game" + num] = demoGame;
@@ -85,11 +101,11 @@ console.log(items);
 //<select id="gameSelect">
 //<option value="gold">Gold</option>
 
-var gameSelect = document.getElementById("gameSelect");
+
 function addGame(num){
-console.log("addGame");
-console.log(LEVELS);
-console.log(items);
+//console.log("addGame");
+//console.log(LEVELS);
+//console.log(items);
 
 	
 	let gameId = "game" + num;
@@ -104,9 +120,9 @@ console.log(items);
 getFile("01");
 
 function clearList(myList){
-console.log("clearList");
-console.log(LEVELS);
-console.log(items);
+//console.log("clearList");
+//console.log(LEVELS);
+//console.log(items);
 
 	while(myList.children.length > 0){
 		myList.removeChild(myList.children[0]);
@@ -114,9 +130,9 @@ console.log(items);
 }
 
 function selectGame(){
-console.log("selectGame");
-console.log(LEVELS);
-console.log(items);
+//console.log("selectGame");
+//console.log(LEVELS);
+//console.log(items);
 
 	if(currentGame != ""){
 		//save current changes to loaded game
@@ -165,9 +181,9 @@ console.log(items);
 }
 
 function initCustomStats(){
-console.log("initCustomStats");
-console.log(LEVELS);
-console.log(items);
+//console.log("initCustomStats");
+//console.log(LEVELS);
+//console.log(items);
 
 	if(myGames[currentGame]["stats"]){
 		if(myGames[currentGame]["stats"]["life"]){statLife.value = myGames[currentGame]["stats"]["life"]}
@@ -179,9 +195,9 @@ console.log(items);
 }
 
 function initLevelSet(){
-console.log("initLevelSet");
-console.log(LEVELS);
-console.log(items);
+//console.log("initLevelSet");
+//console.log(LEVELS);
+//console.log(items);
 
 	newLevels = myGames[currentGame]["levels"];
 	myKeys = Object.keys(newLevels);
@@ -258,9 +274,9 @@ shopIconSelect = document.getElementById("shopIcon")
 hazardIconSelect = document.getElementById("hazardIcon")
 
 function initCustomIcons(){
-console.log("initCustomIcons");
-console.log(LEVELS);
-console.log(items);
+//console.log("initCustomIcons");
+//console.log(LEVELS);
+//console.log(items);
 
 	try{
 		newIcons = myGames[currentGame]["myIcons"];
@@ -319,9 +335,9 @@ hazardValue = document.getElementById('hazardValue'); //numeric - positive or ne
 
 
 function hazardStairToggle(){
-console.log("hazardStairToggle");
-console.log(LEVELS);
-console.log(items);
+//console.log("hazardStairToggle");
+//console.log(LEVELS);
+//console.log(items);
 
 	if(hazardStairs.checked){
 		hazardStairConfig.style = "";
@@ -334,9 +350,9 @@ console.log(items);
 
 
 function updateMonIcon(){
-console.log("updateMonIcon");
-console.log(LEVELS);
-console.log(items);
+//console.log("updateMonIcon");
+//console.log(LEVELS);
+//console.log(items);
 
 	myIcon = monIconSelect.value
 	monIconDisplay.innerHTML = itemIcons[myIcon];	
@@ -347,9 +363,9 @@ console.log(items);
 
 
 function updateShopIcon(){
-console.log("updateShopIcon");
-console.log(LEVELS);
-console.log(items);
+//console.log("updateShopIcon");
+//console.log(LEVELS);
+//console.log(items);
 
 	myIcon = shopIconSelect.value
 	shopIconDisplay.innerHTML = itemIcons[myIcon];	
@@ -359,9 +375,9 @@ console.log(items);
 }
 
 function updateHazardIcon(){
-console.log("updateHazardIcon");
-console.log(LEVELS);
-console.log(items);
+//console.log("updateHazardIcon");
+//console.log(LEVELS);
+//console.log(items);
 
 	myIcon = hazardIconSelect.value
 	hazardIconDisplay.innerHTML = itemIcons[myIcon];	
@@ -371,9 +387,9 @@ console.log(items);
 }
 
 function updateWallIcon(){
-console.log("updateWallIcon");
-console.log(LEVELS);
-console.log(items);
+//console.log("updateWallIcon");
+//console.log(LEVELS);
+//console.log(items);
 
 	myIcon = wallIconSelect.value
 	wallIconDisplay.innerHTML = itemIcons[myIcon];
@@ -396,9 +412,9 @@ console.log(items);
 }
 
 function addMonIcon(){
-console.log("addMonIcon");
-console.log(LEVELS);
-console.log(items);
+//console.log("addMonIcon");
+//console.log(LEVELS);
+//console.log(items);
 
 	const reader = new FileReader();
 	let fileName = monAddIcon.files[0].name.split(".")[0].split("-")[0]
@@ -411,9 +427,9 @@ console.log(items);
 }
 
 function addShopIcon(){
-console.log("addShopIcon");
-console.log(LEVELS);
-console.log(items);
+//console.log("addShopIcon");
+//console.log(LEVELS);
+//console.log(items);
 
 	const reader = new FileReader();
 	let fileName = shopAddIcon.files[0].name.split(".")[0].split("-")[0]
@@ -427,9 +443,9 @@ console.log(items);
 
 
 function addHazardIcon(){
-console.log("addHazardIcon");
-console.log(LEVELS);
-console.log(items);
+//console.log("addHazardIcon");
+//console.log(LEVELS);
+//console.log(items);
 
 	const reader = new FileReader();
 	let fileName = hazardAddIcon.files[0].name.split(".")[0].split("-")[0]
@@ -444,9 +460,9 @@ console.log(items);
 
 
 function addWallIcon(){
-console.log("addWallIcon");
-console.log(LEVELS);
-console.log(items);
+//console.log("addWallIcon");
+//console.log(LEVELS);
+//console.log(items);
 
 	
 	const reader = new FileReader();
@@ -462,9 +478,9 @@ console.log(items);
 
 
 function newIcon(content, name){
-console.log("newIcon");
-console.log(LEVELS);
-console.log(items);
+//console.log("newIcon");
+//console.log(LEVELS);
+//console.log(items);
 
 	monIconDisplay.innerHTML = content;
 	shopIconDisplay.innerHTML = content;
@@ -490,9 +506,9 @@ console.log(items);
 }
 	
 function vectorStyler(myParts){
-console.log("vectorStyler");
-console.log(LEVELS);
-console.log(items);
+//console.log("vectorStyler");
+//console.log(LEVELS);
+//console.log(items);
 
 	for (part of myParts){
 		// fill="none" stroke="currentColor" stroke-width="4"
@@ -511,9 +527,9 @@ console.log(items);
 
 
 function updateID(){
-console.log("updateID");
-console.log(LEVELS);
-console.log(items);
+//console.log("updateID");
+//console.log(LEVELS);
+//console.log(items);
 
 	newId = document.getElementById('inputLevelId').value
 	LEVELS[currentId].id = newId;
@@ -543,9 +559,9 @@ console.log(items);
 	}
 
 function updateOption(myList, oldValue, newValue, newText){
-console.log("updateOption");
-console.log(LEVELS);
-console.log(items);
+//console.log("updateOption");
+//console.log(LEVELS);
+//console.log(items);
 
 	for (let l = 0; l < myList.length; l++){
 		if(myList[l].getAttribute("value") == oldValue){
@@ -558,9 +574,9 @@ console.log(items);
 }
 
 function sortLevelList(){
-console.log("sortLevelList");
-console.log(LEVELS);
-console.log(items);
+//console.log("sortLevelList");
+//console.log(LEVELS);
+//console.log(items);
 
 	//TODO
 	let myLevels = {}
@@ -594,28 +610,28 @@ console.log(items);
 		nextLevel = LEVELS[nextLevel].nextLevelId;
 		
 	}
-	
+	if(levelList.children[1]){
 	while (levelList.children[0].getAttribute("value") != firstLevel){
 		levelList.append(levelList.children[0]);
-		
+	}
 	}
 }
 	
 
 
 function updateNext(){
-console.log("updateNext");
-console.log(LEVELS);
-console.log(items);
+//console.log("updateNext");
+//console.log(LEVELS);
+//console.log(items);
 
 	newNext = document.getElementById('nextLevelSelect').value
 	LEVELS[currentId].nextLevelId = newNext;
 }
 
 function monsterExists(monsterName){
-console.log("monsterExists");
-console.log(LEVELS);
-console.log(items);
+//console.log("monsterExists");
+//console.log(LEVELS);
+//console.log(items);
 
 	monsters = Object.keys(monsterLibrary);
 	if(monsters.includes(monsterName)){
@@ -625,9 +641,9 @@ console.log(items);
 }
 
 function shopExists(shopName){
-console.log("shopExists");
-console.log(LEVELS);
-console.log(items);
+//console.log("shopExists");
+//console.log(LEVELS);
+//console.log(items);
 
 	shops = Object.keys(shopLibrary);
 	if(shops.includes(shopName)){
@@ -637,9 +653,9 @@ console.log(items);
 }
 
 function levelNew(){
-console.log("levelNew");
-console.log(LEVELS);
-console.log(items);
+//console.log("levelNew");
+//console.log(LEVELS);
+//console.log(items);
 
 	myList = document.getElementById("levelSelect");
 	
@@ -663,9 +679,9 @@ console.log(items);
 }
 
 function levelCopy(){
-console.log("levelCopy");
-console.log(LEVELS);
-console.log(items);
+//console.log("levelCopy");
+//console.log(LEVELS);
+//console.log(items);
 
 	newId = currentId + "copy"
 	LEVELS[newId] = structuredClone(LEVELS[currentId])
@@ -680,9 +696,9 @@ console.log(items);
 }
 
 function optionMissing(myList, myValue){
-console.log("optionMissing");
-console.log(LEVELS);
-console.log(items);
+//console.log("optionMissing");
+//console.log(LEVELS);
+//console.log(items);
 
 	for(child of myList.children){
 		if (child.value == myValue){
@@ -694,9 +710,9 @@ console.log(items);
 }
 
 function addOption(myList, myValue, myText){
-console.log("addOption");
-console.log(LEVELS);
-console.log(items);
+//console.log("addOption");
+//console.log(LEVELS);
+//console.log(items);
 
 	if(optionMissing(myList,myValue)){
 		let myOption = document.createElement("option");
@@ -707,9 +723,9 @@ console.log(items);
 }
 
 function levelDelete(){
-console.log("levelDelete");
-console.log(LEVELS);
-console.log(items);
+//console.log("levelDelete");
+//console.log(LEVELS);
+//console.log(items);
 
 	deleteMe = document.getElementById('levelSelect').value;
 	myLevels = document.getElementById("levelSelect").children;
@@ -722,9 +738,9 @@ console.log(items);
 }
 
 function deleteOption(myList, myValue){
-console.log("deleteOption");
-console.log(LEVELS);
-console.log(items);
+//console.log("deleteOption");
+//console.log(LEVELS);
+//console.log(items);
 
 	for (let l = 0; l < myList.length; l++){
 		if(myList[l].getAttribute("value") == myValue){
@@ -734,9 +750,9 @@ console.log(items);
 }
 
 function updateStairCellList(){
-console.log("updateStairCellList");
-console.log(LEVELS);
-console.log(items);
+//console.log("updateStairCellList");
+//console.log(LEVELS);
+//console.log(items);
 
 	//clear the cell list First
 	stairCellSelect.innerHTML = "";
@@ -759,9 +775,9 @@ console.log(items);
 }
 
 function updateWallName(){
-console.log("updateWallName");
-console.log(LEVELS);
-console.log(items);
+//console.log("updateWallName");
+//console.log(LEVELS);
+//console.log(items);
 
 	
 	var existingIdx = getItemIndex(selectedPos);
@@ -778,9 +794,9 @@ console.log(items);
 }
 
 function changeLevel(){
-console.log("changeLevel");
-console.log(LEVELS);
-console.log(items);
+//console.log("changeLevel");
+//console.log(LEVELS);
+//console.log(items);
 
 	console.log(document.getElementById('levelSelect').value)
 	loadLevel(LEVELS[document.getElementById('levelSelect').value])
@@ -788,10 +804,6 @@ console.log(items);
 
 function loadLevel(level){
 	console.log("loadLevel");
-	console.log(LEVELS);
-	console.log(level)
-	console.log(level.items)
-	console.log(items);
 
 	//variables
 	console.log(level)
@@ -819,9 +831,9 @@ function loadLevel(level){
 }
 
 function saveLevel(){
-console.log("saveLevel");
-console.log(LEVELS);
-console.log(items);
+//console.log("saveLevel");
+//console.log(LEVELS);
+//console.log(items);
 
 	
 	LEVELS[currentId].rows = document.getElementById('inputRows').value;
@@ -835,29 +847,23 @@ console.log(items);
 
 }
 
-var root = document.querySelector(':root')
+
 
 function updateOpacity(){
-console.log("updateOpacity");
-console.log(LEVELS);
-console.log(items);
+//console.log("updateOpacity");
+//console.log(LEVELS);
+//console.log(items);
 
 	
 	root.style.setProperty("--gridAlpha", (levelOpacity.value / 100));
 }
 
 
-var statLife = document.getElementById("statLife");
-var statStrength = document.getElementById("statStrength");
-var statDefense = document.getElementById("statDefense");
-var statGold = document.getElementById("statGold");
-var baseOpacity = document.getElementById("baseOpacity");
-var levelOpacity = document.getElementById("levelOpacity");
 
 function saveSet(){
-console.log("saveSet");
-console.log(LEVELS);
-console.log(items);
+//console.log("saveSet");
+//console.log(LEVELS);
+//console.log(items);
 
 	
 	//Save levels in listed order
@@ -892,7 +898,6 @@ console.log(items);
 	document.body.removeChild(link);
 }
 
-var monsterBoss = document.getElementById("monsterBoss");
 
 function selectMonster(monsterName){
 
@@ -964,9 +969,9 @@ function populateFromLibrary(m, myFields){
 
 
 function monsterClass(name){
-console.log("monsterClass");
-console.log(LEVELS);
-console.log(items);
+//console.log("monsterClass");
+//console.log(LEVELS);
+//console.log(items);
 
 	monsterRows = monsterListEl.getElementsByTagName("tr");
 	for (let i = 0; i < monsterRows.length; i++) {
@@ -982,9 +987,9 @@ console.log(items);
 }
 
 function hazardClass(name){
-console.log("hazardClass");
-console.log(LEVELS);
-console.log(items);
+//console.log("hazardClass");
+//console.log(LEVELS);
+//console.log(items);
 
 	hazardRows = hazardListEl.getElementsByTagName("tr");
 	for (let i = 0; i < hazardRows.length; i++) {
@@ -1000,9 +1005,9 @@ console.log(items);
 }
 
 function shopClass(name){
-console.log("shopClass");
-console.log(LEVELS);
-console.log(items);
+//console.log("shopClass");
+//console.log(LEVELS);
+//console.log(items);
 
 	shopRows = shopListEl.getElementsByTagName("tr");
 	for (let i = 0; i < shopRows.length; i++) {
@@ -1018,9 +1023,9 @@ console.log(items);
 }
 
 function treasureUpdate(){
-console.log("treasureUpdate");
-console.log(LEVELS);
-console.log(items);
+//console.log("treasureUpdate");
+//console.log(LEVELS);
+//console.log(items);
 
 	 if(currentItem == 'select'){
 		 //editing an existing treasure Cell
@@ -1033,9 +1038,9 @@ console.log(items);
 }
 
 function hazardUpdate(name, kind, value, icon, hint, eText, hVoid, hStairs){
-console.log("hazardUpdate");
-console.log(LEVELS);
-console.log(items);
+//console.log("hazardUpdate");
+//console.log(LEVELS);
+//console.log(items);
 
 	if(currentItem == 'select'){
 		var pos = activeCell.dataset.pos;
@@ -1055,9 +1060,9 @@ console.log(items);
 
  
 function keyUpdate(){
-console.log("keyUpdate");
-console.log(LEVELS);
-console.log(items);
+//console.log("keyUpdate");
+//console.log(LEVELS);
+//console.log(items);
 
 	 if(currentItem == 'select'){
 		 //editing an existing treasure Cell
@@ -1069,9 +1074,9 @@ console.log(items);
 } 
  
 function stairUpdate(target){
-console.log("stairUpdate");
-console.log(LEVELS);
-console.log(items);
+//console.log("stairUpdate");
+//console.log(LEVELS);
+//console.log(items);
 
 	 if(currentItem == 'select'){
 		 //editing an existing treasure Cell
@@ -1085,9 +1090,9 @@ console.log(items);
 
 
 function villagerUpdate(){
-console.log("villagerUpdate");
-console.log(LEVELS);
-console.log(items);
+//console.log("villagerUpdate");
+//console.log(LEVELS);
+//console.log(items);
 
 	 if(currentItem == 'select'){
 		 //editing an existing villager Cell
@@ -1101,30 +1106,11 @@ console.log(items);
 	 
  }
 
-function monsterUpdate(name, hp, atk, def, rKind, rVal, rDesc, descriptions){
-console.log("monsterUpdate");
-console.log(LEVELS);
-console.log(items);
-
-	if(currentItem == 'select'){
-		var pos = activeCell.dataset.pos;
-		var existingIdx = getItemIndex(pos);
-		myMonster = items[existingIdx].meta;
-		myMonster.name = name;
-		myMonster.hp = hp;
-		myMonster.atk = atk;
-		myMonster.def = def;
-		myMonster.rVal= rVal;
-		myMonster.rKind = rKind;
-		myMonster.rDesc = rDesc;
-		myMonster.descriptions = descriptions;	
-	 }
-}
 
 function shopUpdate(name, kind, value, cost, currency, icon){
-console.log("shopUpdate");
-console.log(LEVELS);
-console.log(items);
+//console.log("shopUpdate");
+//console.log(LEVELS);
+//console.log(items);
 
 	if(currentItem == 'select'){
 		var pos = activeCell.dataset.pos;
@@ -1140,9 +1126,9 @@ console.log(items);
 }
 
 function getItemIndex(pos){
-console.log("getItemIndex");
-console.log(LEVELS);
-console.log(items);
+//console.log("getItemIndex");
+//console.log(LEVELS);
+//console.log(items);
 
 		for (var i = 0; i < items.length; i++) {
 			if (items[i].pos === pos) {
@@ -1153,9 +1139,9 @@ console.log(items);
 }
 
 function loadMonsterLibrary() {
-console.log("loadMonsterLibrary");
-console.log(LEVELS);
-console.log(items);
+//console.log("loadMonsterLibrary");
+//console.log(LEVELS);
+//console.log(items);
 
 //            try {
 //                var raw = localStorage.getItem('monsterLibrary');
@@ -1171,9 +1157,9 @@ console.log(items);
 }
 
 function saveMonsterLibrary() {
-console.log("saveMonsterLibrary");
-console.log(LEVELS);
-console.log(items);
+//console.log("saveMonsterLibrary");
+//console.log(LEVELS);
+//console.log(items);
 
 	try {
 		localStorage.setItem('monsterLibrary', JSON.stringify(monsterLibrary || []));
@@ -1183,86 +1169,14 @@ console.log(items);
 	}
 }
 
-var symbols = {
-	empty: '',
-	wall: 'W',
-	monster: 'M',
-	treasure: 'T',
-	key: 'K',
-	door: 'D',
-	potion: 'P',
-	hazard: 'H',
-	shop: 'S',
-	armor_shop: 'A',
-	inn: 'N',
-	villager: 'L',
-	stairs: 'U'
-};
 
-// SVG icons for each item type
-var customIcons = {}
-var itemIcons = {
-	wall: '<svg viewBox="0 0 88.19 88.19" style="width: 100%; height: 100%; display: block;"><rect x="1" y="1" width="86.19" height="86.19" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="2"/><line x1="1" y1="65.64" x2="87.19" y2="65.64" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="2"/><line x1="1" y1="44.09" x2="87.19" y2="44.09" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="2"/><line x1="1" y1="22.55" x2="87.19" y2="22.55" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="2"/><line x1="33.93" y1="1" x2="33.93" y2="22.55" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="2"/><line x1="64.74" y1="1" x2="64.74" y2="22.55" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="2"/><line x1="12.59" y1="22.55" x2="12.59" y2="44.09" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="2"/><line x1="44.69" y1="22.55" x2="44.69" y2="44.09" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="2"/><line x1="79.26" y1="22.55" x2="79.26" y2="44.09" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="2"/><line x1="19.41" y1="44.09" x2="19.41" y2="65.64" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="2"/><line x1="53.48" y1="44.09" x2="53.48" y2="65.64" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="2"/><line x1="71.85" y1="65.64" x2="71.85" y2="87.19" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="2"/><line x1="30.07" y1="65.64" x2="30.07" y2="87.19" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="2"/><path d="M21.73,23.25c.57,2.12,3.27,3.14,3.81,5.27.37,1.46-.38,3.19.48,4.43.32.46.81.76,1.25,1.11,1.38,1.07,2.38,2.64,2.75,4.35" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="2"/><path d="M70.94,51.36c.69-2.36,2.19-4.47,4.18-5.9.55.04.73.08,1.27.13.44.04.88.07,1.31-.03s.84-.36,1.01-.76" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="2"/><path d="M47.63,87.2c-.55-2.12-1.3-4.18-2.24-6.16" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="2"/><path d="M73.03,1.7c.92,2.16,2.6,4.86,3.51,7.02" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="2"/><path d="M12.4,1.37c.52,2.3-.47,5.69-2.26,7.23" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="2"/><path d="M10.89,5.91l3.37,2.03c.17.69.68,1.3,1.33,1.59" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="2"/></svg>',
-				monster: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 88.2 88.2" style="width: 100%; height: 100%; display: block;" aria-hidden="true" focusable="false">' +
-									'<g stroke="currentColor" stroke-miterlimit="10" stroke-width="4" fill="none">' +
-										'<path d="M77.9,37.4c0,11.5-5.7,21.7-14.5,27.8v18.2H24.8v-18.2c-8.8-6.1-14.5-16.3-14.5-27.8C10.3,18.7,25.4,3.6,44.1,3.6s33.8,15.1,33.8,33.8Z"/>' +
-										'<polyline points="63.4 72.9 63.4 83.4 24.8 83.4 24.8 72.9"/>' +
-										'<line x1="53.8" y1="72.9" x2="53.8" y2="83.4"/>' +
-										'<line x1="44.1" y1="72.9" x2="44.1" y2="83.4"/>' +
-										'<line x1="34.4" y1="72.9" x2="34.4" y2="83.4"/>' +
-									'</g>' +
-									'<g fill="currentColor" stroke="currentColor" stroke-miterlimit="10" stroke-width="4">' +
-										'<path d="M25.9,31.9c0-2.4,2.1-5.3,4.3-4.3s3.1,2.2,4.3,4.3-1.9,4.3-4.3,4.3-4.3-1.9-4.3-4.3Z"/>' +
-										'<path d="M62.3,31.9c0-2.4-2.1-5.3-4.3-4.3s-3.1,2.2-4.3,4.3,1.9,4.3,4.3,4.3,4.3-1.9,4.3-4.3Z"/>' +
-										'<path d="M42.7,43.5l-1.5,2.6c-.6,1.1.2,2.5,1.4,2.5h3c1.3,0,2-1.4,1.4-2.5l-1.5-2.6c-.6-1.1-2.2-1.1-2.8,0Z"/>' +
-									'</g>' +
-								'</svg>',
-				treasure: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 88.2 88.2" style="width: 100%; height: 100%; display: block;" aria-hidden="true" focusable="false">' +
-
-									'<path d="M52,34.7c-.5.9-1.3,1.3-2.3,2.1l4.1,11.4h-19.6,0c0,0,4.1-11.4,4.1-11.4-.7-.6-1.3-1.3-1.8-2.1H3.5v46.1h81.2v-46.1h-32.7Z"' +
-										' fill="currentColor" stroke="currentColor" stroke-width="2" stroke-miterlimit="10"/>' +
-
-									'<path d="M44,21.3c4.9,0,8.8,3.9,8.8,8.8s0,1.6-.1,2.2h31.9v-9.9c0-8.3-6.7-15-15-15H18.5c-8.3,0-15,6.7-15,15v9.9h32c-.2-.7-.3-1.4-.3-2.2,0-4.9,3.9-8.8,8.8-8.8Z"' +
-										' fill="currentColor" stroke="currentColor" stroke-width="2" stroke-miterlimit="10"/>' +
-
-								'</svg>',
-				door: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 88.2 88.2" style="width: 100%; height: 100%; display: block;" aria-hidden="true" focusable="false">' +
-							 '<g fill="none" stroke="currentColor" stroke-width="4" stroke-miterlimit="10">' +
-								 '<rect x="15.8" y="3.2" width="56.7" height="81.8"/>' +
-								 '<circle cx="62.1" cy="46.9" r="4.6"/>' +
-							 '</g>' +
-						 '</svg>',
-				exit: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 88.2 88.2" style="width: 100%; height: 100%; display: block;" aria-hidden="true" focusable="false"><g fill="none" stroke="currentColor" stroke-width="4" stroke-miterlimit="10"><rect x="15.8" y="3.2" width="56.7" height="81.8"/><path d="M30 44 L58 44" stroke-width="6" stroke-linecap="round"/></g></svg>',
-				key: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 88.2 88.2" style="width: 100%; height: 100%; display: block;" aria-hidden="true" focusable="false">' +
-							 '<path d="M31,15.9c-.7,3.4-2.7,7.4-5.6,10.9-6.1,7.4-13.2,9.5-15.4,7.7-2.2-1.8-1.5-9.2,4.7-16.6,6.1-7.4,13.2-9.5,15.4-7.7,1.1.9,1.4,3,.9,5.7Z" fill="none"/>' +
-							 '<path d="M85,69.1L34,26.9c2-3.2,3.3-6.5,3.9-9.7,1-5.4-.1-9.8-3.3-12.4-1.9-1.5-4.1-2.3-6.7-2.3-5.8,0-12.8,3.9-18.6,10.9C1.1,23.4-.5,34.8,5.6,39.9c1.9,1.5,4.1,2.3,6.7,2.3,4.6,0,10-2.5,14.9-7l38.6,31.9-6.1,7.4c-.5.6-.4,1.4.2,1.9l1.7,1.4c.6.5,1.4.4,1.9-.2l6.1-7.4,6.6,5.5-6.1,7.4c-.4.5-.4,1.3.2,1.8l1.3,1.1c.5.4,1.3.4,1.8-.2l11.9-14.4c.6-.7.5-1.7-.2-2.2ZM14.7,17.9c6.1-7.4,13.2-9.5,15.4-7.7,1.1.9,1.4,3,.9,5.7-.7,3.4-2.7,7.4-5.6,10.9-6.1,7.4-13.2,9.5-15.4,7.7-2.2-1.8-1.5-9.2,4.7-16.6Z"' +
-							 ' fill="currentColor" stroke="currentColor" stroke-width="2" stroke-miterlimit="10"/>' +
-						 '</svg>',
-				potion: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 88.2 88.2" style="width: 100%; height: 100%; display: block;" aria-hidden="true" focusable="false">' +
-								 '<path d="M68.2,65c0,10.8-10.8,19.5-24.1,19.5s-24.1-8.7-24.1-19.5c0-8.7,7-16.1,16.7-18.6V5.7h14.8v40.8c9.7,2.5,16.7,9.9,16.7,18.6Z"' +
-									 ' fill="currentColor" stroke="currentColor" stroke-width="2" stroke-miterlimit="10"/>' +
-								 '<path d="M44.1,5.7c-5.1,0-9.2-.5-9.2-1s4.1-1,9.2-1,9.2.5,9.2,1-4.1,1-9.2,1Z"' +
-									 ' fill="none" stroke="currentColor" stroke-width="2" stroke-miterlimit="10"/>' +
-							 '</svg>',
-		weapon:"<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\" viewBox=\"0 0 88 88\">\n  \n  <!-- Generator: Adobe Illustrator 28.7.10, SVG Export Plug-In . SVG Version: 1.2.0 Build 236)  -->\n  <g fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\">\n    <g id=\"Layer_2\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\">\n      <path d=\"M49.8,21.7c-13.7,15.8-27.5,31.6-41.2,47.4-.4.5-.8,1.1-1,1.7-.4,1.4,0,2.4,1.4,3.2.9.5,2.2.3,3.1-.6.2-.2.4-.4.6-.6,13.8-15.8,27.5-31.7,41.3-47.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\"></path>\n      <path d=\"M76.9,36.4c-3.5,5.4-8,9.5-13.7,12.4-5,2.6-10.4,3.6-16.1,1.8.6-.6,1.2-1.2,1.8-1.7,2.8-2.4,5.3-5,7.3-8.1,1.7-2.7,3.2-5.5,3.1-8.8v-.7c-.4-2.4-1.7-4.3-3.6-5.7l5-6c.4-.2.8-.2,1.5,0,3.9,1.2,7.8,1.3,11.2-1.5,1.4-1.2,2.5-2.8,3.7-4.2,0,0,0,0,0,0,0,0,0,0,.2,0,1.1,1.8,2,3.8,2.5,5.8,1.4,6,.4,11.5-2.9,16.7h0Z\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\"></path>\n      <path d=\"M55.7,25.5c1.9,1.4,3.2,3.3,3.6,5.7v.7c.2,3.4-1.3,6.2-3,8.8-2,3.1-4.5,5.7-7.3,8.1-.6.5-1.1,1.1-1.8,1.7,5.7,1.8,11.1.8,16.1-1.8,5.6-2.9,10.2-7.1,13.7-12.4,3.3-5.2,4.3-10.7,2.9-16.7-.5-2.1-1.3-4-2.5-5.8,0,0-.1,0-.2,0s0,0,0,0c-1.2,1.4-2.3,3-3.7,4.2-3.4,2.8-7.3,2.8-11.2,1.5-.7-.2-1.1-.2-1.5,0-.3.1-.5.3-.8.6-1.6,1.9-3.3,3.8-5,5.7l-5.8-5,6.3-7.3c1.7,1.5,3.3,2.9,4.9,4.3.4.3.8.6.5,1.3\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\"></path>\n      <circle id=\"Filll\" cx=\"55.4\" cy=\"19.7\" r=\"3.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\"></circle>\n      <path id=\"Filll-2\" data-name=\"Filll\" d=\"M55.4,13.7c3.3,0,6,2.7,6,6\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\"></path>\n    </g>\n  </g>\n</svg>",
-		armor:	"<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\" viewBox=\"0 0 88 88\">\n  \n  <!-- Generator: Adobe Illustrator 28.7.10, SVG Export Plug-In . SVG Version: 1.2.0 Build 236)  -->\n  <g fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\">\n    <g id=\"Layer_2\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\">\n      <g fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\">\n        <g id=\"Fills\" style='opacity: 0.5;' stroke='none' fill='currentColor'>\n          <path d=\"M20,29.2c0,3.2,0,6.4.6,9.5.2,1.1.4,2.2.6,3.3h22.9V15.2h0c-.4,0-.8,0-1.2,0-3.2.9-6.3,1.7-9.5,2.6-3.8,1.1-7.5,2.2-11.3,3.3-.8.2-1.2.7-1.4,1.5-.4,2.1-.7,4.3-.7,6.5h0Z\"></path>\n          <path d=\"M44.1,71.5h0c.3.1.5,0,.8,0,1-.5,2.1-.9,3-1.5,4.2-2.5,7.7-5.8,10.7-9.6,3.6-4.6,6.2-9.8,7.7-15.5.3-.9.5-1.9.7-2.8h-22.9v29.5h0Z\"></path>\n        </g>\n        <g fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\">\n          <path d=\"M44.1,15.2c.8-.3,1.6.1,2.4.3,4.3,1.2,8.6,2.5,12.9,3.8,2.2.6,4.5,1.2,6.7,1.8.8.2,1.3.9,1.4,1.6.2,1.5.4,3.1.5,4.7.1,2.1.2,4.2.1,6.3,0,1.5-.3,3-.5,4.5-.1,1.2-.4,2.5-.6,3.7-.2.9-.4,1.9-.7,2.8-1.5,5.7-4.1,10.8-7.7,15.5-3,3.8-6.5,7.1-10.7,9.6-1,.6-2,1-3,1.5-.3.1-.5.2-.8.2s-.7-.1-1.1-.3c-3.3-1.5-6.1-3.5-8.7-5.9-3.4-3.1-6.2-6.7-8.4-10.6-1.9-3.4-3.3-6.9-4.2-10.7-.2-.7-.3-1.4-.4-2.1-.2-1.1-.4-2.2-.6-3.3-.6-3.2-.6-6.3-.6-9.5,0-2.2.3-4.4.7-6.5.2-.8.6-1.3,1.4-1.5,3.8-1.1,7.5-2.2,11.3-3.3,3.1-.9,6.3-1.8,9.5-2.6.4-.1.8,0,1.2,0\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\"></path>\n          <path d=\"M44.1,15.3v56.2\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\"></path>\n          <path d=\"M45,7.6c1.4.4,2.7.8,4.1,1.2,2.4.7,4.9,1.4,7.3,2.1,2.8.8,5.6,1.6,8.4,2.4,2.2.6,4.4,1.3,6.6,1.9.8.2,1.6.3,2.2,1,.6.7.6,1.6.7,2.4.3,1.8.6,3.7.6,5.6.1,1.9,0,3.9,0,5.8s0,.6,0,.9c-.1,1.6-.2,3.2-.4,4.7-.2,1.6-.3,3.3-.7,4.9-.5,2.3-1.1,4.6-1.7,6.9-.7,2.8-1.7,5.4-3,8-1.4,2.8-3,5.6-4.8,8.2-2.6,3.6-5.5,6.9-8.8,9.8-2.9,2.6-6.1,4.7-9.6,6.4-.2.1-.4.2-.7.3-.9.5-1.8.4-2.8,0-3.6-1.7-6.8-3.8-9.8-6.4-2.6-2.2-4.9-4.5-7-7.2-2.4-3-4.5-6.3-6.3-9.7-1.9-3.8-3.4-7.7-4.4-11.8-.4-1.7-.8-3.4-1.2-5.1-.3-1.3-.4-2.6-.5-3.9-.4-3.1-.6-6.3-.5-9.5,0-1.5,0-3,.3-4.5.2-1.7.5-3.4.8-5.1.2-1,.9-1.5,1.8-1.8,1.7-.5,3.5-1,5.2-1.5,2.7-.8,5.5-1.6,8.2-2.4,3.2-.9,6.3-1.8,9.5-2.7,1.4-.4,2.9-.9,4.3-1.2.6-.1,1.4,0,2,0\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\"></path>\n          <polyline points=\"66.9 42 44.1 42 21.2 42\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\"></polyline>\n        </g>\n      </g>\n    </g>\n  </g>\n</svg>",
-		inn: "<svg id=\"Layer_2\" data-name=\"Layer 2\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 62.55 56.26\">\n  <path style=\" scale: 0.9; transform: translate(4px, 4px);\" d=\"M55.07,34.69c-6.57,8.54-15.36,15.02-23.79,21.57-8.44-6.55-17.23-13.03-23.8-21.57C1.5,26.92-3.44,15.54,3.11,6.55,10.06-2.99,24.82-1.93,30.27,8.54c.36.7.59,1.57.94,2.24l.07.14.07-.14c.34-.67.57-1.54.94-2.24,5.45-10.47,20.21-11.53,27.15-1.99,6.56,8.99,1.62,20.37-4.37,28.14Z\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\"></path>\n</svg>",
-		villager: "<svg id=\"Layer_2\" data-name=\"Layer 2\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 88 88\">\n  \n  <path style=\" scale: 0.9; transform: translate(4px, 4px);\" id=\"path966\" d=\"M69.79,80.5c-2.54-25.58-6.66-33.2-13.41-37.4-6.8-.3-15.35,0-23.63,0-7.33,3.9-11.78,11.65-14.55,37.4h51.59Z\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\"></path>\n  <path id=\"path710\" d=\"M59.43,22.93c0,8.52-6.91,15.43-15.43,15.43s-15.43-6.91-15.43-15.43,6.91-15.43,15.43-15.43,15.43,6.91,15.43,15.43Z\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\"></path>\n  <line x1=\"60.48\" y1=\"80.5\" x2=\"56.9\" y2=\"62.96\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\"></line>\n  <line x1=\"27.61\" y1=\"80.5\" x2=\"31.34\" y2=\"62.96\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\"></line>\n</svg>",
-		void: "<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\" viewBox=\"0 0 88.2 88.2\">\n  \n  <!-- Generator: Adobe Illustrator 28.7.10, SVG Export Plug-In . SVG Version: 1.2.0 Build 236)  -->\n  <g fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\">\n    <g id=\"Layer_1\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\">\n      <path d=\"M86.4,54.4c.9-2.3.6-4.8.3-7.3-1-7.2-2-14.4-3-21.5-.3-2.5-.7-5-2.3-7-2.6-3.2-7.9-3.8-9.7-7.6-.8-1.7-.8-3.7-1.7-5.3-.9-1.5-2.4-2.4-4-3.2-2-1-4.2-1.9-6.4-1.8-3.1.2-5.9,2.3-9,2.6-3,.3-5.8-1.1-8.6-2s-6.3-1.3-8.5.7c-.9.8-1.5,2-2.5,2.9-2.2,2-5.5,1.9-8.4,1.9-4.7,0-9.9.7-13.3,4-3.1,3-4,7.5-4.2,11.8s.4,8.6-.3,12.8c-.6,3.5-1.9,6.8-2.8,10.3s-1.2,7.2.2,10.5c1.6,3.5,5,5.9,6.7,9.3,1.8,3.6,1.5,7.9,3,11.5,2.2,5,8.1,8,13.4,6.9,2.8-.6,5.7-2.2,8.4-1.2,1.9.7,3.1,2.6,4.8,3.7,3.2,2.1,7.5.9,11-.7s7-3.8,10.8-3.5c2.1.2,4.1,1.1,6.3,1.1,2.6,0,5.2-1.3,6.6-3.5,1.5-2.4,1.9-5.2,3.5-7.6s2.9-3.3,3.6-5.6.7-3.6,1.5-5.3c1.2-2.5,3.5-4.3,4.6-6.9Z\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\"></path>\n      <path d=\"M12.1,52.5c-.8-2.5,1-5.1,1.2-7.6.6-3.8-.7-7.9-2.4-11.1-.5-1-1-2.1-1-3.1.3-3.2,4.5-3.7,6.7-5.2,2.9-1.5,5.8-4,7.9-6.7,1.6-1.8,2.7-4.3,5.1-5,2.9-.7,5.8-.2,8.7-.2,6,.4,12.6-1.3,18.2-2.7,2-.4,5.1-1.1,6.7,0,2,2.1,2.5,5.9,3.4,8.6.8,3.3,3.8,7.7,7,10.5,1.4,1.4,1.8,3,1.6,4.9-.2,3,.1,6.8,1.5,9.9.7,2.4,3.1,4.4,3.2,7-.6,2.5-4.1,3.9-5.5,6.1-1.7,2.2-2.7,4.5-3.3,6.6-.5,1.5-1.2,3.1-2.5,4.1-3.9,2.1-8.6,3.5-14.4,5.9-3.4,1.2-5.3,2.7-8.6,2.9-2.9-.2-6.6-2.2-10-2.3-4.4,0-8.3-1.8-12.8-2.8-2.2-.6-2.4-2.8-2.7-4.7-.6-3.2-2.1-6.5-3.8-9-1.3-2.1-3.3-3.7-4.2-6v-.2Z\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\"></path>\n      <path d=\"M28.9,60.3c-.6-.7-1-1.6-1.4-2.5-1.2-2.8-2.8-5.3-4.9-7.6-1.2-1.3-2.9-2.6-2.2-4.6,1.1-3,2.3-6,2.8-9.2.4-4.7,1.7-5.3,5.4-7.3,4.7-2.8,8.8-6.5,12.1-9.9.9-.9,2-1.3,3.2-.6,3.4,2.6,7.5,4.8,11.4,5.9,1.5.4,2.8,1.2,3.7,2.5,1.8,2.5,4.2,5.3,6.7,7.2,1.6,1.1,2.1,2.9,1.9,4.8-.1,2.3,0,4.7.3,6.6.3,1.5.3,3.1-.6,4.5-2,2.8-4.1,5.5-6.2,8.5-1.5,2.1-2.8,4.4-5.5,5-4,.9-7.4,3.4-11.3,4.4-1.6.4-3.1-.2-4.2-1.2-2.7-2.1-5.9-3.9-9.1-5.2-.7-.3-1.4-.7-1.9-1.2h-.1Z\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\"></path>\n    </g>\n  </g>\n</svg>",
-
-				stairs: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 88.2 88.2" style="width: 100%; height: 100%; display: block;" aria-hidden="true" focusable="false"> <polyline class="cls-1" fill="none" stroke="currentColor" stroke-width="4" points="88.1 24 68 24 68 40 52 40 52 56 36 56 36 72 18 72 18 88.1"/> </svg>',
-				stairsD: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 88.2 88.2" style="width: 100%; height: 100%; display: block;" aria-hidden="true" focusable="false"> <polyline class="cls-1" fill="none" stroke="currentColor" stroke-width="4" points=".2 24 20.3 24 20.3 40 36.3 40 36.3 56 52.3 56 52.3 72 70.3 72 70.3 88.1"/> </svg>'
-				
-};
 
 // Alias the regular wall icon for custom walls so creators can reuse the same art
-itemIcons.custom_wall = itemIcons.wall;
-itemIcons.gameEnd = itemIcons.door;
 
 function makeGrid() {
-console.log("makeGrid");
-console.log(LEVELS);
-console.log(items);
+//console.log("makeGrid");
+//console.log(LEVELS);
+//console.log(items);
 
 	var grid = document.getElementById('grid');
 	grid.innerHTML = '';
@@ -1308,18 +1222,16 @@ console.log(items);
 }
 
 function addIcon(){
-console.log("addIcon");
-console.log(LEVELS);
-console.log(items);
-
-	
+//console.log("addIcon");
+//console.log(LEVELS);
+//console.log(items);
 	
 }
 
 function refreshCells() {
-console.log("refreshCells");
-console.log(LEVELS);
-console.log(items);
+//console.log("refreshCells");
+//console.log(LEVELS);
+//console.log(items);
 
 	var allCells = document.querySelectorAll('.cell');
 	for (var i = 0; i < allCells.length; i++) {
@@ -1394,9 +1306,9 @@ console.log(items);
 }
 
 function getItemNameForAnnouncement(itemType) {
-console.log("getItemNameForAnnouncement");
-console.log(LEVELS);
-console.log(items);
+//console.log("getItemNameForAnnouncement");
+//console.log(LEVELS);
+//console.log(items);
 
 	var itemNames = {
 		empty: 'empty',
@@ -1417,9 +1329,9 @@ console.log(items);
 }
 
 function announceCell(pos) {
-console.log("announceCell");
-console.log(LEVELS);
-console.log(items);
+//console.log("announceCell");
+//console.log(LEVELS);
+//console.log(items);
 
 	var found = null;
 	for (var j = 0; j < items.length; j++) {
@@ -1448,9 +1360,9 @@ console.log(items);
 }
 
 function focusCellByPosition(pos) {
-console.log("focusCellByPosition");
-console.log(LEVELS);
-console.log(items);
+//console.log("focusCellByPosition");
+//console.log(LEVELS);
+//console.log(items);
 
 	var cell = document.getElementById('cell_' + pos);
 	if (cell) {
@@ -1461,9 +1373,9 @@ console.log(items);
 }
 
 function enterGridMode(startPos) {
-console.log("enterGridMode");
-console.log(LEVELS);
-console.log(items);
+//console.log("enterGridMode");
+//console.log(LEVELS);
+//console.log(items);
 
 	startPos = startPos || 'A1';
 	focusCellByPosition(startPos);
@@ -1510,100 +1422,37 @@ for (var i = 0; i < itemButtons.length; i++) {
 	});
 }
 
-// Show/hide treasure config when treasure is selected
-var treasureConfigEl = document.getElementById('treasureConfig');
-var treasureKindEl = document.getElementById('treasureKind');
-var treasureValueEl = document.getElementById('treasureValue');
-var stairConfigEl = document.getElementById('stairConfig');
-var keyConfigEl = document.getElementById('keyConfig');
-var stairLevelSelect = document.getElementById('stairLevelSelect');
-var stairCellSelect = document.getElementById('stairCellSelect');
-var shopConfigEl = document.getElementById('shopConfig');
-var hazardConfigEl = document.getElementById('hazardConfig');
-var shopKindEl = document.getElementById('shopKind');
-var shopNameEl = document.getElementById('shopName');
-var shopValueEl = document.getElementById('shopValue');
-var shopCurrencyEl = document.getElementById('shopCurrency');
-var shopCostEl = document.getElementById('shopCost');
+
+function arrayRemove(array, thing){
+	index = array.indexOf(thing);
+	if (index > -1) { // only splice array when item is found
+		array.splice(index, 1); // 2nd parameter means remove one item only
+	}
+	return array;
+	
+}
 
 
 function updateTreasureUI() {
-console.log("updateTreasureUI");
-console.log(LEVELS);
-console.log(items);
-
+	console.log("updateTreasureUI")
 	var message = "";
+	myObjects = Object.keys(configMap)
+	console.log(myObjects);
+	myObjects = arrayRemove(myObjects, "game");
+	myObjects = arrayRemove(myObjects, "level");
+	myObjects = arrayRemove(myObjects, "scene");
 	
-	if (currentItem === 'treasure') {
-		treasureConfigEl.style.display = 'block';
-		message = "Treasure properties expanded";
-		treasureConfigEl.focus;
-	} else {
-		treasureConfigEl.style.display = 'none';
-	}
-	
-	if (currentItem === 'shop') {
-		shopConfigEl.style.display = 'block';
-		message = "shop properties expanded";
-		shopConfigEl.focus;
-	} else {
-		shopConfigEl.style.display = 'none';
-	}
-	if (currentItem === 'hazard') {
-		hazardConfigEl.style.display = 'block';
-		message = "hazard properties expanded";
-		hazardConfigEl.focus;
-	} else {
-		hazardConfigEl.style.display = 'none';
-	}
-	
-	if (currentItem == 'stairs') {
-		//TODO 
-		stairConfigEl.style.display = 'block';
-		var itemAt = items.find(o => o.pos === selectedPos);
-		if (itemAt && itemAt.type == "stairs"){
-			//don't do anything
-		} else{
-			stairLevelSelect.value = currentId;
-			updateStairCellList();
-			
+	for(object of myObjects){
+		console.log(object);
+		if(currentItem === object){
+			configMap[object].style.display = "block";
+			message = currentItem + " properties expanded";
+			metaMap[object][0].focus;
 		}
-		message = "Stairs properties expanded";
-	} else {
-		stairConfigEl.style.display = 'none';
-	}
-	if (currentItem == 'key') {
-		keyConfigEl.style.display = 'block';
-		message = "Key properties expanded";
-	} else {
-		keyConfigEl.style.display = 'none';
-	}
-
-	if (currentItem == 'villager') {
-		message = "villager properties expanded";
-	}
-	if (currentItem == 'custom_wall') {
-		message = "custom wall properties expanded";
-	}
-	if (currentItem == 'monster') {
-		message = "monster properties expanded";
-	}	
-	if (currentItem == 'wall') {
-		message = "wall properties expanded";
-	}
-	
-	// show/hide potion config
-	if (potionConfigEl) potionConfigEl.style.display = (currentItem === 'potion') ? 'block' : 'none';
-
-	// show/hide villager config
-	var villagerConfigEl = document.getElementById('villagerConfig');
-	if (villagerConfigEl) villagerConfigEl.style.display = (currentItem === 'villager') ? 'block' : 'none';
-	// show/hide custom wall config
-	var customWallConfigEl = document.getElementById('customWallConfig');
-	if (customWallConfigEl) customWallConfigEl.style.display = (currentItem === 'wall') ? 'block' : 'none';
-	var monsterContainer = document.getElementById('monsterLibraryContainer');
-	if (monsterContainer) {
-		monsterContainer.style.display = (currentItem === 'monster') ? 'block' : 'none';
+		else{
+			console.log(configMap[object]);
+			configMap[object].style.display = "none";
+		}
 	}
 	if (message != ""){document.getElementById('gridAnnouncer').textContent = message;}
 }
@@ -1637,9 +1486,9 @@ for (var i = 0; i < itemButtons.length; i++) {
 	};
 
 	function isEditing() {
-console.log("isEditing");
-console.log(LEVELS);
-console.log(items);
+//console.log("isEditing");
+//console.log(LEVELS);
+//console.log(items);
 
 		var ae = document.activeElement;
 		if (!ae) return false;
@@ -1674,79 +1523,20 @@ console.log(items);
 	});
 })();
 
-treasureKindEl.addEventListener('change', function() {
-	treasureKind = this.value;
-	// Apply sensible defaults per treasure kind
-	if (treasureKind === 'gold') treasureValue = 25;
-	else if (treasureKind === 'strength') treasureValue = 2;
-	else if (treasureKind === 'defense') treasureValue = 1;
-	treasureValueEl.value = treasureValue;
-});
-treasureValueEl.addEventListener('change', function() { treasureValue = parseInt(this.value) || 0; });
-// Potion UI wiring
-var potionConfigEl = document.getElementById('potionConfig');
-var potionHealEl = document.getElementById('potionHeal');
-if (potionHealEl) {
-	potionHealEl.addEventListener('change', function() { potionHeal = parseInt(this.value) || 0; });
-	potionHealEl.value = potionHeal;
-}
-// Villager UI wiring
-var villagerConfigEl = document.getElementById('villagerConfig');
-var villagerTextEl = document.getElementById('villagerText');
-var villagerKindEl = document.getElementById('villagerKind');
-var villagerValueEl = document.getElementById('villagerValue');
-if (villagerTextEl) {
-	villagerTextEl.addEventListener('change', function() { villagerText = this.value || ''; });
-	villagerTextEl.value = villagerText;
-}
-if (villagerKindEl) {
-	villagerKindEl.addEventListener('change', function() {
-		villagerKind = this.value || 'gold';
-		// Apply sensible defaults per villager reward kind
-		if (villagerKind === 'gold') villagerValue = 10;
-		else if (villagerKind === 'strength') villagerValue = 1;
-		else if (villagerKind === 'defense') villagerValue = 1;
-		if (villagerValueEl) villagerValueEl.value = villagerValue;
-	});
-	villagerKindEl.value = villagerKind;
-}
-if (villagerValueEl) {
-	villagerValueEl.addEventListener('change', function() { villagerValue = parseInt(this.value) || 0; });
-	villagerValueEl.value = villagerValue;
-}
+
 // Sync initial values
-treasureKindEl.value = treasureKind;
-treasureValueEl.value = treasureValue;
+
 updateTreasureUI();
 
 // Custom wall UI wiring
-var customWallNameEl = document.getElementById('customWallName');
-if (customWallNameEl) {
-	customWallNameEl.addEventListener('change', function() { customWallName = this.value || ''; });
-	customWallNameEl.value = customWallName;
-}
 
-// Monster library handling
-var monsterNameEl = document.getElementById('monsterName');
-var monsterHPEl = document.getElementById('monsterHP');
-var monsterATKEl = document.getElementById('monsterATK');
-var monsterDefEl = document.getElementById('monsterDEF');
-var monsterRewKindEl = document.getElementById('monRewKind');
-var monsterRewValueEl = document.getElementById('monRewValue');
-var monsterRewDescEl = document.getElementById('monRewDesc');
-var monsterListEl = document.getElementById('monsterList');
-var hazardListEl = document.getElementById('hazardList');
-var monsterSoundEl = document.getElementById('monSound');
-var btnAddMonster = document.getElementById('btnAddMonster');
-var btnAddShop = document.getElementById('btnAddShop');
-
-var shopListEl = document.getElementById('shopList');
 
 function renderMonsterLibrary(){
-console.log("renderMonsterLibrary");
-console.log(LEVELS);
-console.log(items);
-
+//console.log("renderMonsterLibrary");
+//console.log(LEVELS);
+//console.log(items);
+	
+	monsterListEl = document.getElementById('monsterList');
 	monsterListEl.innerHTML = '';
 	
 	monsters = Object.keys(monsterLibrary)
@@ -1809,10 +1599,10 @@ console.log(items);
 
 
 function renderHazardLibrary(){
-console.log("renderHazardLibrary");
-console.log(LEVELS);
-console.log(items);
-
+//console.log("renderHazardLibrary");
+//console.log(LEVELS);
+//console.log(items);
+	hazardListEl = document.getElementById('hazardList');
 	hazardListEl.innerHTML = '';
 	
 	hazards = Object.keys(hazardLibrary)
@@ -1872,10 +1662,12 @@ console.log(items);
 }
 
 function renderShopLibrary(){
-console.log("renderShopLibrary");
-console.log(LEVELS);
-console.log(items);
+//console.log("renderShopLibrary");
+//console.log(LEVELS);
+//console.log(items);
 
+
+	shopListEl = document.getElementById('shopList');
 	shopListEl.innerHTML = '';
 	
 	shops = Object.keys(shopLibrary)
@@ -1939,9 +1731,9 @@ console.log(items);
 
 
 function selectShop(shopName){
-console.log("selectShop");
-console.log(LEVELS);
-console.log(items);
+//console.log("selectShop");
+//console.log(LEVELS);
+//console.log(items);
 
 	if (shopName.length > 0){
 		shopClass(shopName);
@@ -1964,9 +1756,9 @@ console.log(items);
 
 
 function selectHazard(myHazard){
-console.log("selectHazard");
-console.log(LEVELS);
-console.log(items);
+//console.log("selectHazard");
+//console.log(LEVELS);
+//console.log(items);
 
 	if (myHazard.length > 0){
 		hazardClass(myHazard);
@@ -2027,8 +1819,9 @@ function libraryFromFields(m, myFields){
 			else{
 				console.log("new array index");
 				arrayIndex[fieldMeta] = 0;
+				m[fieldMeta] = [];
 			}
-			if(m[fieldMeta][arrayIndex[fieldMeta]]){
+			if(m[fieldMeta] && m[fieldMeta][arrayIndex[fieldMeta]]){
 				m[fieldMeta][arrayIndex[fieldMeta]] = field.value;
 			}
 			else if(field.value != ""){m[fieldMeta].push(field.value)}
@@ -2071,14 +1864,9 @@ function getMetas(myFields){
 
 btnAddMonster.addEventListener('click', function(){
 	var name = monsterNameEl.value.trim() || 'Monster';
-	if (!editingMonster.length > 0) {
-		var mon = {name: name};
-		monsterLibrary[name] = mon;
-		monsterLibrary[name].meta = {};
-	} else {
-		monsterLibrary[name] = {name: name, meta: {}};
-		libraryFromFields(monsterLibrary[name].meta, metaMap.monster);
-	}
+	monsterLibrary[name] = {name: name, meta: {}};
+	libraryFromFields(monsterLibrary[name].meta, metaMap.monster);
+
 	if (currentItem == "select"){
 		monsterUpdate();
 	}
@@ -2089,6 +1877,7 @@ btnAddMonster.addEventListener('click', function(){
 	resetFields(metaMap.monster);
 	saveMonsterLibrary();
 	renderMonsterLibrary();
+	
 });
 
 // Load persisted library, or initialize with one default if empty
@@ -2107,7 +1896,6 @@ if (btnCancelEdit) {
 }
 
 var btnCancelShop = document.getElementById('btnCancelShop');
-
 if (btnCancelShop) {
 	btnCancelShop.addEventListener('click', function(){
 		editingShop = "";
@@ -2121,7 +1909,6 @@ if (btnCancelShop) {
 }
 
 var btnCancelHazard = document.getElementById('btnCancelHazard');
-
 if (btnCancelHazard) {
 	btnCancelHazard.addEventListener('click', function(){
 		editingHazard = "";
@@ -2142,22 +1929,19 @@ btnCancelHazard.style.display = 'none';
 
 btnAddHazard.addEventListener('click', function(){
 	var name = hazardName.value.trim() || 'Hazard';
-	if (!editingHazard.length > 0) {
-		var mon = {name: name};
-		hazardLibrary[name] = mon;
-		hazardLibrary[name].meta = {};
-	} else {
-		hazardLibrary[name] = {name: name, meta: {}};
-		libraryFromFields(hazardLibrary[name].meta, metaMap.hazard);
-	}
+
+	hazardLibrary[name] = {name: name, meta: {}};
+	libraryFromFields(hazardLibrary[name].meta, metaMap.hazard);
+
 	if (currentItem == "select"){
 		hazardUpdate();
 	}
+
 	btnAddHazard.textContent = 'Add Hazard';
 	var cancel = document.getElementById('btnCancelEdit'); 
 	if(cancel) cancel.style.display='none';
-	resetFields(metaMap.hazard);
-	
+
+	resetFields(metaMap.hazard);	
 	renderHazardLibrary();
 });
 
@@ -2166,14 +1950,9 @@ btnAddHazard.addEventListener('click', function(){
 btnAddShop.addEventListener('click', function(){
 	var name = shopNameEl.value.trim() || 'Shop';
 	
-	if (!editingShop.length > 0) {
-		var mon = {name: name};
-		shopLibrary[name] = mon;
-		shopLibrary[name].meta = {};
-	} else {
-		shopLibrary[name] = {name: name, meta: {}};
-		libraryFromFields(shopLibrary[name].meta, metaMap.shop);
-	}
+	shopLibrary[name] = {name: name, meta: {}};
+	libraryFromFields(shopLibrary[name].meta, metaMap.shop);
+	
 	if (currentItem == "select"){
 		shopUpdate();
 	}
@@ -2190,9 +1969,9 @@ btnAddShop.addEventListener('click', function(){
 
 // Handle grid keyboard navigation
 function setupGridKeyboard() {
-console.log("setupGridKeyboard");
-console.log(LEVELS);
-console.log(items);
+//console.log("setupGridKeyboard");
+//console.log(LEVELS);
+//console.log(items);
 
 	var allCells = document.querySelectorAll('.cell');
 	for (var i = 0; i < allCells.length; i++) {
@@ -2317,6 +2096,12 @@ console.log(items);
 	}
 }
 
+
+
+
+
+
+
 document.getElementById('grid').onclick = function(e) {
 	updateTreasureUI()
 	// Support clicks on inner SVG/content by finding the nearest .cell ancestor.
@@ -2351,80 +2136,13 @@ document.getElementById('grid').onclick = function(e) {
 				type = items[existingIdx].type;
 				//TODO
 				message = ""
-				if (type == "treasure"){
-					treasureConfigEl.style.display = 'block'; 
+				myDiv = configMap[type];
+				//populateFromLibrary(m, myFields){
+				if(myDiv){
+					myDiv.style.display = 'block'; 
 					message = type + " properties expanded."
-					
-					treasureKindEl.value = items[existingIdx].meta.kind;
-					//treasureKindEl.focus();
-					treasureValueEl.value = items[existingIdx].meta.value;
-				}
-				else if(type == "shop"){
-					myShop = items[existingIdx].meta;
-					shopConfigEl.style.display = 'block'; 
-					message = type + " properties expanded."
-					selectShop(myShop.name)
-					document.getElementById("shopName").focus();
-				}
-				else if (type == "monster"){
-					myMonster = items[existingIdx].meta;
-					message = type + " properties expanded."
-					//descCount = (myMonster.descriptions && myMonster.descriptions.length) ? myMonster.descriptions.length : 0
-					//myDesc = myMonster.name + ' (HP:' + (myMonster.hp||0) + ' ATK:' + (myMonster.atk||0) + ' DEF:' + (myMonster.def||0) + ')' + (descCount>0 ? ' ['+descCount+' desc]' : '');
-					monsterContainer = document.getElementById('monsterLibraryContainer');
-					monsterContainer.style.display = 'block'; 
-					monsters = monsterListEl.children
-					selectMonster(myMonster.name)
-					document.getElementById("monsterName").focus();
-				}
-				else if (type == "villager"){
-					message = type + " properties expanded."
-					villagerConfigEl = document.getElementById('villagerConfig');
-					villagerConfigEl.style.display = 'block'; 
-					myVillager = items[existingIdx].meta
-					villagerTextEl.value = myVillager.text
-					villagerKindEl.value =  myVillager.kind
-					villagerValueEl.value = myVillager.value
-					villagerTextEl.focus();
-				}
-
-				else if (type == "stairs"){
-					message = type + " properties expanded."
-					stairsConfigEl = document.getElementById('stairConfig');
-					stairsConfigEl.style.display = 'block'; 
-					mystairs = items[existingIdx].meta
-					stairLevelSelect.value = mystairs.level
-					updateStairCellList()
-					stairCellSelect.value =  mystairs.cell
-					stairLevelSelect.focus();
-				}
-				else if (type == "key"){
-					message = type + " properties expanded."
-					keyConfigEl = document.getElementById('keyConfig');
-					keyConfigEl.style.display = 'block'; 
-					if (items[existingIdx].meta){
-						mykey = items[existingIdx].meta
-						keyLevelSelect.value = mykey.level								
-					}
-					else {
-						mypos = items[existingIdx].pos
-						keyLevelSelect.value = currentId;
-						var keyObj = {type: 'key', pos: pos, meta: {level: currentId}};
-						items[existingIdx] = keyObj;
-					keyLevelSelect.focus();}
-				}
-				else if (type == "wall"){
-					wallName = document.getElementById("customWallName");
-					message = type + " properties expanded."
-					wallConfigEl = document.getElementById('customWallConfig');
-					wallConfigEl.style.display = 'block'; 
-					wallName.value = ""; 
-					wallIconSelect.value="wall";
-					if (items[existingIdx].meta){
-						if(items[existingIdx].meta.name){wallName.value = items[existingIdx].meta.name;}
-						if(items[existingIdx].meta.icon){wallIconSelect.value = items[existingIdx].meta.icon;}
-					}
-					updateWallIcon();
+					myFields = metaMap[type];
+					populateFromLibrary(items[existingIdx].meta, myFields);
 				}
 				else{updateTreasureUI()}
 				if (message != ""){document.getElementById('gridAnnouncer').textContent = message;}
@@ -2609,18 +2327,18 @@ setupGridKeyboard();
 	if(!importFileEl || !importBtn) return;
 
 	function showMessage(msg){
-console.log("showMessage");
-console.log(LEVELS);
-console.log(items);
+//console.log("showMessage");
+//console.log(LEVELS);
+//console.log(items);
 
 		// Use alert for now; could be replaced with in-UI notification
 		try { alert(msg); } catch(e){ console.log(msg); }
 	}
 
 	function importLevelFromHtmlText(text){
-console.log("importLevelFromHtmlText");
-console.log(LEVELS);
-console.log(items);
+//console.log("importLevelFromHtmlText");
+//console.log(LEVELS);
+//console.log(items);
 
 
 
@@ -2673,9 +2391,9 @@ console.log(items);
 	if(!importInput || !importBtn) return;
 
 	function parseCsv(text){
-console.log("parseCsv");
-console.log(LEVELS);
-console.log(items);
+//console.log("parseCsv");
+//console.log(LEVELS);
+//console.log(items);
 
 		// Simple CSV parser: split lines, handle quoted fields
 		var rows = [];
@@ -2746,12 +2464,16 @@ console.log(items);
 	});
 })();
 
-var metaMap = {};
+
+//object="treasure" class="configDiv"
 
 function initForms(){
-	
+	arrayIndex = {};
+	console.log("initForms")
 	var inputs = document.getElementsByTagName("input");
 	var selects = document.getElementsByTagName("select");
+	var configs = document.getElementsByClassName("configDiv");
+	
 	var objectKeys = [];
 	for(input of inputs){	
 		myObject = input.getAttribute("object");
@@ -2773,17 +2495,102 @@ function initForms(){
 	for(input of inputs){	
 		myObject = input.getAttribute("object");
 		if(myObject){
-		metaMap[myObject].push(input);}
+		metaMap[myObject].push(input);
+		myFunks = ["updateSelected(this);"]
+		
+		if(input.getAttribute("onChange")){
+			myFunks.push(input.getAttribute("onchange"))
+		}
+		console.log(myFunks)
+		input.setAttribute("onChange", myFunks.join(" "))
+		
+		if(input.getAttribute("array") == true){
+			myMeta = input.getAttribute("meta")
+			arrayIndex[myMeta] = (arrayIndex[myMeta] + 1) || 0;
+			input.setAttribute("index", arrayIndex[myMeta]);
+		}
+		
+		}
 	}
 	for(select of selects){	
 		myObject = select.getAttribute("object");
-		if(myObject){metaMap[myObject].push(select);}
+		if(myObject){
+			metaMap[myObject].push(select);
+			myFunks = ["updateSelected(this);"]
+		if(select.getAttribute("onChange")){
+			myFunks.push(select.getAttribute("onchange"))
+		}
+		select.setAttribute("onChange", myFunks.join(" "))
+		
+		}
+	}
+
+	for(div of configs){
+		myObject = div.getAttribute("object");
+		if(myObject){
+			configMap[myObject] = div;}
 	}
 
 	console.log(metaMap);
 	
 }
 
+function updateSelected(field){
+	console.log("updateSelected");
+	console.log(field);
+	if(activeCell){
+		var pos = activeCell.dataset.pos;
+		var existingIdx = getItemIndex(pos);
+		cellObject = items[existingIdx];
+		fieldObject = field.getAttribute("object");
+		fieldMeta = field.getAttribute("meta");
+		fieldValue = field.value;
+		console.log(fieldValue)
+		if(cellObject && cellObject.type == fieldObject){
+			//what kind of field
+			if (field.getAttribute("type") == "checkbox") {
+				console.log("checkbox")
+				cellObject.meta[fielMeta] = field.checked;
+				
+			}
+			else if (field.getAttribute("array") == true){
+				console.log("array")
+				cellObject.meta[fieldMeta][field.getAttribute("index")] = fieldValue;
+				
+			}
+			else{
+				console.log("standard field")
+				console.log(cellObject)
+				console.log(cellObject.meta)
+				console.log(fieldMeta)
+				if(!cellObject.meta){cellObject.meta = {}}
+				cellObject.meta[fieldMeta] = fieldValue;
+				
+			}
+		}
+	}
+}
+
+
+function monsterUpdate(name, hp, atk, def, rKind, rVal, rDesc, descriptions){
+//console.log("monsterUpdate");
+//console.log(LEVELS);
+//console.log(items);
+
+	if(currentItem == 'select'){
+		var pos = activeCell.dataset.pos;
+		var existingIdx = getItemIndex(pos);
+		myMonster = items[existingIdx].meta;
+		myMonster.name = name;
+		myMonster.hp = hp;
+		myMonster.atk = atk;
+		myMonster.def = def;
+		myMonster.rVal= rVal;
+		myMonster.rKind = rKind;
+		myMonster.rDesc = rDesc;
+		myMonster.descriptions = descriptions;	
+	 }
+}
 
 
 
@@ -2792,7 +2599,6 @@ myOption.textContent = "Finish"
 myOption.setAttribute("value", null);
 nextLevelList.appendChild(myOption);
 
-initForms();
 
 renderMonsterLibrary();
 renderShopLibrary();
