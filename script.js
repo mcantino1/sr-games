@@ -2019,7 +2019,10 @@ gameEl.addEventListener("keydown", (e) => {
 	}
 	return
 	}
-	
+  if(e.ctrlKey){
+	  speechSynthesis.cancel();
+	  return
+  }
   if (e.key === "s" || e.key === "S") {
     e.preventDefault();
     speakStatus();
