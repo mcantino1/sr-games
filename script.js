@@ -1464,6 +1464,18 @@ function enterCell(prefix) {
 		  hstat = haz.meta.kind;
 		  effectMessage = "You have " + word + " " + Math.abs(hval) + " " + hstat + "."
 		  stats[hstat] = parseInt(stats[hstat]) + parseInt(hval); 
+		  //allow death
+		  if (stats.life < 1){
+			playSound("fall");
+			const curPos = toPos(player.row, player.col);
+			stats.life = baseLife;
+			defeat = true;
+			stats.key = levels[currentLevelId].foundKey;
+			// Tell loadLevel to preserve the current stats object when reloading.
+			preserveStatsOnNextLoad = true;
+			loadLevel(currentLevelId);
+			return;
+		  }
 	  }
 	  
 	  if (haz.meta.void){
@@ -2032,6 +2044,15 @@ function loadLevel(id, cell = "A1") {
   level = levels[id];
   currentLevelId = id;
   stats.key = level.foundKey;
+  let opacity = 100;
+  if(level.gridOpacity){
+	  opacity = level.gridOpacity;
+  }
+  else if(myGame.gridOpacity){
+	  opacity = myGame.gridOpacity;
+  }
+  root.style.setProperty("--gridAlpha", (opacity / 100));
+  
   // If the level creator saved an opening description in localStorage, prefer a per-level value.
   try {
     var perKey = 'creatorOpeningDesc_' + id;
