@@ -111,6 +111,16 @@ function addGame(num){
 
 getFile("01");
 
+function clearLevelLists(){
+	for (list of levelSelectors){
+		clearList(myList);
+	}
+	for (list of iconSelectors){
+		clearList(myList);
+	}
+	
+}
+
 function clearList(myList){
 //console.log("clearList");
 //console.log(LEVELS);

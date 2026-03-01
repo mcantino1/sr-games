@@ -1438,6 +1438,8 @@ function enterCell(prefix) {
 	if (hasShop(pos)){
 		revealedSpecial.set(pos, "shop");
 		shop = itemsAt(pos)[0].meta
+		console.log(shop)
+		console.log(shop.kind)
 		message = "Welcome to the " + shop.name + "! "
 		if(shop.kind == "text"){
 			if(shop.bought){
