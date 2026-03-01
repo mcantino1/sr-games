@@ -1854,7 +1854,7 @@ function tryMove(dr, dc) {
 	}
 	if (monster.rVal > 0){
 		msg += " You gain " + monster.rVal + " " + monster.rKind + ". "
-		stats[monster.rKind] += monster.rVal;
+		stats[monster.rKind] += parseInt(monster.rVal);
 	}
 	
     // Do NOT move the player — they remain in their current square after
