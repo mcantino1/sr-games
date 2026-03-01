@@ -122,7 +122,7 @@ gameDiv =  document.getElementById("game");
 footDiv =  document.getElementById("foot");
 
 function initGame(myButton){
-	
+	console.log("initGame")
 	myGame = myGames[myButton.getAttribute("gameId")];
 	gameName = document.getElementsByTagName("H1")[0].children[0];
 	gameName.innerHTML = myGame["title"]
@@ -152,8 +152,28 @@ function initGame(myButton){
 	 //level = JSON.parse(JSON.stringify(LEVELS[id]));
 	 for (let k = 0; k < myKeys.length; k ++){
 		 levels[myKeys[k]] = JSON.parse(JSON.stringify(LEVELS[myKeys[k]]));
-		 levels[myKeys[k]].foundKey = false;
+		 levels[myKeys[k]].foundKey = 0;
+		 levels[myKeys[k]].keyCount = 0;
 	 }
+	 console.log(levels)
+	 for(key of myKeys){
+		 console.log(key)
+		 for(item of levels[key].items){
+			 console.log(item)
+			 if (item.type == "key"){
+				 if (item.meta && item.meta.level){
+					 levels[level].keyCount += 1;
+				 }
+				 else{
+					 levels[key].keyCount += 1;
+				 }
+s			 }
+			 
+		 }
+	 }
+	 
+	 
+	 
 	 try {
 	  window.__campaignStartup = true;
 	  loadLevel(myKeys[0]);
@@ -448,6 +468,7 @@ let LEVELS = {
       {type:"treasure", pos:"C4"},
       {type:"potion", pos:"E2"},
       {type:"key", pos:"C5"},
+	  {type:"key", pos:"C6"},
       {type:"void", pos:"E4"},
       {type:"door", pos:"F6"}
     ],
@@ -832,7 +853,21 @@ function updateStatsUI(){
   strText.textContent = stats.strength;
   defText.textContent = stats.defense;
   goldText.textContent = stats.gold;
-  keyText.textContent = stats.key ? "Yes" : "No";
+  let needKey = level.keyCount - level.foundKey;
+  if (level.keyCount == 0) {
+	   keyText.textContent = "none"
+  }
+  else if(level.keyCount == 1){
+	   if(needKey == 0){
+		   keyText.textContent = "Yes";
+	   }
+	   else{
+		   keyText.textContent = "No";
+	   }
+  }
+  else{
+	   keyText.textContent = stats.key;
+  }
 }
 
 function sleep(milliseconds) {
@@ -915,7 +950,8 @@ function isBlocked(r, c) {
   // Walls and living monsters block movement and are treated as blocked paths.
   // Doors block movement unless the player has a key; with a key the player may step
   // into the door square to unlock/enter it.
-  if (hasDoor(pos) && !stats.key) return true;
+  let needKey = level.keyCount - level.foundKey;
+  if (hasDoor(pos) && needKey > 0) return true;
   return hasWall(pos) || hasMonster(pos);
 }
 
@@ -1252,12 +1288,25 @@ function enterCell(prefix) {
 
 	//did you take the stairs?
 	if (tookStairs.bool == true){
-		if (tookStairs.level != null){
-			//You take the stairs to E5
-			discoveryMsgs.push("You take the stairs to " + tookStairs.cell + " of " + tookStairs.level + ".\n")
+		if(tookStairs.hazard == false){
+			if (tookStairs.level != null){
+				//You take the stairs to E5
+				discoveryMsgs.push("You take the stairs to " + tookStairs.cell + " of " + tookStairs.level + ".\n")
+			}
+			else{
+				discoveryMsgs.push("You take the stairs to " + tookStairs.cell + ".\n")
+			}
 		}
 		else{
-			discoveryMsgs.push("You take the stairs to " + tookStairs.cell + ".\n")
+			if (tookStairs.level != null){
+				//You take the stairs to E5
+				discoveryMsgs.push(stairMessage);
+				discoveryMsgs.push("You are now in " + tookStairs.cell + " of " + tookStairs.level + ".\n");
+			}
+			else{
+				discoveryMsgs.push(stairMessage);
+				discoveryMsgs.push("You are now in " + tookStairs.cell + ".\n");
+			}
 		}
 		tookStairs.level = null;
 		tookStairs.cell = null;
@@ -1279,16 +1328,19 @@ function enterCell(prefix) {
 
 
 
-  if (hasKey(pos) && !stats.key) {
+  if (hasKey(pos)) {
 	  let keyLevel;
-	if (itemsAt(pos)[0].meta){keyLevel = itemsAt(pos)[0].meta.level;}
-		else {keyLevel = currentLevelId}
-	levels[keyLevel].foundKey = true;
-	stats.key = true;
+	  let mes = "You found a key"
+	if (itemsAt(pos)[0].meta){keyLevel = itemsAt(pos)[0].meta.level;
+		mes += " for " + keyLevel  + ". "}
+		else {keyLevel = currentLevelId; mes += ". "}
+	levels[keyLevel].foundKey +=  1;
+	stats.key = levels[currentLevelId].foundKey;
+	updateStatsUI()
     removeItem("key", pos);
     revealedSpecial.delete(pos);
 	updateUI();	
-    discoveryMsgs.push("You found a key. ");
+    discoveryMsgs.push(mes);
   }
 
   if (hasTreasure(pos)) {
@@ -1407,7 +1459,7 @@ function enterCell(prefix) {
     discoveryMsgs.push("Welcome to the inn! Press <kbd>Space</kbd> to rest and heal 8 points for 10 gold. ");
   }
 
-  if (hasExit(pos)) {
+  if (hasExit(pos) || (hasDoor(pos) && level.keyCount == 0)) {
     // Prompt the player to open the exit with Space (does not require a key).
     revealedSpecial.set(pos, "exit");
     discoveryMsgs.push("An exit is here. Press <kbd>Space</kbd> to open. ");
@@ -1422,7 +1474,8 @@ function enterCell(prefix) {
 
   if (hasDoor(pos)) {
     // If the player steps onto a door tile and has a key, unlock and mark completed.
-    if (stats.key) {
+		let needKey = level.keyCount - level.foundKey;
+    if (needKey == 0) {
       // consume the key and complete the level (player stands on the door square)
       //	stats.key = false;
       completed = true;
@@ -1509,7 +1562,24 @@ function enterCell(prefix) {
 	  }
 	  
 	  if(haz.meta.stairs){
-		  console.log("We haven't prepared for this kind of hazard yet.")
+		  console.log("We haven't prepared for this kind of hazard yet.")	  
+		//take stairs
+		preserveStatsOnNextLoad = true;
+		targetLevel = itemsAt(pos)[0].meta.level;
+		targetCell = itemsAt(pos)[0].meta.cell;
+		tookStairs.bool = true;
+		stairsMessage = haz.meta.text + " " + effectMessage;
+		if (targetLevel != currentLevelId){	tookStairs.level = targetLevel;}
+		tookStairs.cell = targetCell;
+		
+		if (targetLevel == currentLevelId){
+			player.col = targetCell.charCodeAt(0) - 65;
+			player.row = targetCell.substring(1) - 1;
+			enterCell();
+		}
+		else{
+			loadLevel(targetLevel, targetCell);
+		} 
 		  
 	  }
 	  spoken.push(haz.meta.text);
@@ -1599,14 +1669,21 @@ function tryMove(dr, dc) {
 	   announce("You win!");
    }
 
+	//keyCheck
+	let needKey = level.keyCount - level.foundKey;
 
   // Prevent stepping onto a locked door tile even if other checks miss it.
-  if (hasDoor(nextPos) && !stats.key) {
+  if (hasDoor(nextPos) && needKey > 0) {
     // Reveal the door so the player knows where it is and block movement.
     revealedByBump.add(nextPos);
     // Tell the player a key is required, then repeat the player's current location info.
     const currentDesc = describeCurrentLocation();
-    announce("Key required. ");
+	if(level.keyCount == 1){
+		announce("Key required. ");
+	}
+	else{
+		announce(level.keyCount + " keys required. ");
+	}
     renderMap();
     return;
   }
@@ -1823,7 +1900,8 @@ function speakLoc() {
 	
 }
 
-var tookStairs = {bool: false, level: null, cell: null}
+var tookStairs = {bool: false, level: null, cell: null, hazard: false}
+var stairsMessage = "";
 
 function activateCell(pos){
     if (hasPotion(pos)) {
@@ -1851,6 +1929,7 @@ function activateCell(pos){
 		targetLevel = itemsAt(pos)[0].meta.level;
 		targetCell = itemsAt(pos)[0].meta.cell;
 		tookStairs.bool = true;
+		tookStairs.hazard = false;
 		if (targetLevel != currentLevelId){	tookStairs.level = targetLevel;}
 		tookStairs.cell = targetCell;
 		
@@ -1927,11 +2006,10 @@ function activateCell(pos){
           announce(`You need ${cost} gold to rest at the inn. `);
         }
     }
-    else if (hasExit(pos)) {
+    else if (hasExit(pos) || (hasDoor(pos) && level.keyCount == 0)) {
       // Pressing Space on an Exit marks the stage complete (like a door).
       completed = true;
-	 
-      
+	       
       // Announce completion but do not immediately load next level; Enter will advance.
       announce("You exit and return to the dungeon. <br> press <kbd>enter</kbd> to continue. " + revealMap());
 	  updateUI();
@@ -2121,7 +2199,7 @@ function loadLevel(id, cell = "A1") {
   completed = false;
   // Only reset stats if not preserving from previous level
   if (!preserveStatsOnNextLoad) {
-    stats = { life: baseLife, strength: 2, defense: 0, gold: 0, key: false };
+    stats = { life: baseLife, strength: 2, defense: 0, gold: 0, key: 0 };
   }
   preserveStatsOnNextLoad = false;
   discoveryLog = [];

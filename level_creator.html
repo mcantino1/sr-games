@@ -12,7 +12,7 @@
     <div class="container">
         <h1>Level Creator</h1>
 		<div class="topInfo">    
-		<select id="gameSelect" onChange="selectGame();">
+		<select id="gameSelect" onchange="selectGame();">
 		
 		</select>
 			<label for="gameName">Game Name: </label>
@@ -31,7 +31,7 @@
 <div class="gridParent">
 <div class="leftPanel">
 <H2>Level List</h2>
-<select name="levels" onchange="changeLevel();" title="Level List" id="levelSelect" size="20"></select>
+<select name="levels" meta="level" object="game" onchange="changeLevel();" title="Level List" id="levelSelect" size="20"></select>
 <button id="btnNew" onclick="levelNew()" >New</button>
 <button id="btnCopy" onclick="levelCopy()">Copy</button>
 <button id="btnDelete" onclick="levelDelete()">Delete</button>
@@ -51,7 +51,7 @@
 			</div>
 			<div class="floatGroup">
 			<label for="levelOpacity">Grid opacity</label>
-			<input object="level" meta="gridOpacity" class="statBox" type="number" onChange="saveLevel(); updateOpacity();" id="levelOpacity" value="100"/>
+			<input object="level" meta="gridOpacity" class="statBox" type="number" onchange="saveLevel(); updateOpacity();" id="levelOpacity" value="100"/>
 			</div>
 			<div class="floatGroup">
                 <label for="inputRows">Rows:</label>
@@ -151,7 +151,7 @@
 						<div class="floatGroup">
 						
 						<label for="monIcon">Icon</label>
-						<select object="monster" value="monster" meta="icon" onChange="updateMonIcon();"  id="monIcon" >
+						<select div="monIconDisplay" object="monster" value="monster" meta="icon" onchange="updateMonIcon();"  id="monIcon" >
 						<option  value="monster">monster</option>
 						</select>
 						<div id="monIconDisplay"></div>
@@ -210,7 +210,7 @@
                 </select>
 				<div style="width: fit-content;">
 				<label for="shopIcon">Icon</label>
-				<select object="shop" meta="gold" onChange="updateShopIcon();"  id="shopIcon" >
+				<select object="shop" meta="icon" value="villager" div="shopIconDisplay" onchange="updateShopIcon();"  id="shopIcon" >
 				<option  value="villager">villager</option>
 				</select>
 				<div id="shopIconDisplay"></div>
@@ -250,7 +250,7 @@
                 </div>					
 				<div class="floatGroup">
                         <label for="hazardStairs" >Teleport</label>
-                         <input object="hazard" meta="stairs" id="hazardStairs" onChange="hazardStairToggle();" type="checkbox"/>
+                         <input object="hazard" meta="stairs" id="hazardStairs" onchange="hazardStairToggle();" type="checkbox"/>
 						 
 						 <div id="hazardStairConfig" style="display: none;">
 						 	<label for="hazardLevelSelect">Target Level:</label>
@@ -279,7 +279,7 @@
                 
 				<div style="width: fit-content;">
 				<label for="hazardIcon">Icon</label>
-				<select  object="hazard" meta="icon" onChange="updateHazardIcon();"  id="hazardIcon" >
+				<select  object="hazard" meta="icon" value="void" onchange="updateHazardIcon();"  div="hazardIconDisplay" id="hazardIcon" >
 				<option value="void">void</option>
 				</select>
 				<div id="hazardIconDisplay"></div>
@@ -338,7 +338,7 @@
                 <span >Optional name shown in the editor and exports.</span>
 				<div style="width: fit-content;">
 				<label for="wallIcon">Icon</label>
-				<select  object="wall" meta="icon" meta="icon" onChange="updateWallIcon();"  id="wallIcon" >
+				<select  object="wall" meta="icon" value="wall" meta="icon" div="wallIconDisplay" onchange="updateWallIcon();"  id="wallIcon" >
 				<option  value="wall">wall</option>
 				</select>
 				<div id="wallIconDisplay"></div>

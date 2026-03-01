@@ -21,6 +21,8 @@ var selectedHazardIndex = -1;
 var editingShop = "";
 var editingHazard = "";
 var currentGame = "";
+var levelSelectors = [];
+var iconSelectors = [];
 
 var nameField = document.getElementById("gameName");
 
@@ -89,7 +91,7 @@ function getFile(num){
 function backupDemo(num){
 //console.log("backupDemo");
 //console.log(LEVELS);
-//console.log(items);
+//	(items);
 
 	demoGame = {"title": "New Game", "levels": LEVELS};	
 	myGames["game" + num] = demoGame;
@@ -150,11 +152,8 @@ function selectGame(){
 		LEVELS = {};
 		
 		//clear other data from the page!
-		clearList(levelList);
-		clearList(nextLevelList);
-		clearList(keyList);
-		clearList(stairList);
-		
+		clearLevelLists();
+
 		statLife.value = 10
 		statStrength.value = 2
 		statDefense.value = 0
@@ -194,6 +193,14 @@ function initCustomStats(){
 	if(myGames[currentGame]["gridOpacity"]){baseOpacity.value = myGames[currentGame]["gridOpacity"]}
 }
 
+function addOptions(selectorList, myLevel){
+	//levelSelectors
+	for (list of selectorList){
+		addOption(list, myLevel, myLevel)
+	}
+	
+}
+
 function initLevelSet(){
 //console.log("initLevelSet");
 //console.log(LEVELS);
@@ -203,10 +210,7 @@ function initLevelSet(){
 	myKeys = Object.keys(newLevels);
 	for(i = 0; i < myKeys.length; i++){
 		LEVELS[myKeys[i]] = newLevels[myKeys[i]];
-		addOption(levelList, myKeys[i],  myKeys[i]);
-		addOption(nextLevelList, myKeys[i],  myKeys[i]);
-		addOption(keyList, myKeys[i],  myKeys[i]);
-		addOption(stairList, myKeys[i],  myKeys[i]);
+		addOptions(levelSelectors, myKeys[i]);
 		myItems = LEVELS[myKeys[i]].items;
 		//update level items from previous versions
 		for (let o = 0; o < myItems.length; o++){
@@ -289,22 +293,9 @@ function initCustomIcons(){
 	
 	myIcons = Object.keys(itemIcons);
 	for(icon of myIcons){
-		if(icon != "monster"){
-			addOption(monIconSelect, icon, icon)}
-		if(icon != "wall"){
-			addOption(wallIconSelect, icon, icon)
-		}
-		if(icon != "villager"){
-			addOption(shopIconSelect, icon, icon)
-		}
-		if(icon != "void"){
-			addOption(hazardIconSelect, icon, icon)
-		}
+		addOptions(iconSelectors, icon)
 	}
-	updateMonIcon()
-	updateWallIcon()
-	updateShopIcon()
-	updateHazardIcon()
+	updateIcons()
 }
 
 
@@ -347,13 +338,20 @@ function hazardStairToggle(){
 	}
 }
 
-
+function updateIcons(){
+	//div="monIconDisplay"
+	for (field of iconSelectors){
+		document.getElementById(field.getAttribute("div")).innerHTML = itemIcons[field.value];
+	}
+	if(currentId.length > 0){
+		refreshCells();
+	}	
+}
 
 function updateMonIcon(){
 //console.log("updateMonIcon");
 //console.log(LEVELS);
 //console.log(items);
-
 	myIcon = monIconSelect.value
 	monIconDisplay.innerHTML = itemIcons[myIcon];	
 	if(currentId.length > 0){
@@ -496,13 +494,8 @@ function newIcon(content, name){
 	vectorStyler(myParts)
 	itemIcons[name] = myVector.outerHTML;
 	customIcons[name] = myVector.outerHTML;
-	addOption(monIconSelect, name, name)
-	addOption(wallIconSelect, name, name)
-	addOption(shopIconSelect, name, name)
-	monIconSelect.value = name;
-	wallIconSelect.value = name;
-	shopIconSelect.value = name;
-	updateWallIcon()
+	addOptions(iconSelectors, icon);
+	updateIcons();
 }
 	
 function vectorStyler(myParts){
@@ -669,10 +662,7 @@ function levelNew(){
 	LEVELS[newId].scenes = {};
 	
 	myOtherList = document.getElementById("nextLevelSelect");
-	addOption(myList, newId, newId);
-	addOption(myOtherList, newId, newId);
-	addOption(stairLevelSelect, newId, newId);
-	addOption(keyLevelSelect, newId, newId);
+	addOptions(levelSelectors, newId)
 	myKeys = Object.keys(LEVELS);
 	
 
@@ -686,11 +676,7 @@ function levelCopy(){
 	newId = currentId + "copy"
 	LEVELS[newId] = structuredClone(LEVELS[currentId])
 	LEVELS[newId].id = newId
-	addOption(document.getElementById("levelSelect"), newId, newId);
-	addOption(document.getElementById("nextLevelSelect"), newId, newId);
-	addOption(document.getElementById("stairLevelSelect"), newId, newId);
-	addOption(document.getElementById("keyLevelSelect"), newId, newId);
-	
+	addOptions(levelSelectors, newId)
 	myKeys = Object.keys(LEVELS);
 	
 }
@@ -720,6 +706,7 @@ function addOption(myList, myValue, myText){
 		myOption.setAttribute("value", myValue);
 		myList.appendChild(myOption);
 	}
+	myList.value = myValue;
 }
 
 function levelDelete(){
@@ -749,15 +736,15 @@ function deleteOption(myList, myValue){
 	}}
 }
 
-function updateStairCellList(){
+function updateCellList(levelField){
 //console.log("updateStairCellList");
 //console.log(LEVELS);
 //console.log(items);
-
+	cellSelect = document.getElementById(levelField.getAttribute("cellSelect"));
 	//clear the cell list First
-	stairCellSelect.innerHTML = "";
-	targetLevel = stairLevelSelect.value
-	if (targetLevel == "null") {stairLevelSelect.value = currentId; targetLevel = currentId;}
+	cellSelect.innerHTML = "";
+	targetLevel = levelField.value
+	if (targetLevel == "null") {levelField.value = currentId; targetLevel = currentId;}
 	myRows = LEVELS[targetLevel].rows
 	myCols = LEVELS[targetLevel].cols
 	for (let c = 0; c < (myCols); c++){
@@ -767,7 +754,7 @@ function updateStairCellList(){
 			newOption = document.createElement("option");
 			newOption.textContent = newPos
 			newOption.setAttribute("value", newPos);
-			stairCellSelect.appendChild(newOption);	
+			cellSelect.appendChild(newOption);	
 		}
 		
 	}
@@ -852,9 +839,7 @@ function saveLevel(){
 function updateOpacity(){
 //console.log("updateOpacity");
 //console.log(LEVELS);
-//console.log(items);
-
-	
+//console.log(items);	
 	root.style.setProperty("--gridAlpha", (levelOpacity.value / 100));
 }
 
@@ -1437,30 +1422,33 @@ function updateTreasureUI() {
 	console.log("updateTreasureUI")
 	var message = "";
 	myObjects = Object.keys(configMap)
-	console.log(myObjects);
+	//console.log(myObjects);
 	myObjects = arrayRemove(myObjects, "game");
 	myObjects = arrayRemove(myObjects, "level");
 	myObjects = arrayRemove(myObjects, "scene");
 	
 	for(object of myObjects){
-		console.log(object);
+		//console.log(object);
 		if(currentItem === object){
 			configMap[object].style.display = "block";
 			message = currentItem + " properties expanded";
 			metaMap[object][0].focus;
 		}
 		else{
-			console.log(configMap[object]);
+			//console.log(configMap[object]);
 			configMap[object].style.display = "none";
 		}
 	}
-	if (message != ""){document.getElementById('gridAnnouncer').textContent = message;}
+	if (message != ""){document.getElementById('gridAnnouncer').textContent = message; console.log(message)}
 }
 
 // Initialize listeners on the buttons to toggle treasure UI
 for (var i = 0; i < itemButtons.length; i++) {
 	itemButtons[i].addEventListener('click', function() {
 		currentItem = this.dataset.item;
+		if(metaMap[currentItem]){
+		console.log(currentItem);
+		resetFields(metaMap[currentItem]);}
 		updateTreasureUI();
 	});
 }
@@ -1792,6 +1780,7 @@ function resetFields(myFields){
 			field.value = field.getAttribute("value") || '';
 		}
 	}
+	updateIcons();
 }
 
 
@@ -2470,6 +2459,9 @@ setupGridKeyboard();
 function initForms(){
 	arrayIndex = {};
 	console.log("initForms")
+	levelSelectors = [];
+	iconSelectrs = [];
+	
 	var inputs = document.getElementsByTagName("input");
 	var selects = document.getElementsByTagName("select");
 	var configs = document.getElementsByClassName("configDiv");
@@ -2486,6 +2478,12 @@ function initForms(){
 		if (myObject && !objectKeys.includes(myObject)) {
 			objectKeys.push(myObject);
 		}
+		if (select.getAttribute("meta") && select.getAttribute("meta") == "level"){
+			levelSelectors.push(select);
+		}
+		else if (select.getAttribute("meta") && select.getAttribute("meta") == "icon"){
+			iconSelectors.push(select);
+		}
 	}
 	
 	for(key of objectKeys){
@@ -2501,7 +2499,8 @@ function initForms(){
 		if(input.getAttribute("onChange")){
 			myFunks.push(input.getAttribute("onchange"))
 		}
-		console.log(myFunks)
+
+		//console.log(myFunks)
 		input.setAttribute("onChange", myFunks.join(" "))
 		
 		if(input.getAttribute("array") == true){
@@ -2520,6 +2519,9 @@ function initForms(){
 		if(select.getAttribute("onChange")){
 			myFunks.push(select.getAttribute("onchange"))
 		}
+		if(select.getAttribute("meta") == "level"){
+			myFunks.push("updateCellList(this);");
+		}
 		select.setAttribute("onChange", myFunks.join(" "))
 		
 		}
@@ -2531,13 +2533,13 @@ function initForms(){
 			configMap[myObject] = div;}
 	}
 
-	console.log(metaMap);
+	//console.log(metaMap);
 	
 }
 
 function updateSelected(field){
-	console.log("updateSelected");
-	console.log(field);
+	//console.log("updateSelected");
+	//console.log(field);
 	if(activeCell){
 		var pos = activeCell.dataset.pos;
 		var existingIdx = getItemIndex(pos);
@@ -2545,24 +2547,24 @@ function updateSelected(field){
 		fieldObject = field.getAttribute("object");
 		fieldMeta = field.getAttribute("meta");
 		fieldValue = field.value;
-		console.log(fieldValue)
+		//console.log(fieldValue)
 		if(cellObject && cellObject.type == fieldObject){
 			//what kind of field
 			if (field.getAttribute("type") == "checkbox") {
-				console.log("checkbox")
+				//console.log("checkbox")
 				cellObject.meta[fielMeta] = field.checked;
 				
 			}
 			else if (field.getAttribute("array") == true){
-				console.log("array")
+				//console.log("array")
 				cellObject.meta[fieldMeta][field.getAttribute("index")] = fieldValue;
 				
 			}
 			else{
-				console.log("standard field")
-				console.log(cellObject)
-				console.log(cellObject.meta)
-				console.log(fieldMeta)
+				//console.log("standard field")
+				//console.log(cellObject)
+				//console.log(cellObject.meta)
+				//console.log(fieldMeta)
 				if(!cellObject.meta){cellObject.meta = {}}
 				cellObject.meta[fieldMeta] = fieldValue;
 				
