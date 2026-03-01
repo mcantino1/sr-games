@@ -1961,32 +1961,34 @@ function activateCell(pos){
 	else if (hasShop(pos)){
 		shop = itemsAt(pos)[0].meta;
 			if(!shop.bought){
-			if (stats[shop.currency] >= shop.cost){
-				if(shop.text && shop.text.length > 0){
-					shop.bought == true;
-					stats[shop.currency] -= shop.cost;
-					enterCell();
-				}
-				if(shop.kind == "life"){
-					stats[shop.currency] -= shop.cost;
-					let before = stats.life;
-					stats.life = Math.min(MAX_LIFE, stats.life + parseInt(shop.value));
-					let gained = stats.life - before;
-					announce("You lose " + shop.cost  + " " + shop.currency + " and gain " + gained + " " + shop.kind + ".");	
+				if (stats[shop.currency] >= shop.cost){
+					if(shop.text && shop.text.length > 0){
+						shop.bought = true;
+						console.log(shop)
+						stats[shop.currency] -= shop.cost;
+						enterCell();
+					}
+					if(shop.kind == "life"){
+						stats[shop.currency] -= shop.cost;
+						let before = stats.life;
+						stats.life = Math.min(MAX_LIFE, stats.life + parseInt(shop.value));
+						let gained = stats.life - before;
+						announce("You lose " + shop.cost  + " " + shop.currency + " and gain " + gained + " " + shop.kind + ".");	
+					}
+					else {
+						stats[shop.currency] -= shop.cost;
+						stats[shop.kind] = parseInt(stats[shop.kind]) + parseInt(shop.value);
+						
+					announce("You lose " + shop.cost  + " " + shop.currency + " and gain " + shop.value + " " + shop.kind + ".");	
+					}
+					
+					
 				}
 				else {
-					stats[shop.currency] -= shop.cost;
-					stats[shop.kind] = parseInt(stats[shop.kind]) + parseInt(shop.value);
-					
-				announce("You lose " + shop.cost  + " " + shop.currency + " and gain " + shop.value + " " + shop.kind + ".");	
+					announce("You don't have enough " + shop.currency + ".");
 				}
-				
-				
-			}
-			else {
-				announce("You don't have enough " + shop.currency + ".");
-			}
 		}
+		else{		announce("I've got nothing else to say.");}
 		updateUI();
 	}
     else if (hasWeaponShop(pos)) {
