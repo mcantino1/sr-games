@@ -47,7 +47,7 @@
 			</div>
 			<div class="floatGroup">
 				<label for="nextLevelSelect">Next level:</label>
-				<select object="level" meta="nextLevelId" name="nextLevelId" id="nextLevelSelect"  onchange="updateNext();" ></select>
+				<select object="level" meta="level" name="nextLevelId" id="nextLevelSelect"  onchange="updateNext();" ></select>
 			</div>
 			<div class="floatGroup">
 			<label for="levelOpacity">Grid opacity</label>
@@ -201,9 +201,15 @@
                     <option value="strength">Strength</option>
                     <option value="defense">Defense</option>
 					<option value="life">Life</option>
+					<option value="text">Text</option>
                 </select>
                 <label for="shopValue">Value:</label>
                 <input object="shop" meta="value"   class="number" id="shopValue" type="number" min="1" value="25" />
+				<label for="shopValue">Hint:</label>
+                <input object="shop" meta="Hint" placeholder="I can tell you what lies ahead." id="shopText"/>
+				<label for="shopValue">Text:</label>
+                <input object="shop" meta="text"  placeholder="You'll need your strength." id="shopText"/>
+
 				  <label for="shopCost">cost:</label>
                 <input  object="shop" meta="cost"  class="number" id="shopCost" type="number" min="1" value="25" />
 				<label  for="shopCurrency">Currency:</label>

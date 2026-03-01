@@ -1438,7 +1438,22 @@ function enterCell(prefix) {
 	if (hasShop(pos)){
 		revealedSpecial.set(pos, "shop");
 		shop = itemsAt(pos)[0].meta
-		discoveryMsgs.push("Welcome to the " + shop.name + "! Press <kbd>Space</kbd> to gain " + shop.value + " " + shop.kind + " for " + shop.cost + " " + shop.currency + ".");
+		message = "Welcome to the " + shop.name + "! "
+		if(shop.kind == "text"){
+			if(shop.bought){
+				message += shop.text;
+			}
+			else{
+			if(shop.hint){
+				message += shop.hint
+			}
+			message += "It only costs " + shop.cost + " " + shop.currency + ". \nPress <kbd>Space</kbd> to agree. ";
+			}
+		}
+		else{
+		message += "Press <kbd>Space</kbd> to gain " + shop.value + " " + shop.kind + " for " + shop.cost + " " + shop.currency + ".";
+		}
+		discoveryMsgs.push(message);
 	}
 
   if (hasWeaponShop(pos)) {
@@ -1945,14 +1960,17 @@ function activateCell(pos){
 		shop = itemsAt(pos)[0].meta;
 		
 		if (stats[shop.currency] >= shop.cost){
-			if(shop.kind == "life"){
+			if(shop.kind == "text"){
+				stats[shop.currency] -= shop.cost;
+				announce(shop.text)
+			}
+			else if(shop.kind == "life"){
 				stats[shop.currency] -= shop.cost;
 				let before = stats.life;
 				stats.life = Math.min(MAX_LIFE, stats.life + shop.value);
 				let gained = stats.life - before;
 				announce("You lose " + shop.cost  + " " + shop.currency + " and gain " + gained + " " + shop.kind + ".");	
 			}
-			
 			else {
 				stats[shop.currency] -= shop.cost;
 				stats[shop.kind] = parseInt(stats[shop.kind]) + parseInt(shop.value);
