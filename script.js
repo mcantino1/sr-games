@@ -1963,6 +1963,7 @@ function activateCell(pos){
 		
 		if (stats[shop.currency] >= shop.cost){
 			if(shop.text){
+				shop.bought == true;
 				stats[shop.currency] -= shop.cost;
 				enterCell();
 			}
