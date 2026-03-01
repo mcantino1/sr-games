@@ -1441,7 +1441,7 @@ function enterCell(prefix) {
 		console.log(shop)
 		console.log(shop.kind)
 		message = "Welcome to the " + shop.name + "! "
-		if(shop.kind == "text"){
+		if(shop.text){
 			if(shop.bought){
 				message += shop.text;
 			}
@@ -1962,11 +1962,11 @@ function activateCell(pos){
 		shop = itemsAt(pos)[0].meta;
 		
 		if (stats[shop.currency] >= shop.cost){
-			if(shop.kind == "text"){
+			if(shop.text){
 				stats[shop.currency] -= shop.cost;
-				announce(shop.text)
+				enterCell();
 			}
-			else if(shop.kind == "life"){
+			if(shop.kind == "life"){
 				stats[shop.currency] -= shop.cost;
 				let before = stats.life;
 				stats.life = Math.min(MAX_LIFE, stats.life + shop.value);
