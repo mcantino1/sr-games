@@ -162,7 +162,7 @@ function initGame(myButton){
 			 console.log(item)
 			 if (item.type == "key"){
 				 if (item.meta && item.meta.level){
-					 levels[level].keyCount += 1;
+					 levels[item.meta.level].keyCount += 1;
 				 }
 				 else{
 					 levels[key].keyCount += 1;
