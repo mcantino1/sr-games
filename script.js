@@ -1443,7 +1443,7 @@ function enterCell(prefix) {
 		message = "Welcome to the " + shop.name + "! "
 		if(shop.text){
 			if(shop.bought){
-				message += shop.text;
+				message += shop.text + " ";
 			}
 			else{
 			if(shop.hint){
