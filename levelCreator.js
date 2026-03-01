@@ -113,10 +113,10 @@ getFile("01");
 
 function clearLevelLists(){
 	for (list of levelSelectors){
-		clearList(myList);
+		clearList(list);
 	}
 	for (list of iconSelectors){
-		clearList(myList);
+		clearList(list);
 	}
 	
 }
