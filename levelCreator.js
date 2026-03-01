@@ -61,9 +61,6 @@ initForms();
 
 
 function getFile(num){
-//console.log("getFile");
-//console.log(LEVELS);
-//console.log(items);
 
 	fetch(dataPath + num + ".json")
 	.then(response => {
@@ -896,7 +893,7 @@ function populateFromLibrary(m, myFields){
 	arrayIndex = {};
 	for(field of myFields){
 		fieldMeta = field.getAttribute("meta");
-		console.log(fieldMeta)
+		//console.log(fieldMeta)
 		if(field.getAttribute("instance")){
 			//instance only field, doens't load from library;
 			//reset to default
@@ -914,7 +911,7 @@ function populateFromLibrary(m, myFields){
 				arrayIndex[fieldMeta] += 1;	
 			}
 			else{
-				console.log("new array index")
+			//	console.log("new array index")
 				arrayIndex[fieldMeta] = 0;
 			}
 			if(m[fieldMeta] && m[fieldMeta][arrayIndex[fieldMeta]]){
@@ -926,7 +923,7 @@ function populateFromLibrary(m, myFields){
 			//all other types
 			if(m[fieldMeta]){
 
-				console.log(m[fieldMeta])
+			//	console.log(m[fieldMeta])
 				field.value = m[fieldMeta];
 			}
 			else{
@@ -1127,19 +1124,6 @@ function loadMonsterLibrary() {
 //            } catch (e) {
 //                console.warn('Failed to load monster library from storage', e);
 //            }
-}
-
-function saveMonsterLibrary() {
-//console.log("saveMonsterLibrary");
-//console.log(LEVELS);
-//console.log(items);
-
-	try {
-		localStorage.setItem('monsterLibrary', JSON.stringify(monsterLibrary || []));
-		localStorage.setItem('selectedMonsterIndex', String(selectedMonsterIndex));
-	} catch (e) {
-		console.warn('Failed to save monster library to storage', e);
-	}
 }
 
 
@@ -1407,7 +1391,6 @@ function arrayRemove(array, thing){
 
 
 function updateTreasureUI() {
-	console.log("updateTreasureUI")
 	var message = "";
 	myObjects = Object.keys(configMap)
 	//console.log(myObjects);
@@ -1435,7 +1418,6 @@ for (var i = 0; i < itemButtons.length; i++) {
 	itemButtons[i].addEventListener('click', function() {
 		currentItem = this.dataset.item;
 		if(metaMap[currentItem]){
-		console.log(currentItem);
 		resetFields(metaMap[currentItem]);}
 		updateTreasureUI();
 	});
@@ -1595,18 +1577,18 @@ function renderLibraries(){
 						//confirm REF is still this object
 						if(stillThere(level, item, itemName, libKey)){
 							var myLi = document.createElement("li");
-							console.log(item);
+						
 							myLi.innerHTML = level + " " + item.pos;
 							myList.appendChild(myLi)
 						}
 						else{
 							//remove this ref
-							console.log("remove")
+						
 							removeRefs.push(item);
 						}
 					}
 					for (ref of removeRefs){
-						console.log("remove " + ref)
+					
 						refs[level] = arrayRemove(refs[level], ref)
 					}
 				}
@@ -1651,10 +1633,6 @@ function resetFields(myFields){
 function stillThere(level, pos, itemName, objectType){
 	there = false;
 	myItems = LEVELS[level].items
-	statement = ["looking for:", objectType, itemName, "at", level, pos]
-	console.log(statement.join(" "))
-	console.log(myItems)
-	
 	for(item of myItems){
 		if(item.type == objectType && item.meta && item.meta.name == itemName && item.pos == pos){
 			return true;
@@ -1663,11 +1641,24 @@ function stillThere(level, pos, itemName, objectType){
 	return there;
 }
 
+function findObj(level, pos, itemName, objectType){
+
+	myItems = LEVELS[level].items
+	for(item of myItems){
+		if(item.type == objectType && item.meta && item.meta.name == itemName && item.pos == pos){
+			return item;
+		}
+	}
+	return false;
+}
+
+
+
 function libraryFromFields(m, myFields){
 	arrayIndex = {};
 	for(field of myFields){
 		fieldMeta = field.getAttribute("meta");
-		console.log(fieldMeta)
+	
 		if(field.getAttribute("instance")){
 			//instance only field, doens't load from library;
 			//Just skip	
@@ -1684,7 +1675,7 @@ function libraryFromFields(m, myFields){
 				arrayIndex[fieldMeta] += 1;
 			}
 			else{
-				console.log("new array index");
+			
 				arrayIndex[fieldMeta] = 0;
 				m[fieldMeta] = [];
 			}
@@ -1709,7 +1700,7 @@ function getMetas(myFields){
 	meta = {};
 	for(field of myFields){
 		fieldMeta = field.getAttribute("meta");
-		console.log(fieldMeta)
+	
 		if(field.getAttribute("type") == "checkbox"){
 			//checkbox field
 			meta[fieldMeta] = field.checked;
@@ -1731,6 +1722,23 @@ function libraryAction(btn){
 	myAction = btn.getAttribute("action")
 	objectType = btn.getAttribute("object");
 	myLibrary = libraries[objectType];
+	if(myAction == "export"){
+		libraryToCSV(objectType)
+		
+		return;
+	}
+	if(myAction == "import"){
+
+		let csvInput = document.getElementById(btn.getAttribute("input"));
+		if ('files' in csvInput && csvInput.files.length > 0) {
+			CSVToLibrary(csvInput.files[0], objectType);
+		}
+	
+
+		
+		
+		return;
+	}
 	if(myAction == "add"){
 		//get object type
 		nameField = document.getElementById(objectType + "Name")
@@ -1752,20 +1760,7 @@ function libraryAction(btn){
 		//update refs!
 		myItem = myLibrary.lib[name];
 		if(myItem.refs){
-			myLevels = Object.keys(myItem.refs)
-			for(level of myLevels){
-				console.log(level)
-				console.log(myItem.refs)
-				console.log(myItem.refs[level])
-				for(item of myItem.refs[level]){
-					//update only meta that is stored in the library (non-instance meta)
-					libMeta = myItem.meta
-					libKeys = Object.keys(libMeta)
-					for(key of libKeys){
-						item.meta[key] = libMeta[key];
-					}
-				}
-			}
+			updateRefs(myItem, name, objectType)
 		}
 		
 		
@@ -1778,6 +1773,170 @@ function libraryAction(btn){
 	resetFields(metaMap[objectType]);
 	myLibrary.editing = "";
 	renderLibraries();
+}
+
+function updateRefs(myItem, name, objectType){
+	updateRefs()
+	myLevels = Object.keys(myItem.refs)
+	for(level of myLevels){
+		for(item of myItem.refs[level]){
+			//update only meta that is stored in the library (non-instance meta)
+			libMeta = myItem.meta
+			libKeys = Object.keys(libMeta)
+			itemRef = findObj(level, item, name, objectType)
+			
+			for(key of libKeys){
+				console.log(key)
+				itemRef.meta[key] = libMeta[key];
+			}
+		}
+	}	
+	
+}
+
+function libraryUpload(field){
+	console.log("uploading library")
+	document.getElementById(field.getAttribute("btn")).click();
+	
+}
+
+function CSVToLibrary(file, objectType){
+	readFileContent(file).then(content => {
+		
+		myRows = content.split("\n")
+		myMetas = myRows.shift().replaceAll("\"", "").split(",");
+		
+		myLibrary = libraries[objectType].lib;
+		libraries[objectType].editing = "";
+		for(row of myRows){
+			entry = row.split("\",\"")
+			entry[0] = entry[0].replace("\"", "")
+			last = entry.length - 1
+			entry[last] = entry[last].replace("\"", "")
+			
+			if(!myLibrary[entry[0]]){myLibrary[entry[0]] = {name: entry[0], meta: {}, refs: {}}}
+			arrayIndex = {};
+			name = entry[0]
+			
+			libMeta = myLibrary[name].meta;
+			
+			for(i in myMetas){
+				
+				if(Array.isArray(libMeta[myMetas[i]])){
+				//array Element
+					
+					if(!arrayIndex[myMetas[i]]){
+						arrayIndex[myMetas[i]] = 0;
+					}
+					if(libMeta[myMetas[i]][arrayIndex[myMetas[i]]]){
+						libMeta[myMetas[i]][arrayIndex[myMetas[i]]] = entry[i];
+					}
+					else{
+						//
+						libMeta[myMetas[i]].push(entry[i]);
+					}
+					arrayIndex[myMetas[i]] += 1;
+				}
+				else{
+				//non-array element
+					
+					
+					libMeta[myMetas[i]] = entry[i];					
+				}
+				
+			}
+			
+		}
+		
+		renderLibraries();
+		
+		
+	}).catch(error => console.log(error));
+}
+
+
+
+function readFileContent(file) {
+	const reader = new FileReader();
+	return new Promise((resolve, reject) => {
+		reader.onload = event => resolve(event.target.result);
+		reader.onerror = error => reject(error);
+		reader.readAsText(file, "windows-1252");
+	});
+}
+
+
+function libraryToCSV(objectType){
+	fields = metaMap[objectType];
+	
+    // Variable to store the final csv data
+    let csv_data = [];
+    let csvrow = [];
+	
+	//header row
+	
+	metaKeys = []
+	arrayIndex = {};
+	arrayMetas = []
+	for (field of fields){
+		if(!field.getAttribute("instance")){
+			myMeta = field.getAttribute("meta");
+			csvrow.push(myMeta);
+			metaKeys.push(myMeta);
+			if(field.getAttribute("array")){
+				arrayMetas.push(myMeta);
+			}
+		}
+	}
+    csv_data.push("\"" + csvrow.join("\",\"") + "\""  );
+	
+	//data rows
+	myItems = libraries[objectType].lib;
+	itemKeys = Object.keys(myItems);
+	for(item of itemKeys){
+		let csvrow = [];
+		arrayIndex = {};
+		for(meta of metaKeys){
+			if(arrayMetas.includes(meta)){
+				if(!arrayIndex[meta]){arrayIndex[meta] = 0;}
+				if(myItems[item].meta[meta] && myItems[item].meta[meta].length > arrayIndex[meta]){
+				csvrow.push(myItems[item].meta[meta][arrayIndex[meta]]);}
+				else{csvrow.push("");}
+				arrayIndex[meta] += 1;
+			}
+			else{
+				csvrow.push(myItems[item].meta[meta]);
+			}
+		}
+		csv_data.push("\"" + csvrow.join("\",\"") + "\""  );
+	}
+	
+    csv_data = csv_data.join('\n');
+	downloadCSVFile(csv_data, objectType);
+}
+
+function downloadCSVFile(csv_data, objectType) {
+    // Create CSV file object and feed our
+    // csv_data into it
+    CSVFile = new Blob([csv_data], { type: "text/csv" });
+
+    // Create to temporary link to initiate
+    // download process
+    let temp_link = document.createElement('a');
+
+    // Download csv file
+	
+    temp_link.download = objectType + "Library.csv";
+    let url = window.URL.createObjectURL(CSVFile);
+    temp_link.href = url;
+
+    // This link should not be displayed
+    temp_link.style.display = "none";
+    document.body.appendChild(temp_link);
+
+    // Automatically click the link to trigger download 
+    temp_link.click();
+    document.body.removeChild(temp_link);
 }
 
 
@@ -2144,151 +2303,6 @@ makeGrid();
 setupGridKeyboard();
 
 
-// Importer: allow loading a previously generated level HTML into the creator
-(function(){
-	var importFileEl = document.getElementById('importFile');
-	var importBtn = document.getElementById('btnImportHTML');
-	if(!importFileEl || !importBtn) return;
-
-	function showMessage(msg){
-//console.log("showMessage");
-//console.log(LEVELS);
-//console.log(items);
-
-		// Use alert for now; could be replaced with in-UI notification
-		try { alert(msg); } catch(e){ console.log(msg); }
-	}
-
-	function importLevelFromHtmlText(text){
-//console.log("importLevelFromHtmlText");
-//console.log(LEVELS);
-//console.log(items);
-
-
-
-	}
-
-	importBtn.addEventListener('click', function(){ importFileEl.click(); });
-	importFileEl.addEventListener('change', function(){
-		var f = importFileEl.files && importFileEl.files[0];
-		if(!f) return;
-		var reader = new FileReader();
-		reader.onload = function(evt){
-			try { importLevelFromHtmlText(String(evt.target.result || '')); } catch(err){ showMessage('Import failed: ' + err.message); }
-		};
-		reader.onerror = function(){ showMessage('Failed to read file'); };
-		reader.readAsText(f, 'utf-8');
-		importFileEl.value = '';
-	});
-})();
-
-// Export monsters CSV
-(function(){
-	var btn = document.getElementById('btnExportMonsters');
-	if(!btn) return;
-	function csvEscapeField(s){ if (s==null) s=''; s = String(s); if (s.indexOf('"')!==-1 || s.indexOf(',')!==-1 || s.indexOf('\n')!==-1) return '"' + s.replace(/"/g,'""') + '"'; return s; }
-	btn.addEventListener('click', function(){
-		try {
-			var rowsArr = [];
-			rowsArr.push(['name','hp','atk','def','descriptions']);
-			for (var i=0;i<monsterLibrary.length;i++){
-				var m = monsterLibrary[i] || {};
-				var desc = (m.descriptions && m.descriptions.length) ? m.descriptions.join(' | ') : '';
-				rowsArr.push([m.name||'', String(m.hp||''), String(m.atk||''), String(m.def||''), desc]);
-			}
-			var csv = rowsArr.map(function(r){ return r.map(csvEscapeField).join(','); }).join('\r\n');
-			var blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
-			var link = document.createElement('a');
-			link.href = URL.createObjectURL(blob);
-			link.download = 'monsters.csv';
-			document.body.appendChild(link);
-			link.click();
-			document.body.removeChild(link);
-		} catch (e) { try{ alert('Export failed: '+e.message); }catch(_){ console.error(e); } }
-	});
-})();
-
-// Import monsters from CSV (append-only)
-(function(){
-	var importInput = document.getElementById('importMonstersFile');
-	var importBtn = document.getElementById('btnImportMonsters');
-	if(!importInput || !importBtn) return;
-
-	function parseCsv(text){
-//console.log("parseCsv");
-//console.log(LEVELS);
-//console.log(items);
-
-		// Simple CSV parser: split lines, handle quoted fields
-		var rows = [];
-		var lines = text.split(/\r?\n/);
-		for(var i=0;i<lines.length;i++){
-			var line = lines[i].trim();
-			if(!line) continue;
-			var cols = [];
-			var cur = '';
-			var inQuotes = false;
-			for(var j=0;j<line.length;j++){
-				var ch = line[j];
-				if(inQuotes){
-					if(ch==='"'){
-						if(line[j+1]==='"'){ cur += '"'; j++; } else { inQuotes=false; }
-					} else { cur += ch; }
-				} else {
-					if(ch==='"'){ inQuotes=true; }
-					else if(ch===','){ cols.push(cur); cur=''; }
-					else { cur += ch; }
-				}
-			}
-			cols.push(cur);
-			rows.push(cols);
-		}
-		return rows;
-	}
-	
-	importBtn.addEventListener('click', function(){ importInput.click(); });
-	importInput.addEventListener('change', function(){
-		var f = importInput.files && importInput.files[0];
-		if(!f) return;
-		var reader = new FileReader();
-		reader.onload = function(evt){
-			try {
-				var txt = String(evt.target.result || '');
-				var data = parseCsv(txt);
-				if(!data || data.length===0){ alert('No data found in CSV'); return; }
-				// First row assumed header; find columns indices
-				var header = data[0].map(function(h){ return String(h||'').toLowerCase().trim(); });
-				var idxName = header.indexOf('name');
-				var idxHp = header.indexOf('hp');
-				var idxAtk = header.indexOf('atk');
-				var idxDef = header.indexOf('def');
-				var idxDesc = header.indexOf('descriptions');
-				if(idxName===-1){ alert('CSV missing "name" column'); return; }
-				var added = 0;
-				for(var r=1;r<data.length;r++){
-					var row = data[r]; if(!row || row.length===0) continue;
-					var name = row[idxName] || '';
-					if(!name || !name.trim()) continue;
-					var hp = idxHp===-1 ? 6 : Number(row[idxHp]) || 6;
-					var atk = idxAtk===-1 ? 2 : Number(row[idxAtk]) || 2;
-					var def = idxDef===-1 ? 0 : Number(row[idxDef]) || 0;
-					var desc = '';
-					if(idxDesc!==-1) desc = row[idxDesc] || '';
-					var descriptions = desc ? String(desc).split(/\s*\|\s*/) : [];
-					monsterLibrary.push({ name: String(name), hp: hp, atk: atk, def: def, descriptions: descriptions });
-					added++;
-				}
-				if(added>0){ saveMonsterLibrary(); renderMonsterLibrary(); alert('Imported '+added+' monsters.'); }
-				else alert('No valid monsters found to import.');
-			} catch(e){ alert('Import failed: '+e.message); }
-		};
-		reader.onerror = function(){ alert('Failed to read file'); };
-		reader.readAsText(f, 'utf-8');
-		importInput.value = '';
-	});
-})();
-
-
 //object="treasure" class="configDiv"
 
 function initForms(){
@@ -2432,7 +2446,6 @@ function updateSelected(field){
 				//console.log(fieldMeta)
 				if(!cellObject.meta){cellObject.meta = {}}
 				cellObject.meta[fieldMeta] = fieldValue;
-				
 			}
 		}
 	}

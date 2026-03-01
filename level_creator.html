@@ -162,12 +162,17 @@
 					<div style="clear: both;">
                         <button object="monster" action="add" id="btnAddMonster">Add Monster</button>
                         <button object="monster" action="cancel" id="btnCancelEdit" >New monster</button>
+						<button object="monster" action="export" id="btnExportCSV" >Export CSV</button>
+						<label for="monsterImport">Import CSV</label>
+						<input id="monsterImport" btn="btnMonsterImport" onchange="libraryUpload(this)" accept=".csv" type="file" />
+						<button id="btnMonsterImport" class="hidden" object="monster" action="import" input="monsterImport" type="button">Import Library </button>
 					</div>
 				<div class="floatGroup">
 				<div id="monsterParent">
                     <table object="monster" library="true" id="monsterList" class="monster-list">
 						
 					</table>
+				
                 </div>
 				</div>
             </div>
@@ -219,6 +224,10 @@
 				<div style="clear: both;">
                         <button object="shop" action="add" id="btnAddShop">Add Shop</button>
                         <button object="shop" action="cancel" id="btnCancelShop" >New Shop</button>
+						<button object="shop" action="export" id="btnExportShop" >Export CSV</button>
+						<label for="shopImport">Import CSV</label>
+						<input id="shopImport" btn="btnShopImport" onchange="libraryUpload(this)" accept=".csv" type="file" />
+						<button id="btnShopImport" class="hidden" object="shop" action="import" input="shopImport" type="button">Import Library </button>
 					</div>
 				<div id="shopParent">
                     <table id="shopList" library="true" object="shop" class="monster-list">
@@ -288,7 +297,11 @@
 				<div style="clear: both;">
                         <button  object="hazard" action="add" id="btnAddHazard">Add Hazard</button>
                         <button  object="hazard" action="cancel" id="btnCancelHazard" >New Hazard</button>
-					</div>
+						<button object="hazard" action="export" id="btnExportHazard" >Export CSV</button>
+						<label for="hazardImport">Import CSV</label>
+						<input id="hazardImport" btn="btnHazardImport" onchange="libraryUpload(this)" accept=".csv" type="file" />
+						<button id="btnHazardImport" class="hidden" object="hazard" action="import" input="hazardImport" type="button">Import Library </button>
+				</div>
 				<div id="hazardParent">
                     <table id="hazardList" object="hazard" library="true" class="monster-list">
 						
