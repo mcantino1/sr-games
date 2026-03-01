@@ -160,12 +160,12 @@
 						
 					</div>
 					<div style="clear: both;">
-                        <button id="btnAddMonster">Add Monster</button>
-                        <button id="btnCancelEdit" >New monster</button>
+                        <button object="monster" action="add" id="btnAddMonster">Add Monster</button>
+                        <button object="monster" action="cancel" id="btnCancelEdit" >New monster</button>
 					</div>
 				<div class="floatGroup">
 				<div id="monsterParent">
-                    <table id="monsterList" class="monster-list">
+                    <table object="monster" library="true" id="monsterList" class="monster-list">
 						
 					</table>
                 </div>
@@ -217,11 +217,11 @@
 				<input type="file" onchange="addShopIcon();" style="width: 10em; height: 3em;" id="shopAddIcon" accept=".svg" />
 				</div>
 				<div style="clear: both;">
-                        <button id="btnAddShop">Add Shop</button>
-                        <button id="btnCancelShop" >New Shop</button>
+                        <button object="shop" action="add" id="btnAddShop">Add Shop</button>
+                        <button object="shop" action="cancel" id="btnCancelShop" >New Shop</button>
 					</div>
 				<div id="shopParent">
-                    <table id="shopList" class="monster-list">
+                    <table id="shopList" library="true" object="shop" class="monster-list">
 						
 					</table>
                 </div>
@@ -286,11 +286,11 @@
 				<input type="file" onchange="addHazardIcon();" style="width: 10em; height: 3em;" id="hazardAddIcon" accept=".svg" />
 				</div>
 				<div style="clear: both;">
-                        <button id="btnAddHazard">Add Hazard</button>
-                        <button id="btnCancelHazard" >New Hazard</button>
+                        <button  object="hazard" action="add" id="btnAddHazard">Add Hazard</button>
+                        <button  object="hazard" action="cancel" id="btnCancelHazard" >New Hazard</button>
 					</div>
 				<div id="hazardParent">
-                    <table id="hazardList" class="monster-list">
+                    <table id="hazardList" object="hazard" library="true" class="monster-list">
 						
 					</table>
                 </div>

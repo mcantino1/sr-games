@@ -11,22 +11,16 @@ var scenes = {};
 var selectedPos = null;
 var activeCell;
 var currentItem = 'empty';
-var monsterLibrary = {};
-var shopLibrary = {};
-var hazardLibrary = {};
-var selectedMonsterIndex = -1;
-var editingMonster = "";
-var selectedShopIndex = -1;
-var selectedHazardIndex = -1;
-var editingShop = "";
-var editingHazard = "";
 var currentGame = "";
+
+var libraries = {};
+
 var levelSelectors = [];
 var iconSelectors = [];
 
 var nameField = document.getElementById("gameName");
 
-var LEVELS = {level1: { "id": "level1", "rows": "2", "cols": "2", "items": [ { "type": "wall", "pos": "B1" }, { "type": "door", "pos": "B2" }, { "type": "key", "pos": "A2" } ], "scenes": { "A1": "You wake up in a small room." }, "nextLevelId": null }};
+var LEVELS = {"level1":{"id":"level1","rows":2,"cols":2,"items":[{"type":"wall","pos":"B1"},{"type":"door","pos":"B2"},{"type":"key","pos":"A2"}],"scenes":{"A1":"You wake up in a small room."},"nextLevelId":"level2"}, 		"level2":{"id":"level2","rows":2,"cols":6,"items":[{"type":"wall","pos":"A2"},{"type":"wall","pos":"B2"},{"type":"wall","pos":"D1"},{"type":"door","pos":"F2"},{"type":"key","pos":"F1"}],"scenes":{"A1":"You walk down the hall."},"nextLevelId":"level3"}, 		"level3":{"id":"level3","rows":4,"cols":4,"items":[{"type":"wall","pos":"B1"},{"type":"wall","pos":"B2"},{"type":"wall","pos":"D1"},{"type":"key","pos":"D2"},{"type":"potion","pos":"C3"},{"type":"door","pos":"D4"},{"type":"treasure","pos":"B4","meta":{"kind":"power","value":2}},{"type":"monster","pos":"A4","meta":{"name":"Slime","hp":6,"atk":1,"def":0,"descriptions":["Squiggle, squiggle","Slurp, slurp","Oooooooze"]}}],"scenes":{"A1":"The door opens with a creak, but something feels off in this small room."},"nextLevelId":"level4"}, 		"level4":{"id":"level4","rows":6,"cols":6,"items":[{"type":"wall","pos":"A2"},{"type":"wall","pos":"B2"},{"type":"wall","pos":"C2"},{"type":"wall","pos":"D2"},{"type":"wall","pos":"E2"},{"type":"wall","pos":"F4"},{"type":"wall","pos":"E4"},{"type":"wall","pos":"D4"},{"type":"wall","pos":"B4"},{"type":"wall","pos":"C4"},{"type":"wall","pos":"F6"},{"type":"door","pos":"F5"},{"type":"void","pos":"D6"},{"type":"key","pos":"C6"},{"type":"potion","pos":"B3"},{"type":"potion","pos":"F1"},{"type":"treasure","pos":"E3","meta":{"kind":"gold","value":25}},{"type":"monster","pos":"C3","meta":{"name":"Davey","hp":3,"atk":3,"def":1,"descriptions":["Whoa! Watch where you're going!","Ouch, dude! What's your deal?!","I'm leaving"]}},{"type":"monster","pos":"E1","meta":{"name":"Goblin","hp":6,"atk":2,"def":0,"descriptions":["The goblin sneers and draws his blade.","The goblin growls and leaps toward you.","The goblin winces."]}}],"scenes":{"A1":"You can't help but feel that more danger lies ahead. Be brave, adventurer!","B5":"You hope the exit is near, but it's hard to tell in the dim dungeon light."},"nextLevelId":"town1"}, 		"town1":{"id":"town1","rows":3,"cols":10,"items":[{"type":"custom_wall","pos":"B2","meta":{"name":"bush"}},{"type":"exit","pos":"J3"},{"type":"custom_wall","pos":"D2","meta":{"name":"bush"}},{"type":"custom_wall","pos":"H2","meta":{"name":"bush"}},{"type":"custom_wall","pos":"J2","meta":{"name":"bush"}},{"type":"custom_wall","pos":"C2","meta":{"name":"flowers"}},{"type":"custom_wall","pos":"I2","meta":{"name":"flowers"}},{"type":"custom_wall","pos":"F1","meta":{"name":"flowers"}},{"type":"armor_shop","pos":"G1"},{"type":"weapon_shop","pos":"E1"},{"type":"inn","pos":"F3"},{"type":"villager","pos":"J1","meta":{"text":"Take this to help you in the dungeon.","kind":"power","value":1}},{"type":"villager","pos":"G3","meta":{"text":"Your work in the dungeon is dangerous but important. Take this as a thank you for your work.","kind":"gold","value":10}}],"scenes":{"A1":"You step out of the dungeon into a quiet town.","C1":"It's a lovely day, and you're glad to get a break from the dark dungeon."},"nextLevelId":"level5"}, 		"level5":{"id":"level5","rows":6,"cols":6,"items":[{"type":"wall","pos":"C1"},{"type":"wall","pos":"C2"},{"type":"wall","pos":"A2"},{"type":"wall","pos":"A3"},{"type":"wall","pos":"B4"},{"type":"wall","pos":"C4"},{"type":"wall","pos":"D4"},{"type":"wall","pos":"E3"},{"type":"wall","pos":"E2"},{"type":"wall","pos":"F5"},{"type":"door","pos":"A4"},{"type":"key","pos":"A6"},{"type":"treasure","pos":"D6","meta":{"kind":"gold","value":25}},{"type":"potion","pos":"F6"},{"type":"monster","pos":"B3","meta":{"name":"Blob","hp":7,"atk":1,"def":0,"descriptions":["Squelch","The blob shifts moistily","Look out now!"]}},{"type":"monster","pos":"E1","meta":{"name":"Wolf","hp":9,"atk":3,"def":0,"descriptions":["The wold bares its teeth.","The wolf lunges forward.","The wolf issues a low growl."]}},{"type":"monster","pos":"C5","meta":{"name":"Cave bat","hp":7,"atk":3,"def":1,"descriptions":["The bat screeches","The bat dives toward you","Flap flap flap"]}}],"scenes":{"A1":"You worry about how long this may go on.","E4":"Your bones ache. If only you could find a potion."},"nextLevelId":"level6"}, 		"level6":{"id":"level6","rows":6,"cols":6,"items":[{"type":"wall","pos":"B1"},{"type":"wall","pos":"C2"},{"type":"wall","pos":"D4"},{"type":"wall","pos":"E3"},{"type":"wall","pos":"E2"},{"type":"wall","pos":"A3"},{"type":"wall","pos":"F5"},{"type":"wall","pos":"F6"},{"type":"wall","pos":"E6"},{"type":"void","pos":"C1"},{"type":"door","pos":"F1"},{"type":"potion","pos":"D2"},{"type":"potion","pos":"A5"},{"type":"key","pos":"A6"},{"type":"wall","pos":"B5"},{"type":"treasure","pos":"C5","meta":{"kind":"gold","value":25}},{"type":"treasure","pos":"F3","meta":{"kind":"gold","value":25}},{"type":"monster","pos":"A4","meta":{"name":"Steve","hp":8,"atk":4,"def":0,"descriptions":["Hey! What's up?","What are you doing?!","Oh, man!"]}},{"type":"monster","pos":"D3","meta":{"name":"Mummy","hp":8,"atk":4,"def":1,"descriptions":["Mmmmuuuuuuummmmmmmyyyyyy","Grrrrrrr rrr rrrrrrr","Muuuuu uuuuuuuu uuuuuuummmmy"]}},{"type":"monster","pos":"F4","meta":{"name":"Zombie","hp":8,"atk":4,"def":2,"descriptions":["Zombieeeeeee","The zombie shuffles toward you","The zombie opens its mouth, but you don't want to look inside."]}}],"scenes":{"A1":"You steel yourself for what may come."},"nextLevelId":"town2"}, 		"town2":{"id":"town2","rows":7,"cols":5,"items":[{"type":"custom_wall","pos":"B2","meta":{"name":"Flowers"}},{"type":"custom_wall","pos":"B5","meta":{"name":"Flowers"}},{"type":"custom_wall","pos":"D5","meta":{"name":"Flowers"}},{"type":"custom_wall","pos":"D2","meta":{"name":"Flowers"}},{"type":"exit","pos":"E1"},{"type":"custom_wall","pos":"B7","meta":{"name":"Flowers"}},{"type":"custom_wall","pos":"D7","meta":{"name":"Flowers"}},{"type":"custom_wall","pos":"A7","meta":{"name":"Bushes"}},{"type":"custom_wall","pos":"C7","meta":{"name":"Bushes"}},{"type":"custom_wall","pos":"E7","meta":{"name":"Bushes"}},{"type":"custom_wall","pos":"B3","meta":{"name":"Bushes"}},{"type":"custom_wall","pos":"B4","meta":{"name":"Bushes"}},{"type":"custom_wall","pos":"D3","meta":{"name":"Bushes"}},{"type":"custom_wall","pos":"D4","meta":{"name":"Bushes"}},{"type":"inn","pos":"C5"},{"type":"weapon_shop","pos":"A6"},{"type":"armor_shop","pos":"E6"},{"type":"villager","pos":"E4","meta":{"text":"Be careful in the dungeons! Take this to help you prepare.","kind":"gold","value":20}}],"scenes":{"A1":"A quiet town offers a welcome respite.","C3":"What a lovely garden."},"nextLevelId":"level7"}, 		"level7":{"id":"level7","rows":6,"cols":6,"items":[{"type":"wall","pos":"D1"},{"type":"treasure","pos":"E1","meta":{"kind":"gold","value":25}},{"type":"door","pos":"F3"},{"type":"wall","pos":"B3"},{"type":"wall","pos":"B4"},{"type":"wall","pos":"C4"},{"type":"wall","pos":"E3"},{"type":"wall","pos":"E4"},{"type":"wall","pos":"C6"},{"type":"key","pos":"A6"},{"type":"potion","pos":"B5"},{"type":"void","pos":"E6"},{"type":"monster","pos":"A5","meta":{"name":"Skeleton","hp":11,"atk":7,"def":2,"descriptions":["The skeleton's bones rattle as it raises a bone blade.","The bones are their money. So are the worms.","The pull your hair up, but not out, to get another chance at life."]}},{"type":"monster","pos":"F2","meta":{"name":"Skeleton","hp":11,"atk":7,"def":2,"descriptions":["The skeleton's bones rattle as it raises a bone blade.","The bones are their money. So are the worms.","The pull your hair up, but not out, to get another chance at life."]}},{"type":"monster","pos":"C3","meta":{"name":"Ogre","hp":12,"atk":8,"def":2,"descriptions":["A giant ogre appears from the shadows.","The ogre towers over you as it raises a massive club.","The ogre grumbles and charges forward."]}}],"scenes":{"A1":"You confidence soars, and you hope it is not misplaced."},"nextLevelId":"level8"}, 		"level8":{"id":"level8","rows":7,"cols":7,"items":[{"type":"wall","pos":"C2"},{"type":"wall","pos":"B3"},{"type":"wall","pos":"B5"},{"type":"wall","pos":"C6"},{"type":"wall","pos":"E6"},{"type":"wall","pos":"F5"},{"type":"wall","pos":"F3"},{"type":"wall","pos":"E2"},{"type":"treasure","pos":"D2","meta":{"kind":"gold","value":25}},{"type":"door","pos":"D4"},{"type":"treasure","pos":"D6","meta":{"kind":"gold","value":25}},{"type":"treasure","pos":"B4","meta":{"kind":"power","value":2}},{"type":"treasure","pos":"F4","meta":{"kind":"power","value":2}},{"type":"potion","pos":"G4"},{"type":"potion","pos":"D7"},{"type":"void","pos":"A5"},{"type":"key","pos":"F2"},{"type":"monster","pos":"C4","meta":{"name":"Ghoul","hp":12,"atk":8,"def":2,"descriptions":["Oooooo ooooo oooooooo ooooo ooooooooo.","The ghoul swoops spookily.","The ghoul disappears then reappears behind you."]}},{"type":"monster","pos":"E4","meta":{"name":"Ghoul","hp":12,"atk":8,"def":2,"descriptions":["Oooooo ooooo oooooooo ooooo ooooooooo.","The ghoul swoops spookily.","The ghoul disappears then reappears behind you."]}},{"type":"monster","pos":"D3","meta":{"name":"Werewolf","hp":12,"atk":7,"def":2,"descriptions":["You see a large wolf standing upright in tattered clothes.","The wolf dribbles its basketball toward you.","This wolf seemed nicer in the movies."]}},{"type":"monster","pos":"D5","meta":{"name":"Werewolf","hp":12,"atk":7,"def":2,"descriptions":["You see a large wolf standing upright in tattered clothes.","The wolf dribbles its basketball toward you.","This wolf seemed nicer in the movies."]}}],"scenes":{"A1":"You can sense the end is near, if you can just make it a bit further."},"nextLevelId":"town3"}, 		"town3":{"id":"town3","rows":9,"cols":7,"items":[{"type":"custom_wall","pos":"B2","meta":{"name":"Bushes"}},{"type":"custom_wall","pos":"B3","meta":{"name":"Bushes"}},{"type":"custom_wall","pos":"F2","meta":{"name":"Bushes"}},{"type":"custom_wall","pos":"F3","meta":{"name":"Bushes"}},{"type":"custom_wall","pos":"F7","meta":{"name":"Bushes"}},{"type":"custom_wall","pos":"F8","meta":{"name":"Bushes"}},{"type":"custom_wall","pos":"B8","meta":{"name":"Bushes"}},{"type":"custom_wall","pos":"B7","meta":{"name":"Bushes"}},{"type":"custom_wall","pos":"C2","meta":{"name":"Flowers"}},{"type":"custom_wall","pos":"B4","meta":{"name":"Flowers"}},{"type":"custom_wall","pos":"E2","meta":{"name":"Flowers"}},{"type":"custom_wall","pos":"F4","meta":{"name":"Flowers"}},{"type":"custom_wall","pos":"F6","meta":{"name":"Flowers"}},{"type":"exit","pos":"A9"},{"type":"custom_wall","pos":"E8","meta":{"name":"Flowers"}},{"type":"custom_wall","pos":"C8","meta":{"name":"Flowers"}},{"type":"custom_wall","pos":"B6","meta":{"name":"Flowers"}},{"type":"armor_shop","pos":"C5"},{"type":"inn","pos":"D4"},{"type":"weapon_shop","pos":"E5"},{"type":"custom_wall","pos":"D5","meta":{"name":"Fountain"}},{"type":"villager","pos":"D7","meta":{"text":"Be strong, adventurer! Take this.","kind":"gold","value":15}},{"type":"villager","pos":"G9","meta":{"text":"Your curiosity can lead to danger in the dungeon. Stay safe, warrior!","kind":"defense","value":2}}],"scenes":{"A1":"Finally a new town. I can rest here a bit.","A5":"The beauty of the quiet town helps calm your nerves, but makes you dread the dungeon even more. ","G1":"Few people are around, but you see a villager in the distance."},"nextLevelId":"level9"}, 		"level9":{"id":"level9","rows":8,"cols":8,"items":[{"type":"wall","pos":"A2"},{"type":"wall","pos":"B2"},{"type":"wall","pos":"C3"},{"type":"wall","pos":"D2"},{"type":"wall","pos":"E2"},{"type":"wall","pos":"F2"},{"type":"wall","pos":"G2"},{"type":"wall","pos":"H4"},{"type":"wall","pos":"F4"},{"type":"wall","pos":"G5"},{"type":"wall","pos":"E4"},{"type":"wall","pos":"D5"},{"type":"wall","pos":"C5"},{"type":"wall","pos":"B5"},{"type":"wall","pos":"A7"},{"type":"wall","pos":"B7"},{"type":"wall","pos":"C7"},{"type":"wall","pos":"D7"},{"type":"wall","pos":"E7"},{"type":"wall","pos":"F7"},{"type":"wall","pos":"G7"},{"type":"potion","pos":"H8"},{"type":"potion","pos":"A3"},{"type":"treasure","pos":"C2","meta":{"kind":"defense","value":1}},{"type":"treasure","pos":"E5","meta":{"kind":"power","value":1}},{"type":"key","pos":"G4"},{"type":"void","pos":"H5"},{"type":"door","pos":"A8"},{"type":"monster","pos":"E1","meta":{"name":"Giant spider","hp":25,"atk":13,"def":6,"descriptions":["Numerous soft foot steps creep toward you.","The spiders fangs are much longer than you thought they might be.","The spider shoots a web toward you."]}},{"type":"monster","pos":"F5","meta":{"name":"Giant spider","hp":25,"atk":13,"def":6,"descriptions":["Numerous soft foot steps creep toward you.","The spiders fangs are much longer than you thought they might be.","The spider shoots a web toward you."]}},{"type":"monster","pos":"C4","meta":{"name":"Ghoul","hp":12,"atk":13,"def":2,"descriptions":["Oooooo ooooo oooooooo ooooo ooooooooo.","The ghoul swoops spookily.","The ghoul disappears then reappears behind you."]}},{"type":"monster","pos":"E8","meta":{"name":"Sorceress","hp":30,"atk":14,"def":6,"descriptions":["A bright ball of energy hovers in front of the sorceress.","The sorcerer shoots the ball toward you.","The sorceress floats above the ground with an eerie glow."]}}],"scenes":{"A1":"Your armor is damaged and your body is bruised, but you just need to keep moving."},"nextLevelId":"level10"}, 		"level10":{"id":"level10","rows":10,"cols":10,"items":[{"type":"wall","pos":"C2"},{"type":"wall","pos":"C3"},{"type":"wall","pos":"B3"},{"type":"wall","pos":"C4"},{"type":"wall","pos":"D3"},{"type":"wall","pos":"E2"},{"type":"wall","pos":"G1"},{"type":"potion","pos":"J2"},{"type":"potion","pos":"E3"},{"type":"wall","pos":"I2"},{"type":"wall","pos":"J3"},{"type":"wall","pos":"G3"},{"type":"wall","pos":"F4"},{"type":"wall","pos":"G4"},{"type":"wall","pos":"G5"},{"type":"wall","pos":"H4"},{"type":"wall","pos":"J5"},{"type":"wall","pos":"A6"},{"type":"wall","pos":"D6"},{"type":"wall","pos":"D7"},{"type":"wall","pos":"C7"},{"type":"wall","pos":"D8"},{"type":"wall","pos":"E7"},{"type":"wall","pos":"G8"},{"type":"wall","pos":"H7"},{"type":"wall","pos":"H8"},{"type":"wall","pos":"I8"},{"type":"wall","pos":"H9"},{"type":"wall","pos":"E10"},{"type":"wall","pos":"F10"},{"type":"wall","pos":"B9"},{"type":"void","pos":"C9"},{"type":"treasure","pos":"D10","meta":{"kind":"defense","value":2}},{"type":"potion","pos":"A8"},{"type":"potion","pos":"F7"},{"type":"potion","pos":"I4"},{"type":"key","pos":"J4"},{"type":"treasure","pos":"D2","meta":{"kind":"power","value":2}},{"type":"door","pos":"I9"},{"type":"monster","pos":"A4","meta":{"name":"Sorceress","hp":30,"atk":14,"def":6,"descriptions":["A bright ball of energy hovers in front of the sorceress.","The sorcerer shoots the ball toward you.","The sorceress floats above the ground with an eerie glow."]}},{"type":"monster","pos":"A10","meta":{"name":"Sorceress","hp":30,"atk":14,"def":6,"descriptions":["A bright ball of energy hovers in front of the sorceress.","The sorcerer shoots the ball toward you.","The sorceress floats above the ground with an eerie glow."]}},{"type":"monster","pos":"D5","meta":{"name":"Vampire Lord","hp":30,"atk":16,"def":7,"descriptions":["I vaunt to suck your blood!","1! 2! 3! strikes from the Vampire Lord.","The Vampire Lord hovers ominously."]}},{"type":"monster","pos":"F8","meta":{"name":"Vampire Lord","hp":30,"atk":16,"def":7,"descriptions":["I vaunt to suck your blood!","1! 2! 3! strikes from the Vampire Lord.","The Vampire Lord hovers ominously."]}},{"type":"monster","pos":"J8","meta":{"name":"Vampire Lord","hp":30,"atk":16,"def":7,"descriptions":["I vaunt to suck your blood!","1! 2! 3! strikes from the Vampire Lord.","The Vampire Lord hovers ominously."]}}],"scenes":{"A1":"You finally made it to the end. If you could just reach the exit.","F5":"This labyrinth can be infuriating, but you\u2019ve come too far to give up now."},"nextLevelId":null}}
 
 var myKeys = Object.keys(LEVELS);
 var levelList = document.getElementById("levelSelect");
@@ -85,7 +79,6 @@ function getFile(num){
 		})  
 	.catch(error => {console.log("no more games"); backupDemo(num);}); 
 }
-
 
 
 function backupDemo(num){
@@ -159,9 +152,7 @@ function selectGame(){
 		statDefense.value = 0
 		statGold.value = 0
 		baseOpacity.value = 100;
-		monsterLibrary = {};
-		shopLibrary = {};
-		hazardLibrary = {};
+		resetLibraries()
 	}	
 
 	currentGame = gameSelect.value;
@@ -171,12 +162,15 @@ function selectGame(){
 	initCustomIcons()
 	initCustomStats();
 
-	//TODO - library separation
-	renderMonsterLibrary()
-	renderShopLibrary()	
-	renderHazardLibrary()	
+	renderLibraries();
 
+}
 
+function resetLibraries(){
+	myLibs = Object.keys(libraries)
+	for(lib of myLibs){
+		libraries[lib].lib = {};
+	}
 }
 
 function initCustomStats(){
@@ -246,24 +240,25 @@ function initLevelSet(){
 		}
 		
 		//get all monsters
+		libKeys = Object.keys(libraries);
 		for(u = 0; u < myItems.length; u++){
-			if (myItems[u].type == "monster"){
-				monsterName = myItems[u].meta.name;
-				if (!monsterExists(monsterName)){
-					var mon = {name: monsterName};
-					monsterLibrary[monsterName] = mon;
-					monsterLibrary[monsterName].meta = myItems[u].meta;
+			if(libKeys.includes(myItems[u].type)){
+				//monster, shop, hazar, etc...
+				myLibrary = libraries[myItems[u].type].lib;
+				itemName = myItems[u].meta.name;
+				if(!entryExists(myLibrary, itemName)){
+					var newItem = {name: itemName};
+					myLibrary[itemName] = newItem;
+					myLibrary[itemName].meta = myItems[u].meta;
+					myLibrary[itemName].refs = {}
 				}
-				myItems[u].meta = monsterLibrary[monsterName].meta;
-			}
-			else if (myItems[u].type == "shop"){
-				shopName = myItems[u].meta.name;
-				if (!shopExists(shopName)){
-					var shop = {name: shopName};
-					shopLibrary[shopName] = shop;
-					shopLibrary[shopName].meta = myItems[u].meta;
+				if(!myLibrary[itemName].refs){
+					myLibrary[itemName].refs = {}
 				}
-				myItems[u].meta = shopLibrary[shopName].meta;
+				if(!myLibrary[itemName].refs[myKeys[i]])
+					{myLibrary[itemName].refs[myKeys[i]] = [myItems[u].pos]}
+				else{
+					myLibrary[itemName].refs[myKeys[i]].push(myItems[u].pos)}
 			}
 		}
 		
@@ -621,29 +616,16 @@ function updateNext(){
 	LEVELS[currentId].nextLevelId = newNext;
 }
 
-function monsterExists(monsterName){
-//console.log("monsterExists");
-//console.log(LEVELS);
-//console.log(items);
+function entryExists(myLibrary, itemName){
 
-	monsters = Object.keys(monsterLibrary);
-	if(monsters.includes(monsterName)){
+	entries = Object.keys(myLibrary);
+	if(entries.includes(itemName)){
 			return true;
 	}
 	return false;
 }
 
-function shopExists(shopName){
-//console.log("shopExists");
-//console.log(LEVELS);
-//console.log(items);
 
-	shops = Object.keys(shopLibrary);
-	if(shops.includes(shopName)){
-			return true;
-	}
-	return false;
-}
 
 function levelNew(){
 //console.log("levelNew");
@@ -884,23 +866,30 @@ function saveSet(){
 }
 
 
-function selectMonster(monsterName){
+function selectLibItem(row){
+	itemName = row.getAttribute("itemname");
+	objectType = row.parentElement.parentElement.getAttribute("object");
+	myLibrary = libraries[objectType]
+	if (itemName.length > 0){		
+		libSelectedClass(myLibrary.table, itemName);
 
-	if (monsterName.length > 0){
-	
-	monsterClass(monsterName);
-	editingMonster = monsterName;
+		myLibrary.editing = itemName;
+		myMeta = myLibrary.lib[itemName].meta
 
-	m = monsterLibrary[monsterName].meta;
-	myFields = metaMap.monster;
-	populateFromLibrary(m, myFields);
+		myFields = metaMap[objectType];
+		populateFromLibrary(myMeta, myFields);
 
-	updateMonIcon();
-	btnAddMonster.textContent = 'Save Monster';
-	var cancel = document.getElementById('btnCancelEdit'); 
-	if(cancel) cancel.style.display='inline-block';
-	var message = "monster " + monsterName + " selected.";
-	document.getElementById('gridAnnouncer').textContent = message;}
+		updateIcons();
+		
+		btnAdd = myLibrary.btnAdd;
+		btnCancel = myLibrary.btnCancel;
+		
+		btnAdd.textContent = 'Save ' + objectType;
+		
+		if(btnCancel) btnCancel.style.display='inline-block';
+		var message = objectType + " " + itemName + " selected.";
+		document.getElementById('gridAnnouncer').textContent = message;
+	}
 }
 
 function populateFromLibrary(m, myFields){
@@ -953,21 +942,20 @@ function populateFromLibrary(m, myFields){
 }
 
 
-function monsterClass(name){
+function libSelectedClass(table, name){
 //console.log("monsterClass");
 //console.log(LEVELS);
 //console.log(items);
 
-	monsterRows = monsterListEl.getElementsByTagName("tr");
-	for (let i = 0; i < monsterRows.length; i++) {
-		if(monsterRows[i].getAttribute("m") == name){
-			monsterRows[i].setAttribute("class","selected");
-			monsterRows[i].scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
+	myRows = table.getElementsByTagName("tr");
+	for (let i = 0; i < myRows.length; i++) {
+		if(myRows[i].getAttribute("itemName") == name){
+			myRows[i].setAttribute("class","selected");
+			myRows[i].scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
 		}
 		else{
-			monsterRows[i].setAttribute("class","");
+			myRows[i].setAttribute("class","");
 		}
-		
 	}
 }
 
@@ -1519,253 +1507,126 @@ updateTreasureUI();
 // Custom wall UI wiring
 
 
-function renderMonsterLibrary(){
-//console.log("renderMonsterLibrary");
-//console.log(LEVELS);
-//console.log(items);
+function renderLibraries(){
 	
-	monsterListEl = document.getElementById('monsterList');
-	monsterListEl.innerHTML = '';
-	
-	monsters = Object.keys(monsterLibrary)
-	
-	//TODO: base library for new game
-	if (monsters.length == 0){
-	monsterLibrary.Grunt = {"name": "Grunt", "meta": {"name": "Grunt", "hp": 6, "atk": 2, "def": 0}};
-	monsters = Object.keys(monsterLibrary);}
-
-	
-	
-	
-	//createheader row
-	if(monsters.length > 0){
-	var row = document.createElement("thead")
-	metaKeys = Object.keys(monsterLibrary[monsters[0]].meta);
-	for (let i = 0; i < metaKeys.length; i++){
-		var cell = document.createElement("th");
-		cell.innerText = metaKeys[i]
-		cell.setAttribute("scope","col");
-		row.appendChild(cell);
+	//initiate default Items
+	grunt = {"name": "Grunt", type: "monster", "meta": {"name": "Grunt", "hp": 6, "atk": 2, "def": 0}};
+	avoid =  {"name": "Void", type: "hazard", "meta": { "name": "Void", "hint": "Mysterious fog", "text": "You  have fallen into a void.", "void": true, "icon": "void" } };
+	armor =  { "name": "armor shop", type: "shop", "meta": { "name": "armor shop", "value": 1, "kind": "defense", "cost": 14, "currency": "gold", "icon": "armor" } }
+	weapon 	=  { "name": "weapon shop", type: "shop", "meta": { "name": "weapon shop", "value": 1, "kind": "strength", "cost": 18, "currency": "gold", "icon": "weapon" } }
+	inn = { "name": "inn", type: "shop", "meta": { "name": "inn", "value": 8, "kind": "life", "cost": 10, "currency": "gold", "icon": "inn" } } 
+	defaults = [grunt, avoid, armor, weapon, inn]
+	for (item of defaults){
+		myLibrary = libraries[item.type].lib;
+		itemName = item.name;
+			if(!entryExists(myLibrary, itemName)){
+				var newItem = {name: itemName};
+				myLibrary[itemName] = newItem;
+				myLibrary[itemName].meta = item.meta;
+		}
 	}
-	monsterListEl.appendChild(row);
-	var body = document.createElement("tbody");
-	//create other rows
-	for (let m = 0; m < monsters.length; m++){
-		var row = document.createElement("tr")
-		monsterListEl.appendChild(row);
-		var cell = document.createElement("th");
-		cell.setAttribute("scope","row");
-		cell.innerText = monsterLibrary[monsters[m]].meta[metaKeys[0]];
-		row.appendChild(cell);
-		for (let i = 1; i < metaKeys.length; i++){
-			var cell = document.createElement("td");
-		if(Array.isArray(monsterLibrary[monsters[m]].meta[metaKeys[i]])){
-			//make a list!
-			var descs = monsterLibrary[monsters[m]].meta[metaKeys[i]];
-			var list = document.createElement("ul");
-			for (let d = 0; d < descs.length; d++){
-				var litem = document.createElement("li");
-				litem.innerText = descs[d]
-				list.appendChild(litem);
-			}
-			cell.appendChild(list)
-		}
-		else{
-			cell.innerHTML = monsterLibrary[monsters[m]].meta[metaKeys[i]]
-		}
+	
+	libKeys = Object.keys(libraries);
+	for (libKey of libKeys){
+		myTable = libraries[libKey].table;
+		myTable.innerHTML = '';
+		
+		entries = libraries[libKey].lib;
+		names = Object.keys(entries);
+		
+		//createheader row
+		var row = document.createElement("thead")
+		metaKeys = Object.keys(entries[names[0]].meta)
+		for (key of metaKeys){
+			var cell = document.createElement("th");
+			cell.innerText = key;
+			cell.setAttribute("scope","col");
 			row.appendChild(cell);
 		}
-		body.appendChild(row);
-		row.setAttribute("m", monsters[m]);
-		row.setAttribute('onclick', "selectMonster(\"" + monsters[m] + "\")");
-		
-	}
-	monsterListEl.appendChild(body);
-	}
-	selectMonster(editingMonster);
-}
-
-
-function renderHazardLibrary(){
-//console.log("renderHazardLibrary");
-//console.log(LEVELS);
-//console.log(items);
-	hazardListEl = document.getElementById('hazardList');
-	hazardListEl.innerHTML = '';
-	
-	hazards = Object.keys(hazardLibrary)
-	
-	if(hazards.length == 0){
-		hazardLibrary["void"] =  {"name": "Void", "meta": { "name": "Void", "hint": "Mysterious fog", "text": "You  have fallen into a void.", "void": true, "icon": "void" } };
-		hazards = Object.keys(hazardLibrary);
-	}
-	
-	//createheader row
-	if(hazards.length > 0){
-
-	var row = document.createElement("thead")
-	metaKeys = Object.keys(hazardLibrary[hazards[0]].meta);
-	for (let i = 0; i < metaKeys.length; i++){
 		var cell = document.createElement("th");
-		cell.innerText = metaKeys[i]
+		cell.innerText = "refs";
 		cell.setAttribute("scope","col");
 		row.appendChild(cell);
-	}
-	hazardListEl.appendChild(row);
-	var body = document.createElement("tbody");
-	//create other rows
-	for (let m = 0; m < hazards.length; m++){
-		var row = document.createElement("tr")
-		hazardListEl.appendChild(row);
-		var cell = document.createElement("th");
-		cell.setAttribute("scope","row");
-		cell.innerText = hazardLibrary[hazards[m]].meta[metaKeys[0]];
-		row.appendChild(cell);
-		for (let i = 1; i < metaKeys.length; i++){
-			var cell = document.createElement("td");
-		if(Array.isArray(hazardLibrary[hazards[m]].meta[metaKeys[i]])){
-			//make a list!
-			var descs = hazardLibrary[hazards[m]].meta[metaKeys[i]];
-			var list = document.createElement("ul");
-			for (let d = 0; d < descs.length; d++){
-				var litem = document.createElement("li");
-				litem.innerText = descs[d]
-				list.appendChild(litem);
-			}
-			cell.appendChild(list)
-		}
-		else{
-			cell.innerHTML = hazardLibrary[hazards[m]].meta[metaKeys[i]]
-		}
+		
+		myTable.appendChild(row);
+
+		var body = document.createElement("tbody");
+		//create other rows
+		
+		
+		for (itemName of names){
+			var row = document.createElement("tr")
+			myTable.appendChild(row);
+			var cell = document.createElement("th");
+			cell.setAttribute("scope","row");
+			cell.innerText = itemName;
 			row.appendChild(cell);
-		}
-		body.appendChild(row);
-		row.setAttribute("m", hazards[m]);
-		row.setAttribute('onclick', "selectHazard(\"" + hazards[m] + "\")");
-		
-	}
-	hazardListEl.appendChild(body);
-	}
-	selectHazard(editingHazard);
-}
+			for (key of metaKeys){
+				if(key != "name"){
+				var cell = document.createElement("td");
+				if (Array.isArray(entries[itemName].meta[key])){
+					//make a list!
+					var descs = entries[itemName].meta[key];
+					var list = document.createElement("ul");
+					for (let d = 0; d < descs.length; d++){
+						var litem = document.createElement("li");
+						litem.innerText = descs[d]
+						list.appendChild(litem);
+					}
+					cell.appendChild(list)
+				}
+				else{
+					cell.innerHTML = entries[itemName].meta[key];
+				}
+					row.appendChild(cell);
+			}}
+			//refs cell
 
-function renderShopLibrary(){
-//console.log("renderShopLibrary");
-//console.log(LEVELS);
-//console.log(items);
-
-
-	shopListEl = document.getElementById('shopList');
-	shopListEl.innerHTML = '';
-	
-	shops = Object.keys(shopLibrary)
-	
-	if(shops.length == 0){
-		shopLibrary["armor shop"] =  { "name": "armor shop", "meta": { "name": "armor shop", "value": 1, "kind": "defense", "cost": 14, "currency": "gold", "icon": "armor" } }
-		shopLibrary["weapon shop"] 	=  { "name": "weapon shop", "meta": { "name": "weapon shop", "value": 1, "kind": "strength", "cost": 18, "currency": "gold", "icon": "weapon" } }
-		shopLibrary["inn"] = { "name": "inn", "meta": { "name": "inn", "value": 8, "kind": "life", "cost": 10, "currency": "gold", "icon": "inn" } } 
-		shops = Object.keys(shopLibrary);
-	}	
-	
-	//createheader row
-	if(shops.length > 0){
-
-	var row = document.createElement("thead")
-	metaKeys = Object.keys(shopLibrary[shops[0]].meta);
-	for (let i = 0; i < metaKeys.length; i++){
-		var cell = document.createElement("th");
-		cell.innerText = metaKeys[i]
-		cell.setAttribute("scope","col");
-		row.appendChild(cell);
-	}
-	shopListEl.appendChild(row);
-	var body = document.createElement("tbody");
-	//create other rows
-	for (let m = 0; m < shops.length; m++){
-		var row = document.createElement("tr")
-		shopListEl.appendChild(row);
-		var cell = document.createElement("th");
-		cell.setAttribute("scope","row");
-		cell.innerText = shopLibrary[shops[m]].meta[metaKeys[0]];
-		row.appendChild(cell);
-		for (let i = 1; i < metaKeys.length; i++){
-			var cell = document.createElement("td");
-		if(Array.isArray(shopLibrary[shops[m]].meta[metaKeys[i]])){
-			//make a list!
-			var descs = shopLibrary[shops[m]].meta[metaKeys[i]];
-			var list = document.createElement("ul");
-			for (let d = 0; d < descs.length; d++){
-				var litem = document.createElement("li");
-				litem.innerText = descs[d]
-				list.appendChild(litem);
+			cell = document.createElement("td");
+			cell.innerHTML = "none";
+			refs = entries[itemName].refs;
+				if(refs){
+				cell.innerHTML = "";
+				myLevels = Object.keys(refs);
+				var myList = document.createElement("ul");
+				for (level of myLevels){
+					removeRefs = [];
+					for(item of refs[level]){
+						//confirm REF is still this object
+						if(stillThere(level, item, itemName, libKey)){
+							var myLi = document.createElement("li");
+							console.log(item);
+							myLi.innerHTML = level + " " + item.pos;
+							myList.appendChild(myLi)
+						}
+						else{
+							//remove this ref
+							console.log("remove")
+							removeRefs.push(item);
+						}
+					}
+					for (ref of removeRefs){
+						console.log("remove " + ref)
+						refs[level] = arrayRemove(refs[level], ref)
+					}
+				}
+				cell.appendChild(myList)
 			}
-			cell.appendChild(list)
-		}
-		else{
-			cell.innerHTML = shopLibrary[shops[m]].meta[metaKeys[i]]
-		}
 			row.appendChild(cell);
+			body.appendChild(row);
+			row.setAttribute("itemName", itemName);
+			row.setAttribute('onclick', "selectLibItem(this)");
 		}
-		body.appendChild(row);
-		row.setAttribute("m", shops[m]);
-		row.setAttribute('onclick', "selectShop(\"" + shops[m] + "\")");
 		
+		myTable.appendChild(body);
+		if(libraries[libKey].editing != ""){
+			libSelectedClass(myTable, libraries[libKey].editing);
+		}
 	}
-	shopListEl.appendChild(body);
-	}
-	selectShop(editingShop);
+	
 }
 
 
-
-function selectShop(shopName){
-//console.log("selectShop");
-//console.log(LEVELS);
-//console.log(items);
-
-	if (shopName.length > 0){
-		shopClass(shopName);
-		editingShop = shopName;
-		shop = shopLibrary[shopName].meta;
-		
-		
-		myFields = metaMap.shop;
-		populateFromLibrary(shop, myFields);
-
-		
-		updateShopIcon();
-		btnAddShop.textContent = 'Save Shop';
-		var cancel = document.getElementById('btnCancelShop'); 
-		if(cancel) cancel.style.display='inline-block';
-		var message = "shop " + shopName + " selected.";
-		document.getElementById('gridAnnouncer').textContent = message;
-	}	
-}
-
-
-function selectHazard(myHazard){
-//console.log("selectHazard");
-//console.log(LEVELS);
-//console.log(items);
-
-	if (myHazard.length > 0){
-		hazardClass(myHazard);
-		editingHazard = myHazard;
-		hazard = hazardLibrary[myHazard].meta;
-		
-		
-		myFields = metaMap.hazard;
-
-		populateFromLibrary(hazard, myFields);
-
-		updateHazardIcon();
-		btnAddHazard.textContent = 'Save Hazard';
-		var cancel = document.getElementById('btnCancelHazard'); 
-		if(cancel) cancel.style.display='inline-block';
-		var message = "hazard " + myHazard + " selected.";
-		document.getElementById('gridAnnouncer').textContent = message;
-	}
-}
 
 
 function resetFields(myFields){
@@ -1780,10 +1641,27 @@ function resetFields(myFields){
 			field.value = field.getAttribute("value") || '';
 		}
 	}
+	myObject = myFields[0].getAttribute("object");
+	if(libraries[myObject]){
+		libraries[myObject].editing = "";
+	}
 	updateIcons();
 }
 
-
+function stillThere(level, pos, itemName, objectType){
+	there = false;
+	myItems = LEVELS[level].items
+	statement = ["looking for:", objectType, itemName, "at", level, pos]
+	console.log(statement.join(" "))
+	console.log(myItems)
+	
+	for(item of myItems){
+		if(item.type == objectType && item.meta && item.meta.name == itemName && item.pos == pos){
+			return true;
+		}
+	}
+	return there;
+}
 
 function libraryFromFields(m, myFields){
 	arrayIndex = {};
@@ -1849,111 +1727,58 @@ function getMetas(myFields){
 	return meta;
 }
 
-
-
-btnAddMonster.addEventListener('click', function(){
-	var name = monsterNameEl.value.trim() || 'Monster';
-	monsterLibrary[name] = {name: name, meta: {}};
-	libraryFromFields(monsterLibrary[name].meta, metaMap.monster);
-
-	if (currentItem == "select"){
-		monsterUpdate();
-	}
-	
-	btnAddMonster.textContent = 'Add Monster';
-	var cancel = document.getElementById('btnCancelEdit'); 
-	if(cancel) cancel.style.display='none';
-	resetFields(metaMap.monster);
-	saveMonsterLibrary();
-	renderMonsterLibrary();
-	
-});
-
-// Load persisted library, or initialize with one default if empty
-
-// Cancel edit button behavior
-var btnCancelEdit = document.getElementById('btnCancelEdit');
-if (btnCancelEdit) {
-	btnCancelEdit.addEventListener('click', function(){
-		editingMonster = "";
-		btnAddMonster.textContent = 'Add Monster';
-		btnCancelEdit.style.display = 'none';
-		monsterClass("");
-		resetFields(metaMap.monster);
-		updateMonIcon();
-	});
-}
-
-var btnCancelShop = document.getElementById('btnCancelShop');
-if (btnCancelShop) {
-	btnCancelShop.addEventListener('click', function(){
-		editingShop = "";
-		btnAddShop.textContent = 'Add Shop';
-		btnCancelShop.style.display = 'none';
+function libraryAction(btn){
+	myAction = btn.getAttribute("action")
+	objectType = btn.getAttribute("object");
+	myLibrary = libraries[objectType];
+	if(myAction == "add"){
+		//get object type
+		nameField = document.getElementById(objectType + "Name")
+		var name = nameField.value.trim() || objectType;
 		
-		resetFields(metaMap.shop);
 
-		updateShopIcon();
-	});
-}
-
-var btnCancelHazard = document.getElementById('btnCancelHazard');
-if (btnCancelHazard) {
-	btnCancelHazard.addEventListener('click', function(){
-		editingHazard = "";
-		btnAddHazard.textContent = 'Add Hazard';
-		btnCancelHazard.style.display = 'none';
-
-		resetFields(metaMap.hazard);
-
-
-		updateHazardIcon();
-	});
-}
-
-
-btnCancelEdit.style.display = 'none';
-btnCancelShop.style.display = 'none';
-btnCancelHazard.style.display = 'none';
-
-btnAddHazard.addEventListener('click', function(){
-	var name = hazardName.value.trim() || 'Hazard';
-
-	hazardLibrary[name] = {name: name, meta: {}};
-	libraryFromFields(hazardLibrary[name].meta, metaMap.hazard);
-
-	if (currentItem == "select"){
-		hazardUpdate();
+		if(myLibrary.editing != ""){
+			if(myLibrary.editing != name){
+				Object.defineProperty(myLibrary.lib, name, Object.getOwnPropertyDescriptor(myLibrary.lib, myLibrary.editing));
+				delete myLibrary.lib[myLibrary.editing];
+				myLibrary.editing = name;
+			}
+		}
+		else if(!myLibrary.lib[name]){
+			myLibrary.lib[name] = {name: name, meta: {}};
+		}
+		libraryFromFields(myLibrary.lib[name].meta, metaMap[objectType]);
+		
+		//update refs!
+		myItem = myLibrary.lib[name];
+		if(myItem.refs){
+			myLevels = Object.keys(myItem.refs)
+			for(level of myLevels){
+				console.log(level)
+				console.log(myItem.refs)
+				console.log(myItem.refs[level])
+				for(item of myItem.refs[level]){
+					//update only meta that is stored in the library (non-instance meta)
+					libMeta = myItem.meta
+					libKeys = Object.keys(libMeta)
+					for(key of libKeys){
+						item.meta[key] = libMeta[key];
+					}
+				}
+			}
+		}
+		
+		
+		
+		btn.textContent = 'Add ' + objectType;
+		var cancel = myLibrary.btnCancel; 
+		if(cancel) cancel.style.display='none';
 	}
-
-	btnAddHazard.textContent = 'Add Hazard';
-	var cancel = document.getElementById('btnCancelEdit'); 
-	if(cancel) cancel.style.display='none';
-
-	resetFields(metaMap.hazard);	
-	renderHazardLibrary();
-});
-
-
-
-btnAddShop.addEventListener('click', function(){
-	var name = shopNameEl.value.trim() || 'Shop';
-	
-	shopLibrary[name] = {name: name, meta: {}};
-	libraryFromFields(shopLibrary[name].meta, metaMap.shop);
-	
-	if (currentItem == "select"){
-		shopUpdate();
-	}
-	
-	btnAddShop.textContent = 'Add Shop';
-	var cancel = document.getElementById('btnCancelEdit'); 
-	if(cancel) cancel.style.display='none';
-	resetFields(metaMap.shop);
-	
-	renderShopLibrary();
-});
-
+	libSelectedClass(myLibrary.table, "");
+	resetFields(metaMap[objectType]);
+	myLibrary.editing = "";
+	renderLibraries();
+}
 
 
 // Handle grid keyboard navigation
@@ -2138,10 +1963,20 @@ document.getElementById('grid').onclick = function(e) {
 		}}
 		else {
 			newObj = {type: currentItem, pos: pos, meta: getMetas(metaMap[currentItem])};
+			myIndex = existingIdx;
 			if (existingIdx >= 0) {
 				items[existingIdx] = newObj;				
 			} else {
 				items.push(newObj);
+				myIndex = items.length - 1;
+			}
+			if(libraries[currentItem]){
+				myName = LEVELS[currentId].items[myIndex].meta.name;
+				myLibSelf = libraries[currentItem].lib[myName];
+				if(!myLibSelf.refs){myLibSelf.refs = {}}
+				if(!myLibSelf.refs[currentId]){myLibSelf.refs[currentId] = [LEVELS[currentId].items[myIndex].pos]}
+				else{myLibSelf.refs[currentId].push(LEVELS[currentId].items[myIndex].pos)}
+				renderLibraries();
 			}
 		}
 
@@ -2459,13 +2294,16 @@ setupGridKeyboard();
 function initForms(){
 	arrayIndex = {};
 	console.log("initForms")
+	
 	levelSelectors = [];
-	iconSelectrs = [];
+	iconSelectors = [];
+	libraries = {};
 	
 	var inputs = document.getElementsByTagName("input");
 	var selects = document.getElementsByTagName("select");
 	var configs = document.getElementsByClassName("configDiv");
-	
+	var tables = document.getElementsByTagName("table");
+	var buttons = document.getElementsByTagName("button");
 	var objectKeys = [];
 	for(input of inputs){	
 		myObject = input.getAttribute("object");
@@ -2526,13 +2364,40 @@ function initForms(){
 		
 		}
 	}
+	
 
 	for(div of configs){
 		myObject = div.getAttribute("object");
 		if(myObject){
 			configMap[myObject] = div;}
 	}
+	
+	//<button object="monster" action="add" id="btnAddMonster">Add Monster</button>
+	//<button object="monster" action="cancel" id="btnCancelEdit" >New monster</button>
+	//<table object="monster" library="true" id="monsterList" class="monster-list">
 
+
+	
+	for(table of tables){
+		if(table.getAttribute("library")){
+			libraries[table.getAttribute("object")] = {};
+			libraries[table.getAttribute("object")].table = table;
+			libraries[table.getAttribute("object")].lib = {};
+			libraries[table.getAttribute("object")].editing = "";
+		}
+	}
+	
+	for(btn of buttons){
+		if(btn.getAttribute("object") && btn.getAttribute("action")){
+			myKey = btn.getAttribute("action");
+			myKey = String(myKey).charAt(0).toUpperCase() + String(myKey).slice(1);
+			myKey = "btn" + myKey;
+			libraries[btn.getAttribute("object")][myKey] = btn;
+			btn.setAttribute("onclick", "libraryAction(this)");
+		}
+	}
+	
+	console.log(libraries);
 	//console.log(metaMap);
 	
 }
@@ -2574,25 +2439,6 @@ function updateSelected(field){
 }
 
 
-function monsterUpdate(name, hp, atk, def, rKind, rVal, rDesc, descriptions){
-//console.log("monsterUpdate");
-//console.log(LEVELS);
-//console.log(items);
-
-	if(currentItem == 'select'){
-		var pos = activeCell.dataset.pos;
-		var existingIdx = getItemIndex(pos);
-		myMonster = items[existingIdx].meta;
-		myMonster.name = name;
-		myMonster.hp = hp;
-		myMonster.atk = atk;
-		myMonster.def = def;
-		myMonster.rVal= rVal;
-		myMonster.rKind = rKind;
-		myMonster.rDesc = rDesc;
-		myMonster.descriptions = descriptions;	
-	 }
-}
 
 
 
@@ -2601,7 +2447,4 @@ myOption.textContent = "Finish"
 myOption.setAttribute("value", null);
 nextLevelList.appendChild(myOption);
 
-
-renderMonsterLibrary();
-renderShopLibrary();
-renderHazardLibrary();
+				
