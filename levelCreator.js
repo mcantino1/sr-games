@@ -49,6 +49,8 @@ itemIcons.custom_wall = itemIcons.wall;
 itemIcons.gameEnd = itemIcons.door;
 
 
+const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
 
 
 
@@ -57,8 +59,141 @@ const dataPath = "./data/game";
 
 
 initForms();
+var soundEnd = 0;
+
+function playSound(name){
+	if (!soundBank[name]){return;}
+	mySound = soundBank[name];
+	const now = audioContext.currentTime;  
+	if(now < soundEnd && currentSound != "step"){return;}
+	currentSound = name;
+	const oscillator = audioContext.createOscillator();
+	const gainNode = audioContext.createGain();
+	oscillator.connect(gainNode);
+	gainNode.connect(audioContext.destination);
+	oscillator.type = mySound.type;
+	var dur = (mySound.dur);
+	soundEnd = now + dur
+	oscillator.frequency.setValueAtTime((mySound.frequency ), now);
+	gainNode.gain.setValueAtTime(0, now);
+	myNodes = mySound.nodes;
+	for (let n = 0; n < myNodes.length; n++){
+		if(myNodes[n].type == "frequency"){
+			oscillator.frequency.linearRampToValueAtTime((myNodes[n].value), now + (dur * myNodes[n].time));
+		}
+		else { //gain
+			gainNode.gain.linearRampToValueAtTime((myNodes[n].value), now + (dur * myNodes[n].time));
+		}
+	}
+	oscillator.start(now);
+	oscillator.stop(soundEnd);
+	
+	if (mySound.layers > 1)
+	{
+		nodes = mySound.layers + 1
+		for(let s = 2; s < nodes; s++){
+			const oscillatorB = audioContext.createOscillator();
+			const gainNodeB = audioContext.createGain();
+			oscillatorB.connect(gainNodeB);
+			gainNodeB.connect(audioContext.destination);
+			oscillatorB.type = mySound.type;
+			oscillatorB.frequency.setValueAtTime(mySound.frequency, now);
+			gainNodeB.gain.setValueAtTime(0, now);
+			
+			myNodes = mySound["nodes" + s];
+			
+			 for (let n = 0; n < myNodes.length; n++){
+				if(myNodes[n].type == "frequency"){
+					oscillatorB.frequency.linearRampToValueAtTime(myNodes[n].value, now + (dur * myNodes[n].time));
+				}
+				else { //gain
+					gainNodeB.gain.linearRampToValueAtTime((myNodes[n].value), now + (dur * myNodes[n].time));
+					
+				}
+			}
+			oscillatorB.start(now);
+			oscillatorB.stop(soundEnd);			
+		}		
+	}
+}
+
+var soundBank = {"step": {"dur": 0.1, "type": "sine", "frequency": 15, "layers": 1, "nodes": [{"type": "frequency", "value": 15, "time": 0}, {"type": "frequency", "value": 30, "time": 0.5}, {"type": "frequency", "value": 10, "time": 1}, {"type": "gain", "value": 1, "time": 0.01}, {"type": "gain", "value": 0.01, "time": 0.31}, {"type": "gain", "value": 1, "time": 0.35}, {"type": "gain", "value": 0.01, "time": 0.65}, {"type": "gain", "value": 1, "time": 0.69}, {"type": "gain", "value": 0.01, "time": 0.99}]},
+				"wall": {"dur": 0.05, "type": "sine", "frequency": 120, "layers": 1, "nodes": [{"type": "frequency", "value": 60, "time": 1}, {"type": "gain", "value": 1, "time": 0.25}, {"type": "gain", "value": 0.01, "time": 0.99}]},
+				"key": {"dur": 0.4, "type": "sine", "frequency": 400, "layers": 1, "nodes": [{"type": "frequency", "value": 650, "time": 1}, {"type": "gain", "value": 0.5, "time": 0.01}, {"type": "gain", "value": 0.01, "time": 0.31}, {"type": "gain", "value": 0.5, "time": 0.35}, {"type": "gain", "value": 0.01, "time": 0.65}, {"type": "gain", "value": 0.5, "time": 0.69}, {"type": "gain", "value": 0.01, "time": 0.99}]},
+				"door": {"dur": 0.5, "type": "sawtooth", "frequency": 50, "layers": 1, "nodes": [{"type": "frequency", "value": 10, "time": 1}, {"type": "gain", "value": 1, "time": 0.01}, {"type": "gain", "value": 0.3, "time": 0.9}, {"type": "gain", "value": 0.01, "time": 1}] },
+				"get": {"dur": 0.15, "type": "sine", "frequency": 100, "layers": 1, "nodes": [{"type": "frequency", "value": 150, "time": 0.15}, {"type": "frequency", "value": 200, "time": 0.3}, {"type": "frequency", "value": 150, "time": 0.6}, {"type": "frequency", "value": 200, "time": 0.75}, {"type": "frequency", "value": 100, "time": 1}, {"type": "gain", "value": 1, "time": 0.01}, {"type": "gain", "value": 0.01, "time": 0.3}, {"type": "gain", "value": 1, "time": 0.75}, {"type": "gain", "value": 0.01, "time": 1}]},
+				"drink": {"dur": 0.1, "type": "sine", "frequency": 100, "layers": 1, "nodes": [{"type": "frequency", "value": 50, "time": 0.5}, {"type": "frequency", "value": 200, "time": 1}, {"type": "gain", "value": 1, "time": 0.01}, {"type": "gain", "value": 0.01, "time": 1}]},
+				"fall": {"dur": 1, "type": "sine", "frequency": 800, "layers": 1, "nodes": [{"type": "frequency", "value": 300, "time": 1}, {"type": "gain", "value": 1, "time": 0.01}, {"type": "gain", "value": .01, "time": 1}]},
+				"growl": {"layers": 2, "dur": 0.5, "type": "triangle", "frequency": 50, "nodes": [{"type": "frequency", "value": 40, "time": 1}, {"type": "gain", "value": 1, "time": 0.01}, {"type": "gain", "value": 0.25, "time": 0.5}, {"type": "gain", "value": 0.01, "time": 1}], "nodes2": [{"type": "frequency", "value": 50, "time": 0}, {"type": "frequency", "value": 100, "time": 1}, {"type": "gain", "value": 1 , "time": 0 }, {"type": "gain", "value": 0.01 , "time": 0.083 }, {"type": "gain", "value": 1 , "time": 0.084 }, {"type": "gain", "value": 0.01 , "time": 0.166 }, {"type": "gain", "value": 1 , "time": 0.167 }, {"type": "gain", "value": 0.01 , "time": 0.25 }, {"type": "gain", "value": 1 , "time": 0.251 }, {"type": "gain", "value": 0.01 , "time": 0.333 }, {"type": "gain", "value": 1 , "time": 0.334 }, {"type": "gain", "value": 0.01 , "time": 0.416 }, {"type": "gain", "value": 1 , "time": 0.417 }, {"type": "gain", "value": 0.01 , "time": 0.5 }]},
+				"slay": {"layers": 2, "dur": 0.5, "type": "triangle", "frequency": 200, "nodes": [{"type": "frequency", "value": 40, "time": 1}, {"type": "gain", "value": 0.5, "time": 0.01}, {"type": "gain", "value": 1, "time": 0.5},  {"type": "gain", "value": 0.01, "time":1}], "nodes2": [{"type": "frequency", "value": 50, "time": 0}, {"type": "frequency", "value": 100, "time": 1}, {"type": "gain", "value": 1 , "time": 0 }, {"type": "gain", "value": 0.01 , "time": 0.083 }, {"type": "gain", "value": 1 , "time": 0.084 }, {"type": "gain", "value": 0.01 , "time": 0.166 }, {"type": "gain", "value": 1 , "time": 0.167 }, {"type": "gain", "value": 0.01 , "time": 0.25 }, {"type": "gain", "value": 1 , "time": 0.251 }, {"type": "gain", "value": 0.01 , "time": 0.333 }, {"type": "gain", "value": 1 , "time": 0.334 }, {"type": "gain", "value": 0.01 , "time": 0.416 }, {"type": "gain", "value": 1 , "time": 0.417 }, {"type": "gain", "value": 0.01 , "time": 0.5 }] },
+				"hiss": {"dur": 1, "type": "sawtooth", "frequency": 10, "layers": 1, "nodes": [{"type": "frequency", "value": 10, "time": 1},{"type": "gain", "value": 0.1, "time": 0.01},{"type": "gain", "value": 0.1, "time": 1}]}
+};
 
 
+function initSounds(){
+	mySounds = Object.keys(soundBank);
+	soundSelect = document.getElementById("soundSelect");
+	for(sound of mySounds){
+		var opt = document.createElement("option")
+		opt.value = sound;
+		opt.innerHTML = sound;
+		soundSelect.appendChild(opt);
+	}
+}
+				
+			
+//initSounds();
+
+
+var maxGain = 50;
+var maxFreq = 1000;
+
+
+function selectSound(){
+	soundSelect = document.getElementById("soundSelect");
+	playSound(soundSelect.value);
+	mySound = soundBank[soundSelect.value];
+	vizBox = document.getElementById("soundVisualizer");
+	vizBox.innerHTML = "";
+	newCirc = document.createElement("circle");
+	
+	newCirc.setAttribute("cx",  0);
+	newCirc.setAttribute("cy", 60 - (3 + ((mySound.frequency / maxFreq) * 50)));
+	newCirc.setAttribute("r", 3);
+	
+	newCirc.setAttribute("fill", "white");
+	
+	newCirc.setAttribute("value", mySound.frequency);
+	newCirc.setAttribute("class", "frequency");
+	newCirc.setAttribute("type", "frequency");
+	newCirc.setAttribute("time", 0);
+	newCirc.setAttribute("init", true);
+	let circTitle = ["frequency", mySound.frequency, "time", 0].join(" ")
+	newCirc.setAttribute("title", circTitle);
+	
+	
+	vizBox.appendChild(newCirc);
+	myNodes = mySound.nodes;
+	
+	for (node of myNodes){
+		newCirc = document.createElement("circle");
+		//time
+		newCirc.setAttribute("cx",  node.time * 100 );
+		//frequency
+		newCirc.setAttribute("cy", 60 - (3 + ((node.value / maxFreq) * 50)));
+		newCirc.setAttribute("r", 3);
+		newCirc.setAttribute("fill", "white");
+		newCirc.setAttribute("value", node.value);
+		newCirc.setAttribute("class", node.type);
+		newCirc.setAttribute("type", node.type);
+		newCirc.setAttribute("time", node.time);
+		let circTitle = [node.type, node.value, "time", node.time].join(" ")
+		newCirc.setAttribute("title", circTitle);
+		vizBox.appendChild(newCirc);
+	}
+	vizBox.innerHTML = vizBox.innerHTML;
+	
+}
 
 function getFile(num){
 
@@ -847,8 +982,8 @@ function saveSet(){
 		thisName = myList[i].value;
 		saveLevels[thisName] = LEVELS[thisName];
 	}
-	myName = nameField.value;
-	myGame = {"title": myName, "levels": saveLevels}
+	let myName = document.getElementById("gameName").value;
+	let myGame = {"title": myName, "levels": saveLevels}
 	
 	//TODO - Only save used custom icons
 	
@@ -950,9 +1085,6 @@ function populateFromLibrary(m, myFields){
 
 
 function libSelectedClass(table, name){
-//console.log("monsterClass");
-//console.log(LEVELS);
-//console.log(items);
 
 	myRows = table.getElementsByTagName("tr");
 	for (let i = 0; i < myRows.length; i++) {
@@ -966,144 +1098,6 @@ function libSelectedClass(table, name){
 	}
 }
 
-function hazardClass(name){
-//console.log("hazardClass");
-//console.log(LEVELS);
-//console.log(items);
-
-	hazardRows = hazardListEl.getElementsByTagName("tr");
-	for (let i = 0; i < hazardRows.length; i++) {
-		if(hazardRows[i].getAttribute("m") == name){
-			hazardRows[i].setAttribute("class","selected");
-			hazardRows[i].scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
-		}
-		else{
-			hazardRows[i].setAttribute("class","");
-		}
-		
-	}
-}
-
-function shopClass(name){
-//console.log("shopClass");
-//console.log(LEVELS);
-//console.log(items);
-
-	shopRows = shopListEl.getElementsByTagName("tr");
-	for (let i = 0; i < shopRows.length; i++) {
-		if(shopRows[i].getAttribute("m") == name){
-			shopRows[i].setAttribute("class","selected");
-			shopRows[i].scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
-		}
-		else{
-			shopRows[i].setAttribute("class","");
-		}
-		
-	}
-}
-
-function treasureUpdate(){
-//console.log("treasureUpdate");
-//console.log(LEVELS);
-//console.log(items);
-
-	 if(currentItem == 'select'){
-		 //editing an existing treasure Cell
-		var pos = activeCell.dataset.pos;
-		var existingIdx = getItemIndex(pos);
-		items[existingIdx].meta.kind = treasureKindEl.value;
-		items[existingIdx].meta.value = treasureValueEl.value;				 
-	 }
-	 refreshCells()
-}
-
-function hazardUpdate(name, kind, value, icon, hint, eText, hVoid, hStairs){
-//console.log("hazardUpdate");
-//console.log(LEVELS);
-//console.log(items);
-
-	if(currentItem == 'select'){
-		var pos = activeCell.dataset.pos;
-		var existingIdx = getItemIndex(pos);
-		myHazard = items[existingIdx].meta;
-		myHazard.name = name;
-		myHazard.kind = kind;
-		myHazard.value = value;
-		myHazard.icon = icon;
-		myHazard.hint = hint;
-		myHazard.text = eText;
-		myHazard.void = hVoid;
-		myHazard.stairs = hStairs;	
-	 }
-}
-
-
- 
-function keyUpdate(){
-//console.log("keyUpdate");
-//console.log(LEVELS);
-//console.log(items);
-
-	 if(currentItem == 'select'){
-		 //editing an existing treasure Cell
-		var pos = activeCell.dataset.pos;
-		var existingIdx = getItemIndex(pos);
-		items[existingIdx].meta.level = keyLevelSelect.value;
-	 }
-	
-} 
- 
-function stairUpdate(target){
-//console.log("stairUpdate");
-//console.log(LEVELS);
-//console.log(items);
-
-	 if(currentItem == 'select'){
-		 //editing an existing treasure Cell
-		var pos = activeCell.dataset.pos;
-		var existingIdx = getItemIndex(pos);
-		items[existingIdx].meta.level = stairLevelSelect.value;
-		items[existingIdx].meta.cell = stairCellSelect.value;				 
-	 }
-	 if (target == "level") {updateStairCellList()}
- }
-
-
-function villagerUpdate(){
-//console.log("villagerUpdate");
-//console.log(LEVELS);
-//console.log(items);
-
-	 if(currentItem == 'select'){
-		 //editing an existing villager Cell
-		var pos = activeCell.dataset.pos;
-		var existingIdx = getItemIndex(pos);
-		myVillager = items[existingIdx].meta;
-		myVillager.text = villagerTextEl.value;
-		myVillager.kind = villagerKindEl.value;
-		myVillager.value = villagerValueEl.value;
-	 }			 
-	 
- }
-
-
-function shopUpdate(name, kind, value, cost, currency, icon){
-//console.log("shopUpdate");
-//console.log(LEVELS);
-//console.log(items);
-
-	if(currentItem == 'select'){
-		var pos = activeCell.dataset.pos;
-		var existingIdx = getItemIndex(pos);
-		myShop = items[existingIdx].meta;
-		myShop.name = name;
-		myShop.kind = kind;
-		myShop.value = value;
-		myShop.cost = cost;
-		myShop.currency = currency;
-		myShop.icon = icon;
-	}
-}
 
 function getItemIndex(pos){
 //console.log("getItemIndex");
@@ -1117,26 +1111,6 @@ function getItemIndex(pos){
 		}
 		return(-1)
 }
-
-function loadMonsterLibrary() {
-//console.log("loadMonsterLibrary");
-//console.log(LEVELS);
-//console.log(items);
-
-//            try {
-//                var raw = localStorage.getItem('monsterLibrary');
-//                if (raw) {
-//                    var parsed = JSON.parse(raw);
-//                    if (Array.isArray(parsed)) monsterLibrary = parsed;
-//                }
-//                var sel = localStorage.getItem('selectedMonsterIndex');
-//                if (sel !== null) selectedMonsterIndex = parseInt(sel, 10);
-//            } catch (e) {
-//                console.warn('Failed to load monster library from storage', e);
-//            }
-}
-
-
 
 // Alias the regular wall icon for custom walls so creators can reuse the same art
 
