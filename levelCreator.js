@@ -1265,7 +1265,7 @@ function saveSet(){
 	if(customSounds.length > 0){
 		myGame.customSounds = {};
 		for(sound of customSounds){
-			myGame.customSounds[sound] = soundBank[sound];
+			myGame.mySounds[sound] = soundBank[sound];
 		}
 		
 	}
