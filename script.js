@@ -139,6 +139,14 @@ function initGame(myButton){
 		}	
 	}
 	
+	if(myGame["mySounds"]){
+		newSounds = myGame["mySounds"];
+		soundNames = Object.keys(newSounds);
+		for(sound of soundNames){
+			soundBank[sound] = newSounds[sound];
+		}
+	}
+	
 	if(myGame["stats"]){
 		myStats = myGame["stats"];
 		statKeys = Object.keys(myStats);
