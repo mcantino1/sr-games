@@ -62,8 +62,11 @@ initForms();
 var soundEnd = 0;
 
 function playSound(name){
-	if (!soundBank[name]){return;}
-	mySound = soundBank[name];
+	var mySound;
+	if(name === "xYzzY"){mySound = activeSound}
+	else if (!soundBank[name]){return;}
+	else{mySound = soundBank[name];}
+	console.log(mySound);
 	const now = audioContext.currentTime;  
 	if(now < soundEnd && currentSound != "step"){return;}
 	currentSound = name;
@@ -129,6 +132,8 @@ var soundBank = {"step": {"dur": 0.1, "type": "sine", "frequency": 15, "layers":
 				"hiss": {"dur": 1, "type": "sawtooth", "frequency": 10, "layers": 1, "nodes": [{"type": "frequency", "value": 10, "time": 1},{"type": "gain", "value": 0.1, "time": 0.01},{"type": "gain", "value": 0.1, "time": 1}]}
 };
 
+//store names only
+var customSounds = [];
 
 function initSounds(){
 	mySounds = Object.keys(soundBank);
@@ -140,59 +145,316 @@ function initSounds(){
 		soundSelect.appendChild(opt);
 	}
 }
-				
-			
-//initSounds();
 
 
-var maxGain = 50;
-var maxFreq = 1000;
+var soundMaxes = {gain: 1, frequency: 1000, time: 1}
+var soundGs = {}
+var soundTs = {}
+//<g id="freqG" class="frequency active"></g>
+//<g id="gainG" class="gain" ></g>
+soundTs.gain = document.getElementById("gainT");
+soundTs.frequency = document.getElementById("freqT");
+soundGs.gain = document.getElementById("gainG");
+soundGs.frequency = document.getElementById("freqG");
+
+function nodeTypeSelect(field){
+	activeNode = "frequency";
+	disableNode = "frequency";
+	if(field.value == "frequency"){disableNode = "gain"}
+	else{activeNode = "gain"}
+	soundGs[disableNode].classList.remove("active");
+	soundTs[disableNode].classList.remove("active");
+	
+	soundGs[activeNode].classList.add("active");
+	soundTs[activeNode].classList.add("active");
+	
+}
+
+activeSound = {};
+soundName = document.getElementById("soundName")
+soundDur = document.getElementById("soundDur")
+soundType = document.getElementById("soundType")
+soundLayer = document.getElementById("soundLayer")
+soundNodes = [];
 
 
 function selectSound(){
+	
 	soundSelect = document.getElementById("soundSelect");
+	soundGs.gain = document.getElementById("gainG");
+	soundGs.frequency = document.getElementById("freqG");
+	soundName.value = soundSelect.value;
+	
 	playSound(soundSelect.value);
-	mySound = soundBank[soundSelect.value];
-	vizBox = document.getElementById("soundVisualizer");
-	vizBox.innerHTML = "";
+	
+	mySound = soundBank[soundSelect.value];	
+	
+	activeSound = JSON.parse(JSON.stringify(mySound));
+	activeSound.name = soundSelect.value;
+	soundDur.value = activeSound.dur;
+	soundType.value = activeSound.type;
+	
+	
+	while(soundLayer.children.length < activeSound.layers){
+		//not enough
+		//<option value="1">layer 1</option>
+		let myIndex = soundLayer.children.length + 1;
+		let newOption = document.createElement("option");
+		newOption.setAttribute("value", myIndex)
+		newOption.innerHTML = "Layer " + myIndex;
+		soundLayer.appendChild(newOption);
+	}
+	while(soundLayer.children.length > activeSound.layers){
+		//Too Many Layers
+		let myIndex = soundLayer.children.length - 1;
+		soundLayer.children[myIndex].remove();
+	}
+		
+	
+	
+	
+	buildSoundVix(activeSound, 1)
+}
+
+function buildSoundVix(tables = true){
+	layerIndex = soundLayer.value;
+	vizBox = document.getElementById("soundVisualizer")
+	if(tables){
+		soundTs.frequency.innerHTML = "<thead><tr><th>Time</th><th>Value</th></tr></thead><tbody></tbody>";
+		soundTs.gain.innerHTML = "<thead><tr><th>Time</th><th>Value</th></tr></thead><tbody></tbody>";	
+	}
+	soundGs.gain.innerHTML = "";
+	soundGs.frequency.innerHTML = "";
 	newCirc = document.createElement("circle");
 	
 	newCirc.setAttribute("cx",  0);
-	newCirc.setAttribute("cy", 60 - (3 + ((mySound.frequency / maxFreq) * 50)));
+	newCirc.setAttribute("cy", 60 - (3 + ((activeSound.frequency / soundMaxes.frequency) * 50)));
 	newCirc.setAttribute("r", 3);
 	
-	newCirc.setAttribute("fill", "white");
-	
-	newCirc.setAttribute("value", mySound.frequency);
+	newCirc.setAttribute("value", activeSound.frequency);
 	newCirc.setAttribute("class", "frequency");
 	newCirc.setAttribute("type", "frequency");
 	newCirc.setAttribute("time", 0);
 	newCirc.setAttribute("init", true);
-	let circTitle = ["frequency", mySound.frequency, "time", 0].join(" ")
+	newCirc.setAttribute("nodeIndex", 0);
+	
+	let circTitle = ["frequency", activeSound.frequency, "time", 0].join(" ")
 	newCirc.setAttribute("title", circTitle);
 	
 	
-	vizBox.appendChild(newCirc);
-	myNodes = mySound.nodes;
+	soundGs.frequency.appendChild(newCirc);
 	
+	if(tables){
+		newRow = document.createElement("tr");
+		newRow.setAttribute("nodeIndex", 0);
+		newTh = document.createElement("th");
+		newTd = document.createElement("td");
+		
+		newTh.innerHTML = 0;
+		
+		valueInput = document.createElement("input");
+		valueInput.setAttribute("class", "spinbox")
+		valueInput.setAttribute("type", "number")
+		valueInput.setAttribute("min", 0.01)
+		valueInput.setAttribute("max", soundMaxes["frequency"])
+		valueInput.setAttribute("value", activeSound.frequency )
+		valueInput.setAttribute("onChange", "updateNode(this)")
+		valueInput.setAttribute("nodeIndex", 0);
+		valueInput.setAttribute("nodeVariable", "value");
+			
+		
+		
+		newTd.appendChild(valueInput);
+		
+		newRow.appendChild(newTh);
+		newRow.appendChild(newTd);
+		soundTs.frequency.children[1].appendChild(newRow);
+	}
+	
+	if(!tables){soundNodes[0].circle = newCirc}
+	else{
+		soundNodes.push({circle: newCirc, row: newRow})}
+	
+	if(layerIndex == 1){
+		myNodes = activeSound.nodes;}
+	else{myNodes = activeSound["nodes" + layerIndex]}
+	nodeIndex = 1;
+	if(!myNodes){
+	
+	vizBox.innerHTML = vizBox.innerHTML;
+	soundGs.gain = document.getElementById("gainG");
+	soundGs.frequency = document.getElementById("freqG");
+	return;
+		
+	}
 	for (node of myNodes){
 		newCirc = document.createElement("circle");
 		//time
 		newCirc.setAttribute("cx",  node.time * 100 );
 		//frequency
-		newCirc.setAttribute("cy", 60 - (3 + ((node.value / maxFreq) * 50)));
+		newCirc.setAttribute("cy", 60 - (3 + ((node.value / soundMaxes[node.type]) * 50)));
 		newCirc.setAttribute("r", 3);
-		newCirc.setAttribute("fill", "white");
 		newCirc.setAttribute("value", node.value);
-		newCirc.setAttribute("class", node.type);
 		newCirc.setAttribute("type", node.type);
 		newCirc.setAttribute("time", node.time);
+		newCirc.setAttribute("nodeIndex", nodeIndex);
 		let circTitle = [node.type, node.value, "time", node.time].join(" ")
 		newCirc.setAttribute("title", circTitle);
-		vizBox.appendChild(newCirc);
+		soundGs[node.type].appendChild(newCirc);
+		//also tables
+		if(tables){
+			newRow = document.createElement("tr");
+			newRow.setAttribute("nodeIndex", nodeIndex);
+			newTh = document.createElement("th");
+	//		<input object="monster" meta="hp" class="spinbox" id="monsterHP" type="number" min="1" value="6"  />
+			timeInput = document.createElement("input");
+			timeInput.setAttribute("class", "spinbox")
+			timeInput.setAttribute("type", "number")
+			timeInput.setAttribute("min", 0.01)
+			timeInput.setAttribute("step", 0.05)
+			timeInput.setAttribute("max", 1)
+			timeInput.setAttribute("value", node.time )
+			timeInput.setAttribute("onChange", "updateNode(this)")
+			timeInput.setAttribute("nodeIndex", nodeIndex);
+			timeInput.setAttribute("nodeVariable", "time");
+			
+			newTd = document.createElement("td");
+			valueInput = document.createElement("input");
+			valueInput.setAttribute("class", "spinbox")
+			valueInput.setAttribute("type", "number")
+			valueInput.setAttribute("min", 0.01)
+			valueInput.setAttribute("max", soundMaxes[node.type])
+			valueInput.setAttribute("value",node.value )
+			valueInput.setAttribute("onChange", "updateNode(this)")
+			valueInput.setAttribute("nodeIndex", nodeIndex);
+			valueInput.setAttribute("nodeVariable", "value");
+			
+			
+			
+			newTh.appendChild(timeInput);
+			newTd.appendChild(valueInput);
+			
+			
+			
+			newRow.appendChild(newTh);
+			newRow.appendChild(newTd);
+			soundTs[node.type].children[1].appendChild(newRow);
+		}
+		
+			if(!tables){soundNodes[nodeIndex].circle = newCirc}
+	else{
+		soundNodes.push({circle: newCirc, row: newRow})}
+
+		
+		nodeIndex += 1;
 	}
+	if(tables){ soundSortRows}
 	vizBox.innerHTML = vizBox.innerHTML;
+	soundGs.gain = document.getElementById("gainG");
+	soundGs.frequency = document.getElementById("freqG");
 	
+}
+
+
+function soundLayerAdd(){
+	let myIndex = soundLayer.children.length + 1;
+	let newOption = document.createElement("option");
+	newOption.setAttribute("value", myIndex)
+	newOption.innerHTML = "Layer " + myIndex;
+	soundLayer.appendChild(newOption);
+	activeSound[nodes + myIndex] = [];
+}
+
+function soundSave(){
+	soundName = document.getElementById("soundName").value;
+	activeSound.name = soundName;
+	if(!customSounds.includes(soundName)){
+		customSounds.push(soundName);
+	}
+	if(!soundBank[soundName]){
+		soundSelect = document.getElementById("soundSelect");
+		var opt = document.createElement("option")
+		opt.value = soundName;
+		opt.innerHTML = soundName;
+		soundSelect.appendChild(opt);
+	}
+	soundBank[soundName] = JSON.parse(JSON.stringify(activeSound));
+	delete soundbank[soundName].name;
+}
+
+function soundSortRows(field = document.activeElement){
+	if(soundTs.frequency.classList.contains("active")){
+		activeTable = soundTs.frequency.children[1];
+	}
+	else{
+		activeTable = soundTs.gain.children[1];
+	}
+
+	rows = activeTable.children;
+
+	for(i = 2; i < rows.length; i++){
+	
+		ta = rows[i-1].children[0].children[0].value;
+		tb = rows[i].children[0].children[0].value;
+		if(ta > tb){
+			activeTable.appendChild(rows[i-1]);
+			i = 0;
+		}
+	}
+	field.focus();
+}
+
+function updateNode(field){
+	layerIndex = soundLayer.value;
+	if (layerIndex == 1){
+		myNodes = activeSound.nodes;
+	}
+	else{
+		myNodes = activeSound["nodes" + layerIndex]
+	}
+	myIndex = field.getAttribute("nodeIndex");
+	myVariable = field.getAttribute("nodeVariable");
+	if(myVariable == "time"){
+		myNodes[myIndex - 1].time = field.value;
+		soundSortRows(field);
+	}
+	else {
+		//Value
+		if(myIndex == 0){
+			activeSound.frequency = field.value;
+		}
+		else{
+			myNodes[myIndex - 1].value = field.value;
+		}	
+	}
+	buildSoundVix(false);
+	playSound("xYzzY");
+}
+
+function soundDurUpdate(field){
+	activeSound.dur = parseFloat(field.value);
+	playSound("xYzzY");
+	
+	
+}
+
+function soundNodeAdd(){
+	layerIndex = soundLayer.value;
+	if (layerIndex == 1){
+		myNodes = activeSound.nodes;
+	}
+	else{
+		myNodes = activeSound["nodes" + layerIndex]
+	}
+	nodeType = document.getElementById("soundPath").value
+	let myNode = {"type": nodeType, "value": 1, "time": 1}
+	myNodes.push(myNode);
+	buildSoundVix()
+}
+
+function soundTypeSelect(field){
+	activeSound.type = field.value;
+	playSound("xYzzY");
 }
 
 function getFile(num){
@@ -302,10 +564,10 @@ function selectGame(){
 
 	initLevelSet();
 	initCustomIcons()
+	initCustomSounds()
 	initCustomStats();
-
 	renderLibraries();
-
+	initSounds();
 }
 
 function resetLibraries(){
@@ -419,15 +681,14 @@ function initCustomIcons(){
 //console.log(LEVELS);
 //console.log(items);
 
-	try{
+	if(myGames[currentGame] && myGames[currentGame]["myIcons"]){
 		newIcons = myGames[currentGame]["myIcons"];
 		iconNames = Object.keys(newIcons);
 		for(icon of iconNames){
-		itemIcons[icon] = newIcons[icon];
-		customIcons[icon] = newIcons[icon];
-	}}
-	catch(e){console.log(e)}
-	
+			itemIcons[icon] = newIcons[icon];
+			customIcons[icon] = newIcons[icon];
+		}
+	}
 	myIcons = Object.keys(itemIcons);
 	for(icon of myIcons){
 		addOptions(iconSelectors, icon)
@@ -435,6 +696,19 @@ function initCustomIcons(){
 	updateIcons()
 }
 
+function initCustomSounds(){
+	customSounds = [];
+	if(myGames[currentGame] && myGames[currentGame]["mySounds"]){
+		let newSounds = myGames[currentGame]["mySounds"];
+		soundNames = Object.keys(newSounds);
+		for(sound of soundNames){			
+			if(!customSounds.includes(sound)){
+				customSounds.push(sound);
+			}
+			soundBank[soundName] = JSON.parse(JSON.stringify(newSounds[sound]));
+		}
+	}
+}
 
 
 monIconDisplay = document.getElementById("monIconDisplay");
@@ -988,6 +1262,13 @@ function saveSet(){
 	//TODO - Only save used custom icons
 	
 	if(Object.keys(customIcons).length > 0){myGame["myIcons"] = customIcons}	
+	if(customSounds.length > 0){
+		myGame.customSounds = {};
+		for(sound of customSounds){
+			myGame.customSounds[sound] = soundBank[sound];
+		}
+		
+	}
 	
 	customStats = {}
 	if(statLife.value != 10){		customStats["life"] = statLife.value}
@@ -2456,7 +2737,7 @@ function initForms(){
 		if(select.getAttribute("onChange")){
 			myFunks.push(select.getAttribute("onchange"))
 		}
-		if(select.getAttribute("meta") == "level"){
+		if(select.getAttribute("meta") == "level" && select.getAttribute("cellSelect")){
 			myFunks.push("updateCellList(this);");
 		}
 		select.setAttribute("onChange", myFunks.join(" "))

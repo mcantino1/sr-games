@@ -61,6 +61,16 @@ h2, h3{clear: both;}
 	text-align: center;
 }
 
+.frequency circle, .gain circle{
+	fill: light-dark(#000, #fff);
+	opacity: 0.5;
+}
+.frequency.active circle, .gain.active circle{
+	opacity: 1;
+}
+
+.soundTable.active{display: block;}
+.soundTable{display: none;}
 
 
 .monster-list td li{text-align: left;}
