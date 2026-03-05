@@ -641,6 +641,9 @@ function initLevelSet(){
 				//{"type":"treasure","pos":"A3","meta":{"kind":"gold","value":10}}
 				item.meta.name = "treasure";
 				item.meta.hint = "hidden passage";
+				if(item.meta.kind == "power"){
+					item.meta.kind = "strength";
+				}
 				item.meta.text =  "You found a treasure chest. ";
 				item.meta.icon = "treasure";
 				item.meta.effect = "get";
@@ -1069,6 +1072,8 @@ function sortLevelList(){
 	
 	while (nextLevel != "null" && nextLevel != null){
 		levelList.append(myLevels[nextLevel]);
+		console.log(nextLevel);
+		console.log(LEVELS[nextLevel]);
 		nextLevel = LEVELS[nextLevel].nextLevelId;
 		
 	}
