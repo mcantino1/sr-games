@@ -36,7 +36,7 @@ let stats = { life: baseLife, strength: 2, defense: 0, gold: 0, key: false };
 var controlLock = false;
 
 
-
+var colors = ["red", "tan", "aqua", "blue", "cyan", "gold", "gray", "grey", "lime", "navy", "peru", "pink", "plum", "snow", "teal", "azure", "beige", "black", "brown", "coral", "green", "ivory", "khaki", "linen", "olive", "wheat", "white", "bisque", "indigo", "maroon", "orange", "orchid", "purple", "salmon", "sienna", "silver", "tomato", "violet", "yellow", "crimson", "dark red", "dim gray", "dim grey", "fuchsia", "hot pink", "magenta", "old lace", "sky blue", "thistle", "cornsilk", "dark blue", "dark cyan", "dark gray", "dark grey", "deep pink", "honey dew", "lavender", "moccasin", "sea green", "sea shell", "alice blue", "burly wood", "cadet blue", "chocolate", "dark green", "dark khaki", "fire brick", "gainsboro", "golden rod", "indian red", "lawn green", "light blue", "light cyan", "light gray", "light grey", "light pink", "lime green", "mint cream", "misty rose", "olive drab", "orange red", "pale green", "peach puff", "rosy brown", "royal blue", "slate blue", "slate gray", "slate grey", "steel blue", "turquoise", "aquamarine", "blue violet", "chartreuse", "dark orange", "dark orchid", "dark salmon", "dark violet", "dodger blue", "ghost white", "light coral", "light green", "medium blue", "papaya whip", "powder blue", "sandy brown", "white smoke", "dark magenta", "deep sky blue", "floral white", "forest green", "green yellow", "light salmon", "light yellow", "navajo white", "saddle brown", "spring green", "yellow green", "antique white", "dark sea green", "lemon chiffon", "light sky blue", "medium orchid", "medium purple", "midnight blue", "dark golden rod", "dark slate blue", "dark slate gray", "dark slate grey", "dark turquoise", "lavender blush", "light sea green", "pale golden rod", "pale turquoise", "pale violet red", "rebecca purple", "blanched almond", "cornflower blue", "dark olive green", "light slate gray", "light slate grey", "light steel blue", "medium sea green", "medium slate blue", "medium turquoise", "medium violet red", "medium aqua marine", "medium spring green", "light golden rod yellow"];
 
 
 
@@ -428,10 +428,10 @@ var ICONS = {
     '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 88.2 88.2" aria-hidden="true" focusable="false">' +
 
       '<path d="M52,34.7c-.5.9-1.3,1.3-2.3,2.1l4.1,11.4h-19.6,0c0,0,4.1-11.4,4.1-11.4-.7-.6-1.3-1.3-1.8-2.1H3.5v46.1h81.2v-46.1h-32.7Z"' +
-        ' fill="currentColor" stroke="currentColor" stroke-width="2" stroke-miterlimit="10"/>' +
+        ' fill="currentColor" stroke="currentColor" stroke-width="4" stroke-miterlimit="10"/>' +
 
       '<path d="M44,21.3c4.9,0,8.8,3.9,8.8,8.8s0,1.6-.1,2.2h31.9v-9.9c0-8.3-6.7-15-15-15H18.5c-8.3,0-15,6.7-15,15v9.9h32c-.2-.7-.3-1.4-.3-2.2,0-4.9,3.9-8.8,8.8-8.8Z"' +
-        ' fill="currentColor" stroke="currentColor" stroke-width="2" stroke-miterlimit="10"/>' +
+        ' fill="currentColor" stroke="currentColor" stroke-width="4" stroke-miterlimit="10"/>' +
 
     '</svg>',
   door: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 88.2 88.2" style="width: 100%; height: 100%; display: block;" aria-hidden="true" focusable="false">' +
@@ -498,7 +498,7 @@ let LEVELS = {
       {type:"wall", pos:"C5"},
       {type:"wall", pos:"C6"},
       {type:"monster", pos:"E5"},
-      {type:"treasure", pos:"H8"},
+      {type:"trigger", pos:"H8",  "meta": { "kind": "strength", "value": 1, "name": "yellow treasure", "hint": "hidden passage", "text": "You found a yellow treasure chest. ", "icon": "treasure", "effect": "get" }},
       {type:"key", pos:"B5"},
       {type:"door", pos:"L12"}
     ],
@@ -838,7 +838,23 @@ function renderMap() {
         } else if (level.scenes[pos]) {
           el.innerHTML = `<span aria-hidden="true">•</span>`;
         }
-		if(item){if(item.meta){if(item.meta.icon){el.innerHTML = ICONS[item.meta.icon]}}}
+		if(item && item.meta && item.meta.icon){
+			el.innerHTML = ICONS[item.meta.icon];
+			if(item.meta.name.includes(" ")){
+				//colorNames
+				for(color of colors){
+					if (item.meta.name.includes(color)){
+							console.log(color);
+						myPaths = el.getElementsByTagName("path");
+						for (path of myPaths){
+							path.setAttribute("fill", color);
+						}
+					}
+					//indexOf(searchString, position)
+				}
+			el.innerHTML = el.innerHTML;
+			}
+		}
       }
 
       if (player.row === r && player.col === c) {
@@ -1580,6 +1596,10 @@ function enterCell(prefix) {
 	  effectMessage = ""
 	  if (haz.meta.effect){
 		  playSound(haz.meta.effect)
+	  }
+	  if(haz.meta.value && haz.meta.value > 0){
+		  //this is a positive trigger and should only be activated once;
+		removeItem("trigger", pos);
 	  }
 	  if (haz.meta.value && haz.meta.value != 0){
 		  word = "lost"
