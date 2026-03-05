@@ -1,6 +1,7 @@
 //TODO - count keys per level, determine door or exit behavior for each door/Exit
 //
-
+// verbosity toggles
+// toggle for NESW VS NSWE
 /*
   NOTE: Fix for ReferenceError: MAX_SIZE is not defined
   - MAX_SIZE is defined early and used for grid scaling and clamping.
@@ -36,9 +37,6 @@ var controlLock = false;
 
 
 
-var voiceSpeed = speedBox.value * 0.2;
-var voicePitch = pitchBox.value * 0.2;
-var voiceVol = volBox.value * 0.1;
 
 
 
@@ -163,11 +161,11 @@ function initGame(myButton){
 		 levels[myKeys[k]].foundKey = 0;
 		 levels[myKeys[k]].keyCount = 0;
 	 }
-	 console.log(levels)
+	 //console.log(levels)
 	 for(key of myKeys){
-		 console.log(key)
+		 //console.log(key)
 		 for(item of levels[key].items){
-			 console.log(item)
+			 //console.log(item)
 			 if (item.type == "key"){
 				 if (item.meta && item.meta.level){
 					 levels[item.meta.level].keyCount += 1;
@@ -209,16 +207,15 @@ var wallCount = 0;
 
 				
 
-var toneVol = volBoxTone.value;
+
 //pitch adjust
 // 5 = 1
 // 10 = 10
 // 1 = 0.1
-var tonePitch = pitchBoxTone.value * 0.2;
+
 var soundEnd = 0;
 var currentSound = "";
 
-var toneLength = 0.5 / speedBoxTone.value;
 var toneOscillator = audioContext.createOscillator();
 var hissOscillator = audioContext.createOscillator();
 
@@ -247,13 +244,15 @@ function playTones(dirs){
 	let dur = toneLength * 4;
 
 	freq = 100 * tonePitch;
-	fStep = 100;
+	//fStep = 100;
+	//TODO second 2 sounds different oscillator type
 	
 	hissOscillator.frequency.setValueAtTime(hissFreq, now)
 	gainNodeHiss.gain.setValueAtTime(0, now);
 	
-	for (let i = 0; i < dirs.length; i++){		
-		toneOscillator.frequency.setValueAtTime(freq + (fStep * i), now + (toneLength * i));
+	for (let i = 0; i < dirs.length; i++){	
+		console.log(Math.pow(2, i) * freq)
+		toneOscillator.frequency.setValueAtTime(Math.pow(1.5, i) * freq, now + (toneLength * i));
 		if (dirs[i] == true){
 			gainNode.gain.setValueAtTime(toneVol,  now + (toneLength * i));
 			gainNodeHiss.gain.setValueAtTime(0,  now + (toneLength * i));
@@ -278,9 +277,6 @@ function playTones(dirs){
 // 1 = +
 // 10 = 0.25
 
-var soundSpeed = 5 / speedBoxEffect.value;
-var volume = volBoxEffect.value * 2;
-var effectPitch = pitchBoxEffect.value * 0.2;
 
 function playSound(name){
 	if (!soundBank[name] || soundEffects == false){return;}
@@ -1110,10 +1106,10 @@ function groupedSurroundingsText() {
 	parts.push(`Path: ${openDirs.join(", ")}. `)
 	if(tonesOn == true){
 		if(!blockedDirs.includes("north")){toneDirs[0] = true;}
-		if(!blockedDirs.includes("east")){toneDirs[1] = true;}
-		if(!blockedDirs.includes("south")){toneDirs[2] = true;}
-		if(!blockedDirs.includes("west")){toneDirs[3] = true;}
-		playTones(toneDirs);		
+		if(!blockedDirs.includes("east")){toneDirs[3] = true;}
+		if(!blockedDirs.includes("south")){toneDirs[1] = true;}
+		if(!blockedDirs.includes("west")){toneDirs[2] = true;}
+		playTones(toneDirs);
   }}
 
 	p = 5
@@ -2812,21 +2808,36 @@ if(speechOn){spSettings.classList.add("enabled")}
 
 var soundEffects = true;
 soundEffects = initCheckbox(soundEffects, "soundEffects", effectToggle);
+if(soundEffects){effectSettings.classList.add("enabled")}
 
 var tonesOn = false;
 tonesOn = initCheckbox(tonesOn, "tonesOn", tonesToggle);
+if(tonesOn){toneSettings.classList.add("enabled")}
 
 initSetting("speedBox", speedBox);
 initSetting("pitchBox", pitchBox);
 initSetting("voiceBox", voiceBox);
 initSetting("volBox", volBox);
+
 initSetting("speedBoxEffect", speedBoxEffect);
 initSetting("pitchBoxEffect", pitchBoxEffect);
 initSetting("volBoxEffect", volBoxEffect);
+
 initSetting("speedBoxTone", speedBoxTone);
 initSetting("pitchBoxTone", pitchBoxTone);	
 initSetting("volBoxTone", volBoxTone);
 
+var voiceSpeed = speedBox.value * 0.2;
+var voicePitch = pitchBox.value * 0.2;
+var voiceVol = volBox.value * 0.1;
+
+var soundSpeed = 5 / speedBoxEffect.value;
+var volume = Math.min(volBoxEffect.value - 1, 0.1);
+var effectPitch = pitchBoxEffect.value * 0.2;
+
+var toneVol = volBoxTone.value;
+var tonePitch = pitchBoxTone.value * 0.2;
+var toneLength = 0.5 / speedBoxTone.value;
 
 
 initCSS("colDark");
