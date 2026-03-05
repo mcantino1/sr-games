@@ -17,6 +17,8 @@ var libraries = {};
 
 var levelSelectors = [];
 var iconSelectors = [];
+var soundSelectors = [];
+
 
 var nameField = document.getElementById("gameName");
 
@@ -137,12 +139,8 @@ var customSounds = [];
 
 function initSounds(){
 	mySounds = Object.keys(soundBank);
-	soundSelect = document.getElementById("soundSelect");
 	for(sound of mySounds){
-		var opt = document.createElement("option")
-		opt.value = sound;
-		opt.innerHTML = sound;
-		soundSelect.appendChild(opt);
+		addOptions(soundSelectors, sound);
 	}
 }
 
@@ -372,11 +370,7 @@ function soundSave(){
 		customSounds.push(soundName);
 	}
 	if(!soundBank[soundName]){
-		soundSelect = document.getElementById("soundSelect");
-		var opt = document.createElement("option")
-		opt.value = soundName;
-		opt.innerHTML = soundName;
-		soundSelect.appendChild(opt);
+		addOptions(soundList, soundName);
 	}
 	soundBank[soundName] = JSON.parse(JSON.stringify(activeSound));
 	delete soundbank[soundName].name;
@@ -1409,6 +1403,7 @@ function populateFromLibrary(m, myFields){
 				}
 				else{field.value = ""}
 		}
+		
 		else{
 			//all other types
 			if(m[fieldMeta]){
@@ -2740,7 +2735,8 @@ function initForms(){
 	levelSelectors = [];
 	iconSelectors = [];
 	libraries = {};
-	
+	soundSelectors = [];
+
 	var inputs = document.getElementsByTagName("input");
 	var selects = document.getElementsByTagName("select");
 	var configs = document.getElementsByClassName("configDiv");
@@ -2754,6 +2750,7 @@ function initForms(){
 		}
 	}
 	for(select of selects){
+	//<select soundSelect="true" id="wallHintEffect" object="wall" optional="true" meta="effect" key="bump"> 
 		myObject = select.getAttribute("object");
 		if (myObject && !objectKeys.includes(myObject)) {
 			objectKeys.push(myObject);
@@ -2764,6 +2761,10 @@ function initForms(){
 		else if (select.getAttribute("meta") && select.getAttribute("meta") == "icon"){
 			iconSelectors.push(select);
 		}
+		if(select.getAttribute("soundSelect")){
+			soundSelectors.push(select);
+		}
+			//<select soundSelect="true" id="wallHintEffect" object="wall" optional="true" meta="effect" key="bump"> 
 	}
 	
 	for(key of objectKeys){
@@ -2847,6 +2848,9 @@ function initForms(){
 function updateSelected(field){
 	//console.log("updateSelected");
 	//console.log(field);
+	if(field.getAttribute("soundselect")){
+		playSound(field.value);
+	}
 	if(activeCell){
 		var pos = activeCell.dataset.pos;
 		var existingIdx = getItemIndex(pos);
@@ -2859,7 +2863,7 @@ function updateSelected(field){
 			//what kind of field
 			if (field.getAttribute("type") == "checkbox") {
 				//console.log("checkbox")
-				cellObject.meta[fielMeta] = field.checked;
+				cellObject.meta[fieldMeta] = field.checked;
 				
 			}
 			else if (field.getAttribute("array") == true){

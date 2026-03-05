@@ -249,19 +249,19 @@ function playTones(dirs){
 	
 	hissOscillator.frequency.setValueAtTime(hissFreq, now)
 	gainNodeHiss.gain.setValueAtTime(0, now);
-	
+	console.log(dirs);
 	for (let i = 0; i < dirs.length; i++){	
-		console.log(Math.pow(2, i) * freq)
 		toneOscillator.frequency.setValueAtTime(Math.pow(1.5, i) * freq, now + (toneLength * i));
 		if (dirs[i] == true){
 			gainNode.gain.setValueAtTime(toneVol,  now + (toneLength * i));
 			gainNodeHiss.gain.setValueAtTime(0,  now + (toneLength * i));
 			}
-		else{
+		else if (dirs[i] == "hiss"){
 			gainNode.gain.setValueAtTime(0,  now + (toneLength * i));
 			gainNodeHiss.gain.setValueAtTime((toneVol * 0.1),  now + (toneLength * i));
 			gainNodeHiss.gain.setValueAtTime(0,  now + (toneLength * i + (toneLength * 0.75)));
 			}
+		else{playSound(dirs[i], now + (toneLength * i), toneLength * 0.95);}
 	}
 	
 	
@@ -278,10 +278,11 @@ function playTones(dirs){
 // 10 = 0.25
 
 
-function playSound(name){
+function playSound(name, time = 0, setDur = 0){
 	if (!soundBank[name] || soundEffects == false){return;}
 	mySound = soundBank[name];
-	const now = audioContext.currentTime;  
+	let now = audioContext.currentTime;  
+	
 	if(now < soundEnd && currentSound != "step"){return;}
 	currentSound = name;
 	const oscillator = audioContext.createOscillator();
@@ -290,6 +291,10 @@ function playSound(name){
 	gainNode.connect(audioContext.destination);
 	oscillator.type = mySound.type;
 	var dur = (mySound.dur * soundSpeed);
+	if(setDur != 0){
+		dur = setDur;
+	}
+	if (time != 0) {now = time}
 	soundEnd = now + dur
 	oscillator.frequency.setValueAtTime((mySound.frequency * effectPitch), now);
 	gainNode.gain.setValueAtTime(0, now);
@@ -299,7 +304,7 @@ function playSound(name){
 			oscillator.frequency.linearRampToValueAtTime((myNodes[n].value * effectPitch), now + (dur * myNodes[n].time));
 		}
 		else { //gain
-			gainNode.gain.linearRampToValueAtTime((myNodes[n].value * volume), now + (dur * myNodes[n].time));
+			gainNode.gain.linearRampToValueAtTime((myNodes[n].value * volume), now + (dur * myNodes[n].time), dur);
 		}
 	}
 	oscillator.start(now);
@@ -976,7 +981,7 @@ function contentsAt(r, c) {
   // If a custom wall is present, prefer its configured name as the sensory cue.
   const items = itemsAt(pos);
   const customWall = items.find(i => i.type === 'custom_wall');
-if (customWall) {
+	if (customWall) {
     if (customWall.meta && customWall.meta.name) return [String(customWall.meta.name), 5] ;
     return ['wall', 5];
   }
@@ -999,7 +1004,8 @@ if (customWall) {
   if (items.some(i=>i.type==="villager")) return ["Villager", 4];
   if (items.some(i=>i.type==="key")) return ["faint glow", 4];
   if (items.some(i=>i.type==="monster")) {
-	  playSound("growl");
+//	let soundEffect = items[0].meta.effectGrowl || "growl";
+//	  playSound(soundEffect);
 	  var monSound = "growling"
 		if(items[0].meta){if(items[0].meta.sound){monSound = items[0].meta.sound}};
 	  return [monSound + " sound", 3];}
@@ -1021,6 +1027,7 @@ function groupedSurroundingsText() {
 
   // cue -> [dirs]
   const cueDirs = new Map();
+  let soundDirs = {};
 
   for (const d of DIRS) {
     const r = player.row + d.dr;
@@ -1030,6 +1037,20 @@ function groupedSurroundingsText() {
     // Monsters are blocked for movement, but should be reported via cue (growling sound),
     // not under blocked path.
     const cue = contentsAt(r, c);
+	//TODO back here
+	let item = itemsAt(toPos(r, c))[0];
+	console.log(item);
+	if(item && item.meta && item.meta.effectGrowl){
+		console.log()
+		  //{name:"north", dr:-1, dc: 0}
+		soundDirs[d.name] = item.meta.effectGrowl;
+	}
+	else if(item && item.meta && item.meta.effectHint){
+		soundDirs[d.name] = item.meta.effectHint;
+	}
+	else if(item && item.type == "monster"){
+		soundDirs[d.name] = "growl";
+	}
     if (cue) {
 		
       if (!cueDirs.has(cue[1])) {
@@ -1100,15 +1121,35 @@ function groupedSurroundingsText() {
 
   // Then add open paths
  
-  toneDirs = [false, false, false, false];
-  
+  toneDirs = ["hiss", "hiss", "hiss", "hiss"];
+  console.log(soundDirs);
   if (openDirs.length){
 	parts.push(`Path: ${openDirs.join(", ")}. `)
 	if(tonesOn == true){
-		if(!blockedDirs.includes("north")){toneDirs[0] = true;}
-		if(!blockedDirs.includes("east")){toneDirs[3] = true;}
-		if(!blockedDirs.includes("south")){toneDirs[1] = true;}
-		if(!blockedDirs.includes("west")){toneDirs[2] = true;}
+		if(!blockedDirs.includes("north")){
+			toneDirs[0] = true;
+		}
+		if(soundDirs.north){
+			toneDirs[0] = soundDirs.north;
+		}
+		if(!blockedDirs.includes("east")){
+			toneDirs[3] = true;
+		}
+		if(soundDirs.east){
+			toneDirs[3] = soundDirs.east;
+		}
+		if(!blockedDirs.includes("south")){
+			toneDirs[1] = true;
+		}
+		if(soundDirs.south){
+			toneDirs[1] = soundDirs.south;
+		}
+		if(!blockedDirs.includes("west")){
+			toneDirs[2] = true;
+		}
+		if(soundDirs.west){
+			toneDirs[2] = soundDirs.west;
+		}
 		playTones(toneDirs);
   }}
 
@@ -1537,6 +1578,9 @@ function enterCell(prefix) {
 	  //{"type":"trigger","pos":"D6","meta":{"name":"Void","hint":"Mysterious fog","text":"You  have fallen into a void.","void":true,"icon":"void"}}
 	  haz = itemsAt(pos)[0];
 	  effectMessage = ""
+	  if (haz.meta.effect){
+		  playSound(haz.meta.effect)
+	  }
 	  if (haz.meta.value && haz.meta.value != 0){
 		  word = "lost"
 		  if (haz.meta.value > 0) {word = "gained"}
@@ -1680,7 +1724,6 @@ function tryMove(dr, dc) {
 	else {
 		announce("A wall blocks your way. ");
 	}
-	playSound("wall");
     return;
   }
 
@@ -1732,7 +1775,12 @@ function tryMove(dr, dc) {
 		else{
 		announce("A " + wallName + " blocks your way. ");}
 	}
-    playSound("wall");
+	let bumpEffect = "wall";
+	if(wall && wall.meta && wall.meta.effectBump){
+		let bumpEffect = wall.meta.effectBump;
+	}
+	
+	playSound(bumpEffect);
     renderMap();
     return;
   }
@@ -1845,7 +1893,8 @@ function tryMove(dr, dc) {
     }
 
     // Monster defeated
-	playSound("slay");
+	let slaySound = monster.effectSlay || "slay";
+	playSound(slaySound);
 	//get rewards
     removeMonster(nextPos);
     // Once defeated, the monster icon should disappear from the map.

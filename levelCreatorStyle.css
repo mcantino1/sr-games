@@ -45,7 +45,7 @@
 	overflow:auto; 
 }
 
-#monIconDisplay, #wallIconDisplay, #shopIconDisplay{width: 100px; margin: auto;}
+#monIconDisplay, #triggerIconDisplay, #wallIconDisplay, #shopIconDisplay{width: 100px; margin: auto;}
 
 h2, h3{clear: both;}
 
