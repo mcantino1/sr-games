@@ -1968,11 +1968,11 @@ function stillThere(level, pos, itemName, objectType){
 	return there;
 }
 
-function findObj(level, pos, itemName, objectType){
+function findObj(level, pos, objectType){
 
 	myItems = LEVELS[level].items
 	for(item of myItems){
-		if(item.type == objectType && item.meta && item.meta.name == itemName && item.pos == pos){
+		if(item.type == objectType && item.meta && item.pos == pos){
 			return item;
 		}
 	}
@@ -2110,12 +2110,12 @@ function updateRefs(myItem, name, objectType){
 			//update only meta that is stored in the library (non-instance meta)
 			libMeta = myItem.meta
 			libKeys = Object.keys(libMeta)
-			itemRef = findObj(level, item, name, objectType)
-			
+			itemRef = findObj(level, item, objectType)
+			if(itemRef){
 			for(key of libKeys){
 				console.log(key)
 				itemRef.meta[key] = libMeta[key];
-			}
+			}}
 		}
 	}	
 	
