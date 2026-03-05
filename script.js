@@ -1004,8 +1004,8 @@ function contentsAt(r, c) {
   if (items.some(i=>i.type==="villager")) return ["Villager", 4];
   if (items.some(i=>i.type==="key")) return ["faint glow", 4];
   if (items.some(i=>i.type==="monster")) {
-//	let soundEffect = items[0].meta.effectGrowl || "growl";
-//	  playSound(soundEffect);
+	let soundEffect = items[0].meta.effectGrowl || "growl";
+	  playSound(soundEffect);
 	  var monSound = "growling"
 		if(items[0].meta){if(items[0].meta.sound){monSound = items[0].meta.sound}};
 	  return [monSound + " sound", 3];}
