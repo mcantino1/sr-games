@@ -48,10 +48,10 @@ var itemIcons = { wall: '<svg viewBox="0 0 88.19 88.19" style="width: 100%; heig
 itemIcons.custom_wall = itemIcons.wall;
 itemIcons.gameEnd = itemIcons.door;
 
+var colorNames = ["blanched almond","blue","blue violet","brown","burly wood","cadet blue","chartreuse","chocolate","coral","cornflower blue","cornsilk","crimson","cyan","dark blue","dark cyan","dark golden rod","dark gray","dark green","dark grey","dark khaki","dark magenta","dark olive green","dark orange","dark orchid","dark red","dark salmon","dark sea green","dark slate blue","dark slate gray","dark slate grey","dark turquoise","dark violet","deep pink","deep sky blue","dim gray","dim grey","dodger blue","fire brick","floral white","forest green","fuchsia","gainsboro","ghost white","gold","golden rod","gray","green","green yellow","grey","honey dew","hot pink","indian red","indigo","ivory","khaki","lavender","lavender blush","lawn green","lemon chiffon","light blue","light coral","light cyan","light golden rod yellow","light gray","light green","light grey","light pink","light salmon","light sea green","light sky blue","light slate gray","light slate grey","light steel blue","light yellow","lime","lime green","linen","magenta","maroon","medium aqua marine","medium blue","medium orchid","medium purple","medium sea green","medium slate blue","medium spring green","medium turquoise","medium violet red","midnight blue","mint cream","misty rose","moccasin","navajo white","navy","old lace","olive","olive drab","orange","orange red","orchid","pale golden rod","pale green","pale turquoise","pale violet red","papaya whip","peach puff","peru","pink","plum","powder blue","purple","rebecca purple","red","rosy brown","royal blue","saddle brown","salmon","sandy brown","sea green","sea shell","sienna","silver","sky blue","slate blue","slate gray","slate grey","snow","spring green","steel blue","tan","teal","thistle","tomato","turquoise","violet","wheat","white","white smoke","yellow","yellow green"];
+
 
 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-
-
 
 
 
@@ -640,6 +640,32 @@ function initLevelSet(){
 				item.type = "trigger"
 				var myMeta = { "name": "Void", "hint": "Mysterious fog", "text": "You  have fallen into a void.", "void": true, "icon": "void" };
 				item.meta = myMeta;
+			}			
+			else if(item.type == "treasure"){
+				//Void
+				//{"type":"treasure","pos":"B4","meta":{"kind":"power","value":2}}
+				//{"type":"treasure","pos":"A3","meta":{"kind":"gold","value":10}}
+				item.meta.name = "treasure";
+				item.meta.hint = "hidden passage";
+				item.meta.text =  "You found a treasure chest. ";
+				item.meta.icon = "treasure";
+				item.meta.effect = "get";
+				item.type = "trigger";
+				//discoveryMsgs.push("You found a treasure chest. ");
+			}
+			else if(item.type == "potion"){
+			//{"type":"potion","pos":"D2"}
+			//{"type":"potion","pos":"B3","meta":{"heal":6}}
+			//if (items.some(i=>i.type==="potion")) return ["small pouch", 4];
+				if(!item.meta){item.meta = {}}
+				item.meta.name = "potion";
+				item.type = "trigger";
+				item.meta.hint = "small pouch";
+				item.meta.text = "You find and drink a potion. ";
+				item.meta.icon = "potion";
+				item.meta.kind = "life";
+				item.meta.value = item.meta.heal || 3;
+				item.meta.effect = "drink";
 			}
 		}
 		
@@ -656,6 +682,44 @@ function initLevelSet(){
 					myLibrary[itemName].meta = myItems[u].meta;
 					myLibrary[itemName].refs = {}
 				}
+				if(myLibrary[itemName].meta.kind != myItems[u].meta.kind || myLibrary[itemName].meta.value != myItems[u].meta.value){
+					//NOT identical to the library version
+					//check for matching library instance
+					let itemKeys = Object.keys(myLibrary);
+					let foundMatch = 0
+					for(key of itemKeys){
+						
+						if (myLibrary[key].meta && ((!myLibrary[key].meta.icon && !myItems[u].meta.icon) || myLibrary[key].meta.icon == myItems[u].meta.icon) && ((!myLibrary[key].meta.value && !myItems[u].meta.value) || myLibrary[key].meta.value == myItems[u].meta.value) && ((!myLibrary[key].meta.kind && !myItems[u].meta.kind) || myLibrary[key].meta.kind == myItems[u].meta.kind) && ((!myLibrary[key].meta.hp && !myItems[u].meta.hp) || myLibrary[key].meta.hp == myItems[u].meta.hp) && ((!myLibrary[key].meta.atk && !myItems[u].meta.atk) || myLibrary[key].meta.atk == myItems[u].meta.atk) && ((!myLibrary[key].meta.def && !myItems[u].meta.def) || myLibrary[key].meta.def == myItems[u].meta.def)&& ((!myLibrary[key].meta.descriptions && !myItems[u].meta.descriptions) || myLibrary[key].meta.descriptions == myItems[u].meta.descriptions)){
+							//it's a match
+							foundMatch = 1;
+							itemName = key;	
+							myItems[u].meta.name = itemName;
+						}
+					}
+					
+					if (foundMatch == 0){
+						//Else:
+						//rename this instance
+						let myColor = colorNames[Math.floor(Math.random() * colorNames.length)];
+						colorNames = arrayRemove(colorNames, myColor);
+						itemName = myColor + " " + itemName;
+						oldName = myItems[u].meta.name;
+						if(myItems[u].meta.text && myItems[u].meta.text.includes(oldName)){
+							let myText = myItems[u].meta.text;
+							let nameLoc =  myText.indexOf(oldName);
+							myText = myText.substring(0,nameLoc) + itemName + myText.substring(nameLoc + oldName.length);
+							myItems[u].meta.text = myText;
+						}
+						var newItem = {name: itemName};
+						myItems[u].meta.name = itemName;
+						myLibrary[itemName] = newItem;
+						myLibrary[itemName].meta = myItems[u].meta;
+						myLibrary[itemName].refs = {};
+						//function arrayRemove(array, thing){
+					}
+					
+				}
+				
 				if(!myLibrary[itemName].refs){
 					myLibrary[itemName].refs = {}
 				}
@@ -1261,8 +1325,7 @@ function saveSet(){
 	
 	//TODO - Only save used custom icons
 	
-	if(Object.keys(customI
-	cons).length > 0){myGame["myIcons"] = customIcons}	
+	if(Object.keys(customIcons).length > 0){myGame["myIcons"] = customIcons}	
 	if(customSounds.length > 0){
 		myGame.customSounds = {};
 		for(sound of customSounds){
@@ -1695,11 +1758,9 @@ for (var i = 0; i < itemButtons.length; i++) {
 	var keyMap = {
 		'w': 'wall',
 		'm': 'monster',
-		't': 'treasure',
 		'k': 'key',
 		'd': 'door',
-			'p': 'potion',
-			'h': 'trigger',
+			't': 'trigger',
 			's': 'shop',
 			'n': 'gameEnd',
 			'l': 'villager',
