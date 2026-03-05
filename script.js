@@ -848,7 +848,7 @@ function renderMap() {
 						myPaths = el.getElementsByTagName("path");
 						colorName = color;
 						if (color.includes(" ")){
-						colorName = color.split(" ").join;}
+						colorName = color.split(" ").join();}
 						for (path of myPaths){
 							path.setAttribute("fill", colorName);
 						}
