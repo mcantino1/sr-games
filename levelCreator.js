@@ -40,7 +40,7 @@ var statDefense = document.getElementById("statDefense");
 var statGold = document.getElementById("statGold");
 var baseOpacity = document.getElementById("baseOpacity");
 var levelOpacity = document.getElementById("levelOpacity");
-var symbols = { empty: '', wall: 'W', monster: 'M', treasure: 'T', key: 'K', door: 'D', potion: 'P', hazard: 'H', shop: 'S', armor_shop: 'A', inn: 'N', villager: 'L', stairs: 'U' };
+var symbols = { empty: '', wall: 'W', monster: 'M', treasure: 'T', key: 'K', door: 'D', potion: 'P', trigger: 'H', shop: 'S', armor_shop: 'A', inn: 'N', villager: 'L', stairs: 'U' };
 
 // SVG icons for each item type
 var customIcons = {}
@@ -636,8 +636,8 @@ function initLevelSet(){
 			}
 			else if(item.type == "void"){
 				//Void
-				//hazardLibrary["void"] =  {"name": "Void", "meta": { "name": "Void", "hint": "Mysterious fog", "text": "You  have fallen into a void.", "void": true, "icon": "void" } };
-				item.type = "hazard"
+				//triggerLibrary["void"] =  {"name": "Void", "meta": { "name": "Void", "hint": "Mysterious fog", "text": "You  have fallen into a void.", "void": true, "icon": "void" } };
+				item.type = "trigger"
 				var myMeta = { "name": "Void", "hint": "Mysterious fog", "text": "You  have fallen into a void.", "void": true, "icon": "void" };
 				item.meta = myMeta;
 			}
@@ -674,7 +674,7 @@ function initLevelSet(){
 monIconSelect = document.getElementById("monIcon")
 wallIconSelect = document.getElementById("wallIcon")
 shopIconSelect = document.getElementById("shopIcon")
-hazardIconSelect = document.getElementById("hazardIcon")
+triggerIconSelect = document.getElementById("triggerIcon")
 
 function initCustomIcons(){
 //console.log("initCustomIcons");
@@ -718,34 +718,34 @@ wallAddIcon = document.getElementById("wallAddIcon");
 shopIconDisplay = document.getElementById("shopIconDisplay");
 shopAddIcon = document.getElementById("shopAddIcon");
 
-hazardAddIcon = document.getElementById('hazardAddIcon');
+triggerAddIcon = document.getElementById('triggerAddIcon');
 
-hazardIcon = document.getElementById('hazardIcon');
-hazardIconDisplay = document.getElementById('hazardIconDisplay');
-hazardList = document.getElementById('hazardList');
+triggerIcon = document.getElementById('triggerIcon');
+triggerIconDisplay = document.getElementById('triggerIconDisplay');
+triggerList = document.getElementById('triggerList');
 
-hazardName = document.getElementById('hazardName'); //void
-hazardHint = document.getElementById('hazardHint'); //mysterious fog
-hazardText = document.getElementById('hazardText'); //You have fallen into a void
+triggerName = document.getElementById('triggerName'); //void
+triggerHint = document.getElementById('triggerHint'); //mysterious fog
+triggerText = document.getElementById('triggerText'); //You have fallen into a void
 
-hazardVoid = document.getElementById('hazardVoid'); //checkbox (void behavior
-hazardStairs = document.getElementById('hazardStairs'); //checkbox (stairs behavior)
-hazardStairsConfig = document.getElementById('hazardStairsConfig'); 
-hazardKind = document.getElementById('hazardKind'); //select box
-hazardValue = document.getElementById('hazardValue'); //numeric - positive or negative
+triggerVoid = document.getElementById('triggerVoid'); //checkbox (void behavior
+triggerStairs = document.getElementById('triggerStairs'); //checkbox (stairs behavior)
+triggerStairsConfig = document.getElementById('triggerStairsConfig'); 
+triggerKind = document.getElementById('triggerKind'); //select box
+triggerValue = document.getElementById('triggerValue'); //numeric - positive or negative
 
 
 
-function hazardStairToggle(){
-//console.log("hazardStairToggle");
+function triggerStairToggle(){
+//console.log("triggerStairToggle");
 //console.log(LEVELS);
 //console.log(items);
 
-	if(hazardStairs.checked){
-		hazardStairConfig.style = "";
+	if(triggerStairs.checked){
+		triggerStairConfig.style = "";
 	}
 	else{
-		hazardStairConfig.style = "display: none";
+		triggerStairConfig.style = "display: none";
 	}
 }
 
@@ -783,13 +783,13 @@ function updateShopIcon(){
 	}
 }
 
-function updateHazardIcon(){
-//console.log("updateHazardIcon");
+function updateTriggerIcon(){
+//console.log("updateTriggerIcon");
 //console.log(LEVELS);
 //console.log(items);
 
-	myIcon = hazardIconSelect.value
-	hazardIconDisplay.innerHTML = itemIcons[myIcon];	
+	myIcon = triggerIconSelect.value
+	triggerIconDisplay.innerHTML = itemIcons[myIcon];	
 	if(currentId.length > 0){
 		refreshCells();
 	}
@@ -851,19 +851,19 @@ function addShopIcon(){
 }
 
 
-function addHazardIcon(){
-//console.log("addHazardIcon");
+function addTriggerIcon(){
+//console.log("addTriggerIcon");
 //console.log(LEVELS);
 //console.log(items);
 
 	const reader = new FileReader();
-	let fileName = hazardAddIcon.files[0].name.split(".")[0].split("-")[0]
+	let fileName = triggerAddIcon.files[0].name.split(".")[0].split("-")[0]
 	
 	reader.addEventListener("load", () => {
     // this will then display a text file
 		newIcon(reader.result, fileName);
 	});
-	reader.readAsText(hazardAddIcon.files[0]);
+	reader.readAsText(triggerAddIcon.files[0]);
 }
 
 
@@ -1261,7 +1261,8 @@ function saveSet(){
 	
 	//TODO - Only save used custom icons
 	
-	if(Object.keys(customIcons).length > 0){myGame["myIcons"] = customIcons}	
+	if(Object.keys(customI
+	cons).length > 0){myGame["myIcons"] = customIcons}	
 	if(customSounds.length > 0){
 		myGame.customSounds = {};
 		for(sound of customSounds){
@@ -1542,7 +1543,7 @@ function getItemNameForAnnouncement(itemType) {
 		potion: 'potion',
 		eraser: 'eraser',
 		void: 'void',
-		hazard: "hazard",
+		trigger: "trigger",
 		stairs: 'stairs'
 	};
 	
@@ -1698,7 +1699,7 @@ for (var i = 0; i < itemButtons.length; i++) {
 		'k': 'key',
 		'd': 'door',
 			'p': 'potion',
-			'h': 'hazard',
+			'h': 'trigger',
 			's': 'shop',
 			'n': 'gameEnd',
 			'l': 'villager',
@@ -1758,7 +1759,7 @@ function renderLibraries(){
 	
 	//initiate default Items
 	grunt = {"name": "Grunt", type: "monster", "meta": {"name": "Grunt", "hp": 6, "atk": 2, "def": 0}};
-	avoid =  {"name": "Void", type: "hazard", "meta": { "name": "Void", "hint": "Mysterious fog", "text": "You  have fallen into a void.", "void": true, "icon": "void" } };
+	avoid =  {"name": "Void", type: "trigger", "meta": { "name": "Void", "hint": "Mysterious fog", "text": "You  have fallen into a void.", "void": true, "icon": "void" } };
 	armor =  { "name": "armor shop", type: "shop", "meta": { "name": "armor shop", "value": 1, "kind": "defense", "cost": 14, "currency": "gold", "icon": "armor" } }
 	weapon 	=  { "name": "weapon shop", type: "shop", "meta": { "name": "weapon shop", "value": 1, "kind": "strength", "cost": 18, "currency": "gold", "icon": "weapon" } }
 	inn = { "name": "inn", type: "shop", "meta": { "name": "inn", "value": 8, "kind": "life", "cost": 10, "currency": "gold", "icon": "inn" } } 

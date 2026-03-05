@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Level Creator</title>
     <link rel="stylesheet" href="levelCreatorStyle.css">
-
-
 </head>
 <body>
     <div class="container">
@@ -77,7 +75,7 @@
                 <button class="item-btn" data-item="door">Door (D)</button>
 				<button class="item-btn" data-item="stairs" >Stairs (U)</button>
                 <button class="item-btn" data-item="potion" >Potion (P)</button>
-                <button class="item-btn" data-item="hazard">Hazard (H)</button>
+                <button class="item-btn" data-item="trigger">Trigger (H)</button>
                 <button class="item-btn" data-item="shop" >Shop (S)</button>
                 <button class="item-btn" data-item="villager" >Villager (L)</button>
 				<button class="item-btn" data-item="gameEnd" >Game End (N)</button>
@@ -142,12 +140,14 @@
 						<label for="monRewDesc">Reward description: </label>
 						<input object="monster" meta="rDesc" id="monRewDesc"/>
 					</div></div>
-					<div class="floatGroup">
+						<div class="floatGroup">
 						<div class="floatGroup">
 						<label for="monSound">sound clue</label>
 						<input object="monster" meta="sound" id="monSound" value="growling"></input>
-						</div>
 						
+						<select soundSelect="true" id="monEffectGrowl" object="monster" value="growl" meta="effect" key="growl" > </select>
+						<select soundSelect="true" id="monEffectSlay" object="monster" value="slay" meta="effect" key="slay" > </select>
+						</div>
 						<div class="floatGroup">
 						
 						<label for="monIcon">Icon</label>
@@ -242,43 +242,43 @@
             </div>
 
 
-			<div object="hazard" class="configDiv" id="hazardConfig">
+			<div object="trigger" class="configDiv" id="triggerConfig">
 			    <div class="floatGroup">
-					<label for="hazardName" > Hazard Name:     </label>
-                    <input object="hazard" meta="name" id="hazardName" placeholder="void" />
+					<label for="triggerName" > Trigger Name:     </label>
+                    <input object="trigger" meta="name" id="triggerName" placeholder="void" />
 				</div>
 				<div class="floatGroup">
-					<label for="hazardHint" > Hazard Hint:     </label>
-                    <input object="hazard" meta="hint" id="hazardHint" placeholder="Mysterious fog" />
-				</div>
-				
-				<div class="floatGroup">
-					<label for="hazardText" > Hazard event description:     </label>
-                    <input object="hazard" meta="text" id="hazardText" placeholder="You have fallen into a void." />
+					<label for="triggerHint" > Trigger Hint:     </label>
+                    <input object="trigger" meta="hint" id="triggerHint" placeholder="Mysterious fog" />
 				</div>
 				
 				<div class="floatGroup">
-                        <label for="hazardVoid" >Reload Level</label>
-                            <input object="hazard" meta="void" id="hazardVoid"  type="checkbox"  />
+					<label for="triggerText" > Trigger event description:     </label>
+                    <input object="trigger" meta="text" id="triggerText" placeholder="You have fallen into a void." />
+				</div>
+				
+				<div class="floatGroup">
+                        <label for="triggerVoid" >Reload Level</label>
+                            <input object="trigger" meta="void" id="triggerVoid"  type="checkbox"  />
                 </div>					
 				<div class="floatGroup">
-                        <label for="hazardStairs" >Teleport</label>
-                         <input object="hazard" meta="stairs" id="hazardStairs" onchange="hazardStairToggle();" type="checkbox"/>
+                        <label for="triggerStairs" >Teleport</label>
+                         <input object="trigger" meta="stairs" id="triggerStairs" onchange="triggerStairToggle();" type="checkbox"/>
 						 
-						 <div id="hazardStairConfig" style="display: none;">
-						 	<label for="hazardLevelSelect">Target Level:</label>
-							<select object="hazard" meta="level" cellSelect="hazardCellSelect" instance="true" id="hazardLevelSelect">
+						 <div id="triggerStairConfig" style="display: none;">
+						 	<label for="triggerLevelSelect">Target Level:</label>
+							<select object="trigger" meta="level" cellSelect="triggerCellSelect" instance="true" id="triggerLevelSelect">
 							</select>
-							<label for="hazardCellSelect">Target Cell:</label>
-							<select object="hazard" meta="cell" instance="true" id="hazardCellSelect"/></select>
+							<label for="triggerCellSelect">Target Cell:</label>
+							<select object="trigger" meta="cell" instance="true" id="triggerCellSelect"/></select>
 						 </div>
                 </div>					
 				
 				
 				
 				<div class="floatGroup">
-                <label  for="hazardKind">hazard type:</label>
-                <select object="hazard" meta="kind"    id="hazardKind">
+                <label  for="triggerKind">trigger type:</label>
+                <select object="trigger" meta="kind"    id="triggerKind">
 					<option value="life">Life</option>
 					<option value="gold">gold</option>
                     <option value="strength">Strength</option>
@@ -286,28 +286,28 @@
                 </select>
 				</div>
 				<div class="floatGroup">
-                <label for="hazardValue">Value:</label>
-				<input object="hazard" meta="value" id="hazardValue" type="number"  value="0" />
+                <label for="triggerValue">Value:</label>
+				<input object="trigger" meta="value" id="triggerValue" type="number"  value="0" />
 				</div>
                 
 				<div style="width: fit-content;">
-				<label for="hazardIcon">Icon</label>
-				<select  object="hazard" meta="icon" value="void" onchange="updateHazardIcon();"  div="hazardIconDisplay" id="hazardIcon" >
+				<label for="triggerIcon">Icon</label>
+				<select  object="trigger" meta="icon" value="void" onchange="updateTriggerIcon();"  div="triggerIconDisplay" id="triggerIcon" >
 				<option value="void">void</option>
 				</select>
-				<div id="hazardIconDisplay"></div>
-				<input type="file" onchange="addHazardIcon();" style="width: 10em; height: 3em;" id="hazardAddIcon" accept=".svg" />
+				<div id="triggerIconDisplay"></div>
+				<input type="file" onchange="addTriggerIcon();" style="width: 10em; height: 3em;" id="triggerAddIcon" accept=".svg" />
 				</div>
 				<div style="clear: both;">
-                        <button  object="hazard" action="add" id="btnAddHazard">Add Hazard</button>
-                        <button  object="hazard" action="cancel" id="btnCancelHazard" >New Hazard</button>
-						<button object="hazard" action="export" id="btnExportHazard" >Export CSV</button>
-						<label for="hazardImport">Import CSV</label>
-						<input id="hazardImport" btn="btnHazardImport" onchange="libraryUpload(this)" accept=".csv" type="file" />
-						<button id="btnHazardImport" class="hidden" object="hazard" action="import" input="hazardImport" type="button">Import Library </button>
+                        <button  object="trigger" action="add" id="btnAddTrigger">Add Trigger</button>
+                        <button  object="trigger" action="cancel" id="btnCancelTrigger" >New Trigger</button>
+						<button object="trigger" action="export" id="btnExportTrigger" >Export CSV</button>
+						<label for="triggerImport">Import CSV</label>
+						<input id="triggerImport" btn="btnTriggerImport" onchange="libraryUpload(this)" accept=".csv" type="file" />
+						<button id="btnTriggerImport" class="hidden" object="trigger" action="import" input="triggerImport" type="button">Import Library </button>
 				</div>
-				<div id="hazardParent">
-                    <table id="hazardList" object="hazard" library="true" class="monster-list">
+				<div id="triggerParent">
+                    <table id="triggerList" object="trigger" library="true" class="monster-list">
 						
 					</table>
                 </div>

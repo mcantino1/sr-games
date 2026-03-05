@@ -561,7 +561,7 @@ function hasStairs(pos){ return itemsAt(pos).some(it => it.type === "stairs"); }
 function hasTreasure(pos){ return itemsAt(pos).some(it => it.type === "treasure"); }
 function hasPotion(pos){ return itemsAt(pos).some(it => it.type === "potion"); }
 function hasVoid(pos){ return itemsAt(pos).some(it => it.type === "void"); }
-function hasHazard(pos){ return itemsAt(pos).some(it => it.type === "hazard"); }
+function hasTrigger(pos){ return itemsAt(pos).some(it => it.type === "trigger"); }
 function hasMonster(pos){ return itemsAt(pos).some(it => it.type === "monster"); }
 function hasWeaponShop(pos){ return itemsAt(pos).some(it => it.type === "weapon_shop"); }
 function hasShop(pos){ return itemsAt(pos).some(it => it.type === "shop"); }
@@ -630,7 +630,7 @@ function revealNeighbors(pos) {
 	else if (hasStairs(npos)) revealedSpecial.set(npos, "stairs");
     else if (hasMonster(npos)) revealedSpecial.set(npos, "monster");
     else if (hasVoid(npos)) revealedSpecial.set(npos, "void");
-	else if (hasHazard(npos)) revealedSpecial.set(npos, "hazard");
+	else if (hasTrigger(npos)) revealedSpecial.set(npos, "trigger");
     else if (hasPotion(npos)) revealedSpecial.set(npos, "potion");
     else if (hasVillager(npos)) revealedSpecial.set(npos, "villager");
     else if (hasWeaponShop(npos)) revealedSpecial.set(npos, "weapon_shop");
@@ -659,7 +659,7 @@ function revealMap(){
 	else if (hasStairs(pos)){ revealedSpecial.set(pos, "stairs")}
     else if (hasMonster(pos)){ revealedSpecial.set(pos, "monster")}
     else if (hasVoid(pos)) {revealedSpecial.set(pos, "void")}
-    else if (hasHazard(pos)) {revealedSpecial.set(pos, "hazard")}
+    else if (hasTrigger(pos)) {revealedSpecial.set(pos, "trigger")}
     else if (hasPotion(pos)) {revealedSpecial.set(pos, "potion")}
     else if (hasVillager(pos)) {revealedSpecial.set(pos, "villager")}
     else if (hasWeaponShop(pos)) {revealedSpecial.set(pos, "weapon_shop")}
@@ -995,7 +995,7 @@ if (customWall) {
   if (items.some(i=>i.type==="door")) return ["You see the exit", 1];
   if (items.some(i=>i.type==="exit")) return ["Dungeon entrance", 1];
   if (items.some(i=>i.type==="void")) return ["mysterious fog", 2];
-  if (items.some(i=>i.type==="hazard")) return [items[0].meta.hint, 2];
+  if (items.some(i=>i.type==="trigger")) return [items[0].meta.hint, 2];
   if (items.some(i=>i.type==="weapon_shop")) return ["weapon shop", 4];
     if (items.some(i=>i.type==="shop")){ return [items[0].meta.name, 4]};
   if (items.some(i=>i.type==="armor_shop")) return ["armor shop", 4];
@@ -1296,7 +1296,7 @@ function enterCell(prefix) {
 
 	//did you take the stairs?
 	if (tookStairs.bool == true){
-		if(tookStairs.hazard == false){
+		if(tookStairs.trigger == false){
 			if (tookStairs.level != null){
 				//You take the stairs to E5
 				discoveryMsgs.push("You take the stairs to " + tookStairs.cell + " of " + tookStairs.level + ".\n")
@@ -1536,9 +1536,9 @@ function enterCell(prefix) {
     updateUI();
     return;
   }
-  if (hasHazard(pos)){
+  if (hasTrigger(pos)){
 	  
-	  //{"type":"hazard","pos":"D6","meta":{"name":"Void","hint":"Mysterious fog","text":"You  have fallen into a void.","void":true,"icon":"void"}}
+	  //{"type":"trigger","pos":"D6","meta":{"name":"Void","hint":"Mysterious fog","text":"You  have fallen into a void.","void":true,"icon":"void"}}
 	  haz = itemsAt(pos)[0];
 	  effectMessage = ""
 	  if (haz.meta.value && haz.meta.value != 0){
@@ -1587,7 +1587,7 @@ function enterCell(prefix) {
 	  }
 	  
 	  if(haz.meta.stairs){
-		  console.log("We haven't prepared for this kind of hazard yet.")	  
+		  console.log("We haven't prepared for this kind of trigger yet.")	  
 		//take stairs
 		preserveStatsOnNextLoad = true;
 		targetLevel = itemsAt(pos)[0].meta.level;
@@ -1925,7 +1925,7 @@ function speakLoc() {
 	
 }
 
-var tookStairs = {bool: false, level: null, cell: null, hazard: false}
+var tookStairs = {bool: false, level: null, cell: null, trigger: false}
 var stairsMessage = "";
 
 function activateCell(pos){
@@ -1954,7 +1954,7 @@ function activateCell(pos){
 		targetLevel = itemsAt(pos)[0].meta.level;
 		targetCell = itemsAt(pos)[0].meta.cell;
 		tookStairs.bool = true;
-		tookStairs.hazard = false;
+		tookStairs.trigger = false;
 		if (targetLevel != currentLevelId){	tookStairs.level = targetLevel;}
 		tookStairs.cell = targetCell;
 		
