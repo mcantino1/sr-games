@@ -846,8 +846,11 @@ function renderMap() {
 					if (item.meta.name.includes(color)){
 							console.log(color);
 						myPaths = el.getElementsByTagName("path");
+						colorName = color;
+						if (color.includes(" ")){
+						colorName = color.split(" ").join;}
 						for (path of myPaths){
-							path.setAttribute("fill", color);
+							path.setAttribute("fill", colorName);
 						}
 					}
 					//indexOf(searchString, position)
