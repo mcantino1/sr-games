@@ -2104,7 +2104,6 @@ function libraryAction(btn){
 }
 
 function updateRefs(myItem, name, objectType){
-	updateRefs()
 	myLevels = Object.keys(myItem.refs)
 	for(level of myLevels){
 		for(item of myItem.refs[level]){
