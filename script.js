@@ -498,7 +498,7 @@ let LEVELS = {
       {type:"wall", pos:"C5"},
       {type:"wall", pos:"C6"},
       {type:"monster", pos:"E5"},
-      {type:"trigger", pos:"H8",  "meta": { "kind": "strength", "value": 1, "name": "yellow treasure", "hint": "hidden passage", "text": "You found a yellow treasure chest. ", "icon": "treasure", "effect": "get" }},
+      {type:"trigger", pos:"H8",  "meta": { "kind": "strength", "value": 1, "name": "sky blue treasure", "hint": "hidden passage", "text": "You found a yellow treasure chest. ", "icon": "treasure", "effect": "get" }},
       {type:"key", pos:"B5"},
       {type:"door", pos:"L12"}
     ],
@@ -848,7 +848,7 @@ function renderMap() {
 						myPaths = el.getElementsByTagName("path");
 						colorName = color;
 						if (color.includes(" ")){
-						colorName = color.split(" ").join();}
+						colorName = color.split(" ").join("");}
 						for (path of myPaths){
 							path.setAttribute("fill", colorName);
 						}
