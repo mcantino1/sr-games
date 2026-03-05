@@ -1070,7 +1070,7 @@ function sortLevelList(){
 	let firstLevel = levelNames[0];
 	let nextLevel = firstLevel;
 	
-	while (nextLevel != "null" && nextLevel != null){
+	while (nextLevel != "null" && nextLevel != null && nextLevel != ""){
 		levelList.append(myLevels[nextLevel]);
 		console.log(nextLevel);
 		console.log(LEVELS[nextLevel]);
