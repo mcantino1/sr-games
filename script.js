@@ -410,7 +410,7 @@ function playSound(name, time = 0, setDur = 0){
 var soundBank = {"step": {"dur": 0.1, "type": "sine", "frequency": 15, "layers": 1, "nodes": [{"type": "frequency", "value": 15, "time": 0}, {"type": "frequency", "value": 30, "time": 0.5}, {"type": "frequency", "value": 10, "time": 1}, {"type": "gain", "value": 1, "time": 0.01}, {"type": "gain", "value": 0.01, "time": 0.31}, {"type": "gain", "value": 1, "time": 0.35}, {"type": "gain", "value": 0.01, "time": 0.65}, {"type": "gain", "value": 1, "time": 0.69}, {"type": "gain", "value": 0.01, "time": 0.99}]},
 				"wall": {"dur": 0.05, "type": "sine", "frequency": 120, "layers": 1, "nodes": [{"type": "frequency", "value": 60, "time": 1}, {"type": "gain", "value": 1, "time": 0.25}, {"type": "gain", "value": 0.01, "time": 0.99}]},
 				"key": {"dur": 0.4, "type": "sine", "frequency": 400, "layers": 1, "nodes": [{"type": "frequency", "value": 650, "time": 1}, {"type": "gain", "value": 0.5, "time": 0.01}, {"type": "gain", "value": 0.01, "time": 0.31}, {"type": "gain", "value": 0.5, "time": 0.35}, {"type": "gain", "value": 0.01, "time": 0.65}, {"type": "gain", "value": 0.5, "time": 0.69}, {"type": "gain", "value": 0.01, "time": 0.99}]},
-				"door": {"dur": 0.5, "type": "sawtooth", "frequency": 50, "layers": 1, "nodes": [{"type": "frequency", "value": 10, "time": 1}, {"type": "gain", "value": 1, "time": 0.01}, {"type": "gain", "value": 0.3, "time": 0.9}, {"type": "gain", "value": 0.01, "time": 1}] },
+				"door": { "dur": 0.5, "type": "sawtooth", "frequency": 50, "layers": 1, "nodes": [ { "type": "frequency", "value": 10, "time": 1 }, { "type": "gain", "value": "0.5", "time": 0.01 }, { "type": "gain", "value": "0.2", "time": 0.9 }, { "type": "gain", "value": 0.01, "time": 1 } ] },
 				"get": {"dur": 0.15, "type": "sine", "frequency": 100, "layers": 1, "nodes": [{"type": "frequency", "value": 150, "time": 0.15}, {"type": "frequency", "value": 200, "time": 0.3}, {"type": "frequency", "value": 150, "time": 0.6}, {"type": "frequency", "value": 200, "time": 0.75}, {"type": "frequency", "value": 100, "time": 1}, {"type": "gain", "value": 1, "time": 0.01}, {"type": "gain", "value": 0.01, "time": 0.3}, {"type": "gain", "value": 1, "time": 0.75}, {"type": "gain", "value": 0.01, "time": 1}]},
 				"drink": {"dur": 0.1, "type": "sine", "frequency": 100, "layers": 1, "nodes": [{"type": "frequency", "value": 50, "time": 0.5}, {"type": "frequency", "value": 200, "time": 1}, {"type": "gain", "value": 1, "time": 0.01}, {"type": "gain", "value": 0.01, "time": 1}]},
 				"fall": {"dur": 1, "type": "sine", "frequency": 800, "layers": 1, "nodes": [{"type": "frequency", "value": 300, "time": 1}, {"type": "gain", "value": 1, "time": 0.01}, {"type": "gain", "value": .01, "time": 1}]},
@@ -2464,7 +2464,7 @@ function updateEffect(){
 	setCookie("speedBoxEffect", speedBoxEffect.value);
 	setCookie("pitchBoxEffect", pitchBoxEffect.value);
 	soundSpeed = 5 / speedBoxEffect.value;
-	volume = volBoxEffect.value * 2;
+	volume = Math.max((volBoxEffect.value - 1), 0.1)
 	effectPitch = pitchBoxEffect.value * 0.2;
 	soundNames = Object.keys(soundBank);
 	mySound = soundNames[Math.floor(Math.random() * soundNames.length)]
@@ -2972,7 +2972,7 @@ var voicePitch = pitchBox.value * 0.2;
 var voiceVol = volBox.value * 0.1;
 
 var soundSpeed = 5 / speedBoxEffect.value;
-var volume = Math.min(volBoxEffect.value - 1, 0.1);
+var volume = Math.max((volBoxEffect.value - 1), 0.1)
 var effectPitch = pitchBoxEffect.value * 0.2;
 
 var toneVol = volBoxTone.value;
