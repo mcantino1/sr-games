@@ -1524,6 +1524,7 @@ function makeGrid() {
 			cell.textContent = '';
 			cell.tabIndex = 0
 			cell.style.cursor = 'pointer';
+			cell.setAttribute("onmouseover", 'announceCell("' + pos + '")');
 			//cell.setAttribute('role', 'button');
 			cell.title = title;	
 			row.appendChild(cell);
@@ -1643,7 +1644,6 @@ function announceCell(pos) {
 //console.log("announceCell");
 //console.log(LEVELS);
 //console.log(items);
-
 	var found = null;
 	for (var j = 0; j < items.length; j++) {
 		if (items[j].pos === pos) {
@@ -1651,6 +1651,7 @@ function announceCell(pos) {
 			break;
 		}
 	}
+
 	var announcement = 'Cell ' + pos;
 	if (found) {
 		//announcement += ' Contains: ' + getItemNameForAnnouncement(found.type);
@@ -1662,7 +1663,9 @@ function announceCell(pos) {
 				announcement += ", " + metadata[m] + " " +  found.meta[metadata[m]]
 			}
 		}
-	} else {
+	} else if(scenes[pos]){
+		announcement += ", Scene: " + scenes[pos];
+	}else{
 		announcement += '. Empty';
 	}
 //            announcement += '. Selected item type: ' + getItemNameForAnnouncement(currentItem) + '.';
@@ -2474,12 +2477,11 @@ function setupGridKeyboard() {
 				newRow = Math.max(0, row - 1);
 				handled = true;
 			} else if (e.key === 'ArrowDown' || e.code == "ArrowDown") {
-				console.log("down")
+				
 				e.preventDefault();
 				newRow = Math.min(rows - 1, row + 1);
 				handled = true;
 			} else if (e.key === 'ArrowLeft') {
-				console.log("left")
 				e.preventDefault();
 				newCol = Math.max(0, col - 1);
 				handled = true;
