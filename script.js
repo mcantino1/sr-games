@@ -1415,6 +1415,7 @@ function enterCell(prefix) {
 
 	//did you take the stairs?
 	if (tookStairs.bool == true){
+		console.log(tookStairs);
 		if(tookStairs.trigger == false){
 			if (tookStairs.level != null){
 				//You take the stairs to E5
@@ -1860,7 +1861,7 @@ function tryMove(dr, dc) {
 				myPhrases.push(desc);
 			}
 		}
-		myPhrase = myPhrases[Math.floor(Math.random(myPhrases.length))].replace("wall", wallName).replace("Wall", wallName);
+		myPhrase = myPhrases[Math.floor(Math.random()* myPhrases.length	)].replace("wall", wallName).replace("Wall", wallName);
 		announce(myPhrase);
 		
 	} else if(wallName.substr(wallName.length - 1) == "s"){
