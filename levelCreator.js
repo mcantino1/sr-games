@@ -384,14 +384,14 @@ function soundSortRows(field = document.activeElement){
 		activeTable = soundTs.gain.children[1];
 	}
 
-	rows = activeTable.children;
+	myRows = activeTable.children;
 
-	for(i = 2; i < rows.length; i++){
+	for(i = 2; i < myRows.length; i++){
 	
-		ta = rows[i-1].children[0].children[0].value;
-		tb = rows[i].children[0].children[0].value;
+		ta = myRows[i-1].children[0].children[0].value;
+		tb = myRows[i].children[0].children[0].value;
 		if(ta > tb){
-			activeTable.appendChild(rows[i-1]);
+			activeTable.appendChild(myRows[i-1]);
 			i = 0;
 		}
 	}
@@ -1779,9 +1779,19 @@ function updateTreasureUI() {
 // Initialize listeners on the buttons to toggle treasure UI
 for (var i = 0; i < itemButtons.length; i++) {
 	itemButtons[i].addEventListener('click', function() {
+		myIndex = -1;
+		if(activeCell){
+			let myPos = activeCell.getAttribute("data-pos");
+			let myIndex = getItemIndex(pos);
+		}
+		if(currentItem == "select" && myIndex != -1 && items[myIndex].type == this.dataset.item){
+			currentItem = this.dataset.item;
+			//don't reset fields;
+		}else{
 		currentItem = this.dataset.item;
 		if(metaMap[currentItem]){
 		resetFields(metaMap[currentItem]);}
+		}
 		updateTreasureUI();
 	});
 }
@@ -1828,7 +1838,8 @@ for (var i = 0; i < itemButtons.length; i++) {
 			keys = Object.keys(keyMap);
 			for(let i = 0; i < keys.length; i++){
 				announcement +=  keyMap[keys[i]] + " " + keys[i] + ", ";
-			}
+				}
+			announcement += "\n use numbers to select library entries."
 			document.getElementById('gridAnnouncer').textContent = announcement;
 		}
 		else{
@@ -1971,20 +1982,20 @@ function renderLibraries(){
 		
 		//sort by Use
 	
-		rows = body.children;
+		myRows = body.children;
 		rowCount = body.children.length;
-		lastCol = rows[0].children.length - 1;
+		lastCol = myRows[0].children.length - 1;
 		for(r = 0; r < (rowCount - 1); r++){
 			//how any refs current row
 			//		row			ref Cell		ul			lis
 			refsA = 0
 			refsB = 0
-			if(rows[r].children[lastCol].children.length > 0){
-				refsA = rows[r].children[lastCol].children[0].children.length;}
-			if(rows[r+1].children[lastCol].children.length > 0){
-				refsB = rows[r + 1].children[lastCol].children[0].children.length || 0};
+			if(myRows[r].children[lastCol].children.length > 0){
+				refsA = myRows[r].children[lastCol].children[0].children.length;}
+			if(myRows[r+1].children[lastCol].children.length > 0){
+				refsB = myRows[r + 1].children[lastCol].children[0].children.length || 0};
 			if(refsA < refsB){
-				body.appendChild(rows[r]);
+				body.appendChild(myRows[r]);
 				r = -1;
 			}	
 		}
@@ -2097,6 +2108,7 @@ function libraryFromFields(m, myFields){
 
 function getMetas(myFields){
 	meta = {};
+	console.log(myFields);
 	for(field of myFields){
 		fieldMeta = field.getAttribute("meta");
 	
@@ -2455,16 +2467,19 @@ function setupGridKeyboard() {
 			var newRow = row;
 			var newCol = col;
 			var handled = false;
-
+			var existingIdx = getItemIndex(pos);
+			message = "";
 			if (e.key === 'ArrowUp') {
 				e.preventDefault();
 				newRow = Math.max(0, row - 1);
 				handled = true;
-			} else if (e.key === 'ArrowDown') {
+			} else if (e.key === 'ArrowDown' || e.code == "ArrowDown") {
+				console.log("down")
 				e.preventDefault();
 				newRow = Math.min(rows - 1, row + 1);
 				handled = true;
 			} else if (e.key === 'ArrowLeft') {
+				console.log("left")
 				e.preventDefault();
 				newCol = Math.max(0, col - 1);
 				handled = true;
@@ -2472,95 +2487,51 @@ function setupGridKeyboard() {
 				e.preventDefault();
 				newCol = Math.min(cols - 1, col + 1);
 				handled = true;
-			} else if (e.key === 'Enter') {
+			} else if (e.key == "Delete" || e.code == "NumpadDecimal"){
 				e.preventDefault();
-				// Place item on current cell
-				var existingIdx = -1;
-				for (var k = 0; k < items.length; k++) {
-					if (items[k].pos === pos) {
-						existingIdx = k;
-						break;
-					}
-				}
-
-				if (currentItem === 'empty' || currentItem === 'eraser') {
-					if (existingIdx >= 0) {
-						items.splice(existingIdx, 1);
-					}
-				} else if (currentItem === 'treasure') {
-					var treasureObj = {type: 'treasure', pos: pos, meta: {kind: treasureKind, value: treasureValue}};
-					if (existingIdx >= 0) {
-						items[existingIdx] = treasureObj;
-					} else {
-						items.push(treasureObj);
-					}
-				 }  else if (currentItem === 'key') {
-					var keyObj = {type: 'key', pos: pos, meta: {level: document.getElementById("keyLevelSelect").value}};
-					
-					if (existingIdx >= 0) {
-						items[existingIdx] = keyObj;
-					} else {
-						items.push(keyObj);
-					}
-
-					
-				} else if (currentItem === 'monster') {
-					var monsterMeta = null;
-					if (selectedMonster.length > "" && monsterLibrary[selectedMonster]) {
-						monsterMeta = monsterLibrary[selectedMonster].meta;
-						
-					}
-					var monsterObj = {type: 'monster', pos: pos};
-					if (monsterMeta) monsterObj.meta = monsterMeta;
-					if (existingIdx >= 0) {
-						items[existingIdx] = monsterObj;
-					} else {
-						items.push(monsterObj);
-					}
-				} else if (currentItem === 'potion') {
-					var potionObj = {type: 'potion', pos: pos, meta: {heal: potionHeal}};
-					if (existingIdx >= 0) {
-						items[existingIdx] = potionObj;
-					} else {
-						items.push(potionObj);
-					}
-				} else if (currentItem === 'villager') {
-					var villagerObj = {type: 'villager', pos: pos, meta: {text: villagerText, kind: villagerKind, value: villagerValue}};
-					if (existingIdx >= 0) {
-						items[existingIdx] = villagerObj;
-					} else {
-						items.push(villagerObj);
-					}
-				} else if (currentItem === 'custom_wall') {
-					var cwObj = {type: 'custom_wall', pos: pos, meta: {name: customWallName}};
-					if (existingIdx >= 0) {
-						items[existingIdx] = cwObj;
-					} else {
-						items.push(cwObj);
-					}
-				} else if (currentItem === 'select') {
-					this.click();
-				}
-				else {
-					if (existingIdx >= 0) {
-						items[existingIdx].type = currentItem;
-						if (items[existingIdx].meta) delete items[existingIdx].meta;
-					} else {
-						items.push({type: currentItem, pos: pos});
-					}
-				}
-
-				refreshCells();
-				if (currentItem != 'select'){
-				var message = 'Placed ' + getItemNameForAnnouncement(currentItem) + ' on cell ' + pos + '.';
-				document.getElementById('gridAnnouncer').textContent = message;}
-				else{
-					var message = "Cell selected. ";
-					document.getElementById('gridAnnouncer').textContent = message;}
 				
-				return;
-			}	
+				if (existingIdx >= 0) {
+					message = "deleting " + items[existingIdx].type
+					items.splice(existingIdx, 1);
+				}
+				refreshCells();
+				handled = true;
+			} else if(/\d/.test(e.key)){
+				// a digit!
+				e.preventDefault();
+				//Does the current item have a Library
+				let libNames = Object.keys(libraries)
+				if (libNames.includes(currentItem)){
+					//yes
+					//get that libraries table rows 
+					let myRows = libraries[currentItem].table.children[1].children;
+					let rowIndex = -1;
+					if(e.key == 0){ rowIndex = 9}
+					else{rowIndex = parseInt(e.key) - 1}
+					if(myRows.length > rowIndex){
+						itemName = myRows[rowIndex].getAttribute("itemName");
+						
+						selectLibItem(myRows[rowIndex]);
+						message = itemName + " selected"
+					}
+					
+				}
+				handled = true;
+			}
 
+			else if (e.key === ' ' || e.key === 'Spacebar' || e.code === 'Space' || e.code == "Enter" || e.key == "Enter" || e.code == "NumpadEnter") {
+				e.preventDefault();
+				if (currentItem == 'select' ){
+					console.log("select Item");
+					selectItem(this)
+					handled = true;
+				}else{
+				// Place item on current cell
+				placeItem(pos);
+				handled = true;
+				}
+			}
+			if (message != ""){document.getElementById('gridAnnouncer').textContent = message;}
 			if (handled && (newRow !== row || newCol !== col)) {
 				var newPos = String.fromCharCode(65 + newCol) + (newRow + 1);
 				focusCellByPosition(newPos);
@@ -2573,7 +2544,35 @@ function setupGridKeyboard() {
 
 
 
-
+function placeItem(pos){
+	var existingIdx = getItemIndex(pos);
+	console.log(currentItem);
+	newObj = {type: currentItem, pos: pos, meta: getMetas(metaMap[currentItem])};
+	myIndex = existingIdx;
+	message = "";
+	objName = currentItem
+	if(newObj.meta && newObj.meta.name){objName = newObj.meta.name}
+	if (existingIdx >= 0) {
+		message = "Replaced " + items[existingIdx].type + " with " + objName + ". "; 
+		items[existingIdx] = newObj;				
+		
+	} else {
+		items.push(newObj);
+		myIndex = items.length - 1;
+		message = "Placed " + objName + " in " + pos + ". ";
+	}
+	
+	if(libraries[currentItem]){
+		myName = LEVELS[currentId].items[myIndex].meta.name;
+		myLibSelf = libraries[currentItem].lib[myName];
+		if(!myLibSelf.refs){myLibSelf.refs = {}}
+		if(!myLibSelf.refs[currentId]){myLibSelf.refs[currentId] = [LEVELS[currentId].items[myIndex].pos]}
+		else{myLibSelf.refs[currentId].push(LEVELS[currentId].items[myIndex].pos)}
+		renderLibraries();
+	}
+	if (message != ""){document.getElementById('gridAnnouncer').textContent = message;}
+	refreshCells();
+}
 
 document.getElementById('grid').onclick = function(e) {
 	updateTreasureUI()
@@ -2604,46 +2603,43 @@ document.getElementById('grid').onclick = function(e) {
 				items.splice(existingIdx, 1);
 			}
 		} else if (currentItem == 'select'){
-			activeCell = cell
-			if(items[existingIdx]){
-				type = items[existingIdx].type;
-				//TODO
-				message = ""
-				myDiv = configMap[type];
-				//populateFromLibrary(m, myFields){
-				if(myDiv){
-					myDiv.style.display = 'block'; 
-					message = type + " properties expanded."
-					myFields = metaMap[type];
-					populateFromLibrary(items[existingIdx].meta, myFields);
-				}
-				else{updateTreasureUI()}
-				if (message != ""){document.getElementById('gridAnnouncer').textContent = message;}
-		}}
+			selectItem(cell)
+		}
 		else {
-			newObj = {type: currentItem, pos: pos, meta: getMetas(metaMap[currentItem])};
-			myIndex = existingIdx;
-			if (existingIdx >= 0) {
-				items[existingIdx] = newObj;				
-			} else {
-				items.push(newObj);
-				myIndex = items.length - 1;
-			}
-			if(libraries[currentItem]){
-				myName = LEVELS[currentId].items[myIndex].meta.name;
-				myLibSelf = libraries[currentItem].lib[myName];
-				if(!myLibSelf.refs){myLibSelf.refs = {}}
-				if(!myLibSelf.refs[currentId]){myLibSelf.refs[currentId] = [LEVELS[currentId].items[myIndex].pos]}
-				else{myLibSelf.refs[currentId].push(LEVELS[currentId].items[myIndex].pos)}
-				renderLibraries();
-			}
+			placeItem(pos);
 		}
 
 		refreshCells();
 	};
 	
 
-
+function selectItem(cell){
+	activeCell = cell
+	existingIdx = getItemIndex(cell.dataset.pos);
+	console.log(items[existingIdx]);
+	updateTreasureUI()
+	if(items[existingIdx]){
+		type = items[existingIdx].type;
+		//TODO
+		message = ""
+		myDiv = configMap[type];
+		//populateFromLibrary(m, myFields){
+		if(myDiv){
+			console.log(myDiv);
+			myDiv.style.display = 'block'; 
+			message = type + " properties expanded."
+			myFields = metaMap[type];
+			resetFields(myFields);
+			if(items[existingIdx].meta){
+			populateFromLibrary(items[existingIdx].meta, myFields);}
+		}
+		
+		
+		
+		if (message != ""){document.getElementById('gridAnnouncer').textContent = message;}
+	}
+	
+}
 
 
 document.getElementById('btnGenerateSVG').onclick = function() {
@@ -2978,8 +2974,15 @@ function updateSelected(field){
 			else if (field.getAttribute("array") == "true"){
 				//console.log("array")
 				mySibs = field.parentElement.children;
-				myIndex = mySibs.indexOf(field);
-				cellObject.meta[fieldMeta][myIndex] = fieldValue;
+				myIndex = 0;
+				for(let i = 0; i < mySibs.length; i++){
+					if(mySibs[i] == field){myIndex = i; i = 9999;}
+				}
+				if(!cellObject.meta){cellObject.meta = {}}
+				if(!cellObject.meta[fieldMeta]){ cellObject.meta[fieldMeta] = []}
+				if(cellObject.meta[fieldMeta].length < myIndex){ cellObject.meta[fieldMeta].push(fieldValue)}
+				else{cellObject.meta[fieldMeta][myIndex] = fieldValue;}
+				
 			}
 			else{
 				//console.log("standard field")

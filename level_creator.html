@@ -39,7 +39,7 @@
         <div class="grid-section">
            <H3>Level Grid</H3>
             <table id="grid" title="game grid"  ></table>
-            <div id="gridAnnouncer" aria-live="polite" aria-atomic="true"> </div>
+            <div id="gridAnnouncer" aria-live="polite"> </div>
      
 		</div>
         <div>
@@ -52,9 +52,6 @@
         </div>
         <!-- Help text for form fields (hidden but available to screen readers) -->
         <div class="sr-only">
-            <div id="rowsHelp">Enter a number between 1 and 12 for the number of grid rows.</div>
-            <div id="colsHelp">Enter a number between 1 and 12 for the number of grid columns.</div>
-            <div id="descHelp">Optional. Enter a text description or hint for the currently selected grid cell. This description will be shown to the player when they visit that cell.</div>
         </div>
 </div>
 <div class="mainBody">
@@ -392,6 +389,12 @@
 				<option  value="">none</option>
 				</select>
 				</div>
+				<div class="floatGroup">
+					<p>Bump Descriptions</p>
+					<div id="wallDescGroup" class="descriptionGroup">
+						<input array="true" object="wall" title="Bump Description 1"  meta="descriptions" id="wallDesc1" placeholder="Bump Description 1" />
+					</div>
+                    </div>	
 				<div style="width: fit-content;">
 				<label for="wallIcon">Icon</label>
 				<select  object="wall" meta="icon" value="wall" meta="icon" div="wallIconDisplay" onchange="updateWallIcon();"  id="wallIcon" >
