@@ -1748,27 +1748,7 @@ function enterCell(prefix) {
   // discovery messages already describe the item (prevents duplicates).
   var finalText = String(text || '');
   const discAll = discoveryMsgs.join(' ').toLowerCase();
-  const redundantPatterns = [
-    { key: 'potion', re: /A potion is here\.\s*/i },
-    { key: 'treasure', re: /A treasure chest is here\.\s*/i },
-    { key: 'villager', re: /A villager is here\.\s*/i },
-    { key: 'weapon shop', re: /A weapon shop is here\.\s*/i },
-    { key: 'armor shop', re: /An armor shop is here\.\s*/i },
-    { key: 'key', re: /A key is here\.\s*/i },
-    { key: 'door', re: /A door is here\.\s*/i },
-    { key: 'exit', re: /An exit is here\.\s*/i }
-  ];
-
-  for (const p of redundantPatterns) {
-    if (discAll.indexOf(p.key) !== -1) {
-      finalText = finalText.replace(p.re, '');
-    }
-  }
-
-  // Also strip the 'Inn: ...' surroundings cue if we already pushed an inn discovery message.
-  if (discoveryMsgs.some(m => /inn/i.test(m))) {
-    finalText = finalText.replace(/Inn:\s*[^.]*\.\s*/i, '');
-  }
+	console.log(discAll);
 
   if (prefix) spoken.push(prefix);
   if (discoveryMsgs.length) spoken.push(discoveryMsgs.join(" "));
