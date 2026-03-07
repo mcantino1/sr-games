@@ -1428,11 +1428,11 @@ function enterCell(prefix) {
 		else{
 			if (tookStairs.level != null){
 				//You take the stairs to E5
-				discoveryMsgs.push(stairMessage);
+				discoveryMsgs.push(stairsMessage);
 				discoveryMsgs.push("You are now in " + tookStairs.cell + " of " + tookStairs.level + ".\n");
 			}
 			else{
-				discoveryMsgs.push(stairMessage);	
+				discoveryMsgs.push(stairsMessage);	
 				discoveryMsgs.push("You are now in " + tookStairs.cell + ".\n");
 			}
 		}
