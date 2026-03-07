@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Level Creator</title>
+    <title>Game Creator</title>
     <link rel="stylesheet" href="levelCreatorStyle.css">
 </head>
 <body>
     <div class="container">
-        <h1>Level Creator</h1>
+        <h1>Game Creator</h1>
 		<div class="topInfo">    
 		<select id="gameSelect" onchange="selectGame();">
 		
@@ -16,7 +16,7 @@
 			<label for="gameName">Game Name: </label>
 			<input object="game" meta="name" type="text" id="gameName" value="Super Dungeon"/>
 	       <button id="btnSave" onclick="saveSet()" >save</button> 
-		
+			<H2>Game Defaults</H2>
 		   
 		   <label for="statLife">Life</label><input  object="game" meta="life" class="statBox" type="number" id="statLife" value="10"/>
 		   <label for="statStrength">Strength</label><input  object="game" meta="strength" class="statBox" type="number" id="statStrength" value="2"/>
@@ -25,47 +25,71 @@
 		   <label  for="baseOpacity">Grid opacity</label><input object="game" meta="gridOpacity" class="statBox" type="number"  id="baseOpacity" value="100"/>
 		   
 </div>
-        
+<H2>Level Editor</H2>    
 <div class="gridParent">
 <div class="leftPanel">
-<H2>Level List</h2>
+<H3>Level List</H3>
 <select name="levels" meta="level" object="game" onchange="changeLevel();" title="Level List" id="levelSelect" size="20"></select>
 <button id="btnNew" onclick="levelNew()" >New</button>
 <button id="btnCopy" onclick="levelCopy()">Copy</button>
 <button id="btnDelete" onclick="levelDelete()">Delete</button>
 <button id="btnSort" onclick="sortLevelList()">Sort</button>
 </div>
+<div class="rightPanel">
+        <div class="grid-section">
+           <H3>Level Grid</H3>
+            <table id="grid" title="game grid"  ></table>
+            <div id="gridAnnouncer" aria-live="polite" aria-atomic="true"> </div>
+     
+		</div>
+        <div>
+            <div >
+       
+                <button id="btnGenerateSVG" class="gen-btn" >Download SVG Map</button>
+                <button id="btnGenerateWallsSVG" class="gen-btn" >Download Wall Only Map</button>
+            </div>
+            
+        </div>
+        <!-- Help text for form fields (hidden but available to screen readers) -->
+        <div class="sr-only">
+            <div id="rowsHelp">Enter a number between 1 and 12 for the number of grid rows.</div>
+            <div id="colsHelp">Enter a number between 1 and 12 for the number of grid columns.</div>
+            <div id="descHelp">Optional. Enter a text description or hint for the currently selected grid cell. This description will be shown to the player when they visit that cell.</div>
+        </div>
+</div>
 <div class="mainBody">
+	<H3>Level Settings</H3>
 	<div>
-		<h2>Level Settings</h2>
-		<div>
-			<div class="floatGroup">
-				<label  for="inputLevelId">Level ID:</label>
-                <input meta="id" object="level" type="text" onchange="updateID();" id="inputLevelId" placeholder="uniqueIdentifier" >
-			</div>
-			<div class="floatGroup">
-				<label for="nextLevelSelect">Next level:</label>
-				<select object="level" meta="level" name="nextLevelId" id="nextLevelSelect"  onchange="updateNext();" ></select>
-			</div>
-			<div class="floatGroup">
+		<div class="floatGroup">
+			<label  for="inputLevelId">Level ID:</label>
+			<input meta="id" object="level" type="text" onchange="updateID();" id="inputLevelId" placeholder="uniqueIdentifier" >
+		</div>
+		<div class="floatGroup">
+			<label for="nextLevelSelect">Next level:</label>
+			<select object="level" meta="level" name="nextLevelId" id="nextLevelSelect"  onchange="updateNext();" ></select>
+		</div>
+		<div class="floatGroup">
 			<label for="levelOpacity">Grid opacity</label>
 			<input object="level" meta="gridOpacity" class="statBox" type="number" onchange="saveLevel(); updateOpacity();" id="levelOpacity" value="100"/>
-			</div>
-			<div class="floatGroup">
-                <label for="inputRows">Rows:</label>
-                <input meta="rows" object="level" type="number" id="inputRows" min="1" max="12" value="6" aria-describedby="rowsHelp">
-            </div>
-			<div class="floatGroup">
+		</div>
+		<div class="floatGroup">
+            <label for="inputRows">Rows:</label>
+            <input meta="rows" object="level" type="number" id="inputRows" min="1" max="12" value="6" aria-describedby="rowsHelp">
+        </div>
+		<div class="floatGroup">
 			<label for="inputCols">Cols:</label>
-                <input  object="level" meta="cols" type="number" id="inputCols" min="1" max="12" value="6" aria-describedby="colsHelp">
-            </div>
+            <input  object="level" meta="cols" type="number" id="inputCols" min="1" max="12" value="6" aria-describedby="colsHelp">
+        </div>
 			<div class="floatGroup">
 			<button id="btnCreateGrid">Create Grid</button>
-			</div>
 		</div>
-		</div>
-		<div>
-         <h2>Tools</h2>
+	</div>
+	<H3>Cell Tools</H3>
+	<div>
+        <div class="floatGroup">
+			<label for="inputDesc">Cell description:</label><div>
+			<textarea onChange="updateScene(this)" object="scene" type="text" id="inputDesc" placeholder="Enter description for selected cell" > </textArea></div>
+        </div>
 				<button class="item-btn" id="btnSelect" data-item="select">Select (I)</button>
                 <button class="item-btn" data-item="eraser" >Eraser (E)</button>
                 <button class="item-btn" data-item="wall" >Wall (W)</button>
@@ -79,9 +103,21 @@
 				<button class="item-btn" data-item="gameEnd" >Game End (N)</button>
          </div>
 		<div>		 
-			<h2>Cell Properties</h2>
+			<H3>Object Properties</H3>
             <div object="monster" class="configDiv" id="monsterLibraryContainer" >
+				<div>
+				<h4>Monster Library</h4>
+				<div class="libraryParent" id="monsterParent">
+                    <table object="monster" library="true" id="monsterList" class="monster-list">
+						
+					</table>
 				
+                </div>
+				<button object="monster" action="export" id="btnExportCSV" >Export CSV</button>
+				
+						<input id="monsterImport" class="hidden" btn="btnMonsterImport" onchange="libraryUpload(this)" accept=".csv" type="file" />
+						<button id="btnMonsterImport"  object="monster" action="import" input="monsterImport" type="button">Import CSV </button>
+				</div>
                     <div class="floatGroup">
                         <label for="monsterName" > monster Name:     </label>
                             <input object="monster" meta="name"  id="monsterName" placeholder="Name" />
@@ -107,17 +143,9 @@
                             <input object="monster" meta="boss" id="monsterBoss"  type="checkbox"  />
                     </div>					
                     <div class="floatGroup">
-						<div class="floatGroup">
-							<label  for="monsterDesc1">Attack description 1</label>
-							<input object="monster" meta="descriptions" array="true" id="monsterDesc1" placeholder="Description 1 (attacked)" />
-						</div>
-						<div class="floatGroup">
-							<label for="monsterDesc2">Description 2</label>
-							<input object="monster" meta="descriptions" array="true" id="monsterDesc2" placeholder="Description 2 (attacked)"  />
-						</div>
-						<div class="floatGroup">
-							<label for="monsterDesc3">Description 3</label>
-							<input object="monster" meta="descriptions" array="true" id="monsterDesc3" placeholder="Description 3 (attacked)"  />
+						<p>Attack Descriptions</p>
+						<div id="monDescGroup" class="descriptionGroup">
+						<input array="true" object="monster" title="Attack Description 1"  meta="descriptions" id="monsterDesc1" placeholder="Description 1 (attacked)" />
 						</div>
                     </div>	
 					<div class="floatGroup">
@@ -161,19 +189,10 @@
 					<div style="clear: both;">
                         <button object="monster" action="add" id="btnAddMonster">Add Monster</button>
                         <button object="monster" action="cancel" id="btnCancelEdit" >New monster</button>
-						<button object="monster" action="export" id="btnExportCSV" >Export CSV</button>
-						<label for="monsterImport">Import CSV</label>
-						<input id="monsterImport" btn="btnMonsterImport" onchange="libraryUpload(this)" accept=".csv" type="file" />
-						<button id="btnMonsterImport" class="hidden" object="monster" action="import" input="monsterImport" type="button">Import Library </button>
-					</div>
-				<div class="floatGroup">
-				<div id="monsterParent">
-                    <table object="monster" library="true" id="monsterList" class="monster-list">
 						
-					</table>
-				
-                </div>
-				</div>
+						
+					</div>
+
             </div>
 
 
@@ -190,6 +209,16 @@
 			</div>
 
 			<div object="shop" class="configDiv"id="shopConfig">
+				<div>
+				<h4>Shop Library</h4>
+					<div class="libraryParent" id="shopParent">
+						<table id="shopList" library="true" object="shop" class="monster-list">	
+						</table>
+					</div>
+				<button object="shop" action="export" id="btn+ExportShop" >Export CSV</button>
+						<input id="shopImport" btn="btnShopImport" class="hidden" onchange="libraryUpload(this)" accept=".csv" type="file" />
+						<button id="btnShopImport"  object="shop" action="import" input="shopImport" type="button">Import CSV </button>
+				</div>
 			    <div class="floatGroup">
 					<label for="shopName" > Shop Name:     </label>
                     <input object="shop" meta="name" id="shopName" placeholder="the ..." />
@@ -227,21 +256,26 @@
 				<div style="clear: both;">
                         <button object="shop" action="add" id="btnAddShop">Add Shop</button>
                         <button object="shop" action="cancel" id="btnCancelShop" >New Shop</button>
-						<button object="shop" action="export" id="btnExportShop" >Export CSV</button>
-						<label for="shopImport">Import CSV</label>
-						<input id="shopImport" btn="btnShopImport" onchange="libraryUpload(this)" accept=".csv" type="file" />
-						<button id="btnShopImport" class="hidden" object="shop" action="import" input="shopImport" type="button">Import Library </button>
-					</div>
-				<div id="shopParent">
-                    <table id="shopList" library="true" object="shop" class="monster-list">
 						
-					</table>
-                </div>
+					</div>
+
 				
             </div>
 
 
 			<div object="trigger" class="configDiv" id="triggerConfig">
+			    <div>
+					<h4>Trigger Library</h4>
+					<div class="libraryParent" id="triggerParent">
+						<table id="triggerList" object="trigger" library="true" class="monster-list">
+						</table>
+					</div>
+
+				<button object="trigger" action="export" id="btnExportTrigger" >Export CSV</button>
+						
+						<input class="hidden" id="triggerImport" btn="btnTriggerImport" onchange="libraryUpload(this)" accept=".csv" type="file" />
+						<button id="btnTriggerImport"  object="trigger" action="import" input="triggerImport" type="button">Import CSV </button>
+					</div>
 			    <div class="floatGroup">
 					<label for="triggerName" > Trigger Name:     </label>
                     <input object="trigger" meta="name" id="triggerName" placeholder="void" />
@@ -303,16 +337,8 @@
 				<div style="clear: both;">
                         <button  object="trigger" action="add" id="btnAddTrigger">Add Trigger</button>
                         <button  object="trigger" action="cancel" id="btnCancelTrigger" >New Trigger</button>
-						<button object="trigger" action="export" id="btnExportTrigger" >Export CSV</button>
-						<label for="triggerImport">Import CSV</label>
-						<input id="triggerImport" btn="btnTriggerImport" onchange="libraryUpload(this)" accept=".csv" type="file" />
-						<button id="btnTriggerImport" class="hidden" object="trigger" action="import" input="triggerImport" type="button">Import Library </button>
-				</div>
-				<div id="triggerParent">
-                    <table id="triggerList" object="trigger" library="true" class="monster-list">
 						
-					</table>
-                </div>
+				</div>
 				
             </div>
 
@@ -376,30 +402,15 @@
 				</div>
             </div>
 			
-			<div class="floatGroup">
-                <label for="inputDesc">Cell description:</label>
-                <input object="scene" type="text" id="inputDesc" placeholder="Enter description for selected cell"  aria-describedby="descHelp">
-                <button id="btnSetDesc">Set Description</button>
-            </div>
+
         </div>
 </div>
-<div class="rightPanel">
-        <div class="grid-section">
-           <H2>Level Grid</H2>
-            <table id="grid" title="game grid"  ></table>
-            <div id="gridAnnouncer" aria-live="polite" aria-atomic="true"> </div>
-     
 </div>
-        <div>
-            <div >
-       
-                <button id="btnGenerateSVG" class="gen-btn" >Download SVG Map</button>
-                <button id="btnGenerateWallsSVG" class="gen-btn" >Download Wall Only Map</button>
-            </div>
-            
-        </div>
+<H2>Asset management</H2>
+<div class="gridParent">
+
 <div id="soundBox">
-<h2>Sound Bank</h2>
+<H3>Sound Bank</H3>
 <select soundSelect="true" id="soundSelect" onchange="selectSound();">
 		
 </select>
@@ -437,13 +448,9 @@
 <button onClick="soundNodeAdd()">Add Node</button>
 </div>
     </div>
+</div>
+</div>
 
-        <!-- Help text for form fields (hidden but available to screen readers) -->
-        <div class="sr-only">
-            <div id="rowsHelp">Enter a number between 1 and 12 for the number of grid rows.</div>
-            <div id="colsHelp">Enter a number between 1 and 12 for the number of grid columns.</div>
-            <div id="descHelp">Optional. Enter a text description or hint for the currently selected grid cell. This description will be shown to the player when they visit that cell.</div>
-        </div></div>
 
 
 

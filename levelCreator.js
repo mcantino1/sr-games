@@ -1115,7 +1115,7 @@ function levelNew(){
 	
 	myNum = (myList.children.length + 1).toString().padStart(2, '0');
 	newId = "level" + myNum
-	LEVELS[newId] = {};
+	LEVELS[newId] = {};	
 	LEVELS[newId].id = newId
 	LEVELS[newId].rows = 6
 	LEVELS[newId].cols = 6
@@ -1379,7 +1379,6 @@ function selectLibItem(row){
 }
 
 function populateFromLibrary(m, myFields){
-	arrayIndex = {};
 	for(field of myFields){
 		fieldMeta = field.getAttribute("meta");
 		//console.log(fieldMeta)
@@ -1394,19 +1393,45 @@ function populateFromLibrary(m, myFields){
 			field.checked = m[fieldMeta];
 		}
 		else if(field.getAttribute("array")){
-			//Part of an array'd variable
+			//Field for an array'd variable
 			//uuuuuuuuh
-			if (Object.keys(arrayIndex).includes(fieldMeta)){
-				arrayIndex[fieldMeta] += 1;	
+			//how many entries does this library item have
+			console.log(m[fieldMeta]);	
+			let fieldCount = 0
+			if(m[fieldMeta]){
+				fieldCount = m[fieldMeta].length;
 			}
-			else{
-			//	console.log("new array index")
-				arrayIndex[fieldMeta] = 0;
+			fieldCount += 1;
+			fieldParent = field.parentElement;
+			let fieldArray = fieldParent.children;
+			objType = field.getAttribute("object")
+			baseId = field.getAttribute("id").replace("1", "")
+			//get right number of fields
+			while (fieldCount > fieldArray.length){
+				//<input array="true" object="monster" meta="descriptions" id="monsterDesc1" placeholder="Description 1 (attacked)" />
+				let newInput = document.createElement("input");
+				newInput.setAttribute("id", baseId + (fieldArray.length + 1));
+				newInput.setAttribute("placeholder", fieldMeta + " " + (fieldArray.length + 1));
+				newInput.setAttribute("title", fieldMeta + " " + (fieldArray.length + 1));
+				newInput.setAttribute("onchange", "updateSelected(this)");
+				newInput.setAttribute("meta", fieldMeta);
+				newInput.setAttribute("object", objType);
+				
+				newInput.setAttribute("array", "true");
+				
+				fieldParent.appendChild(newInput);
 			}
-			if(m[fieldMeta] && m[fieldMeta][arrayIndex[fieldMeta]]){
-					field.value = m[fieldMeta][arrayIndex[fieldMeta]]
-				}
-				else{field.value = ""}
+			while (fieldCount < fieldArray.length){
+				//document.body.removeChild(temp_link);
+				fieldParent.removeChild(fieldParent.children[fieldParent.children.length - 1]);
+			}
+			//add content
+			fieldCount = fieldCount - 1;
+			fieldArray[fieldCount].value = "";
+			for (let a = 0; a < fieldCount; a++){
+				fieldArray[a].value = m[fieldMeta][a];
+			}
+			
 		}
 		
 		else{
@@ -1658,6 +1683,15 @@ function focusCellByPosition(pos) {
 	}
 }
 
+function selectCell(pos){
+	var cell = document.getElementById('cell_' + pos);
+	if (cell) {
+		//cell.tabIndex = 0;
+		cell.click();
+		announceCell(pos);
+	}
+}
+
 function enterGridMode(startPos) {
 //console.log("enterGridMode");
 //console.log(LEVELS);
@@ -1813,7 +1847,12 @@ for (var i = 0; i < itemButtons.length; i++) {
 
 updateTreasureUI();
 
-// Custom wall UI wiring
+
+function refJump(btn){
+	levelSelect.value = btn.getAttribute("level");
+	changeLevel();
+	selectCell(btn.getAttribute("cell"))	
+}
 
 
 function renderLibraries(){
@@ -1885,7 +1924,8 @@ function renderLibraries(){
 					cell.appendChild(list)
 				}
 				else{
-					cell.innerHTML = entries[itemName].meta[key];
+					
+					cell.innerHTML = "<p>" +  entries[itemName].meta[key] + "</p>";
 				}
 					row.appendChild(cell);
 			}}
@@ -1903,9 +1943,9 @@ function renderLibraries(){
 					for(item of refs[level]){
 						//confirm REF is still this object
 						if(stillThere(level, item, itemName, libKey)){
+							//LINK TO REF
 							var myLi = document.createElement("li");
-						
-							myLi.innerHTML = level + " " + item.pos;
+							myLi.innerHTML = '<button class="refbutton" onClick="refJump(this)" level="' + level + '" cell="' + item.pos + '" type="button">' + level + "&nbsp;" + item.pos + "</button>";
 							myList.appendChild(myLi)
 						}
 						else{
@@ -1928,14 +1968,35 @@ function renderLibraries(){
 		}
 		
 		myTable.appendChild(body);
+		
+		//sort by Use
+	
+		rows = body.children;
+		rowCount = body.children.length;
+		lastCol = rows[0].children.length - 1;
+		for(r = 0; r < (rowCount - 1); r++){
+			//how any refs current row
+			//		row			ref Cell		ul			lis
+			refsA = 0
+			refsB = 0
+			if(rows[r].children[lastCol].children.length > 0){
+				refsA = rows[r].children[lastCol].children[0].children.length;}
+			if(rows[r+1].children[lastCol].children.length > 0){
+				refsB = rows[r + 1].children[lastCol].children[0].children.length || 0};
+			if(refsA < refsB){
+				body.appendChild(rows[r]);
+				r = -1;
+			}	
+		}
+		
+		
 		if(libraries[libKey].editing != ""){
 			libSelectedClass(myTable, libraries[libKey].editing);
 		}
+		
 	}
 	
 }
-
-
 
 
 function resetFields(myFields){
@@ -1945,6 +2006,15 @@ function resetFields(myFields){
 		if(field.getAttribute("type") == "checkbox"){
 			//checkbox field
 			field.checked = false;
+		}
+		if(field.getAttribute("array") == "true"){
+			//delete all siblings and empty this field
+			field.value = field.getAttribute("value") || '';
+			let fieldParent = field.parentElement;
+			let mySibs = fieldParent.children;
+			while(mySibs.length > 1){
+				fieldParent.removeChild(mySibs[1]);
+			}
 		}
 		else {
 			field.value = field.getAttribute("value") || '';
@@ -1982,7 +2052,6 @@ function findObj(level, pos, objectType){
 
 
 function libraryFromFields(m, myFields){
-	arrayIndex = {};
 	for(field of myFields){
 		fieldMeta = field.getAttribute("meta");
 	
@@ -1996,20 +2065,23 @@ function libraryFromFields(m, myFields){
 			field.checked = false;
 		}
 		else if(field.getAttribute("array")){
-			//Part of an array'd variable
-			//uuuuuuuuh
-			if (Object.keys(arrayIndex).includes(fieldMeta)){
-				arrayIndex[fieldMeta] += 1;
+			if(m[fieldMeta] || field.value != ""){m[fieldMeta] = []}
+			arrayFields = field.parentElement.children;
+			fieldCount = arrayFields.length;
+			for (let a = 0; a < fieldCount; a++){
+				if(arrayFields[a].value != ""){
+					if(m[fieldMeta].length > a){
+						m[fieldMeta][a] = arrayFields[a].value;
+					}
+					else{
+					m[fieldMeta].push(arrayFields[a].value);
+					}
+				}
 			}
-			else{
-			
-				arrayIndex[fieldMeta] = 0;
-				m[fieldMeta] = [];
+			//remove extra fields
+			while(arrayFields.length > 1){
+				field.parentElement.removeChild(arrayFields[1]);
 			}
-			if(m[fieldMeta] && m[fieldMeta][arrayIndex[fieldMeta]]){
-				m[fieldMeta][arrayIndex[fieldMeta]] = field.value;
-			}
-			else if(field.value != ""){m[fieldMeta].push(field.value)}
 		}
 		else{
 			//all other types
@@ -2057,6 +2129,7 @@ function libraryAction(btn){
 	if(myAction == "import"){
 
 		let csvInput = document.getElementById(btn.getAttribute("input"));
+		csvInput.click();
 		if ('files' in csvInput && csvInput.files.length > 0) {
 			CSVToLibrary(csvInput.files[0], objectType);
 			
@@ -2113,7 +2186,7 @@ function updateRefs(myItem, name, objectType){
 			itemRef = findObj(level, item, objectType)
 			if(itemRef){
 			for(key of libKeys){
-				console.log(key)
+				
 				itemRef.meta[key] = libMeta[key];
 			}}
 		}
@@ -2570,16 +2643,6 @@ document.getElementById('grid').onclick = function(e) {
 	};
 	
 
-document.getElementById('btnSetDesc').onclick = function() {
-	if (selectedPos) {
-		var desc = document.getElementById('inputDesc').value;
-		if (desc.trim()) {
-			scenes[selectedPos] = desc;
-		} else {
-			delete scenes[selectedPos];
-		}
-	}
-};
 
 
 
@@ -2849,11 +2912,53 @@ function initForms(){
 	
 }
 
+
+
+function updateScene(field){
+	if (selectedPos) {
+		var desc = field.value;
+		if (desc.trim()) {
+			scenes[selectedPos] = desc;
+		} else {
+			delete scenes[selectedPos];
+		}
+	}
+}
+
 function updateSelected(field){
-	//console.log("updateSelected");
-	//console.log(field);
+	console.log("updateSelected");
+	console.log(field);
 	if(field.getAttribute("soundselect")){
 		playSound(field.value);
+	}
+	
+	if(field.getAttribute("array") == "true"){
+		console.log("array field changed")
+		console.log(field.value);
+		//always have one blank input at the bottom
+		//check for two blank inputs
+		let arrayFields = field.parentElement.children;
+		let fieldParent = field.parentElement;
+		let fieldCount = arrayFields.length;
+		while(arrayFields[fieldCount - 1].value == "" && arrayFields[fieldCount - 2].value == ""){
+			//remove last item
+		    field.parentElement.removeChild(arrayFields[fieldCount - 1]);
+			fieldCount = arrayFields.length;
+		}
+		//check for no blank inputs
+		let fieldMeta = field.getAttribute("meta");
+		objType = field.getAttribute("object")
+		if(arrayFields[fieldCount - 1].value != ""){
+			let newInput = document.createElement("input");
+			newInput.setAttribute("placeholder", fieldMeta + " " + (fieldCount +  1));
+			newInput.setAttribute("title", fieldMeta + " " + (fieldCount + 1));
+			newInput.setAttribute("onchange", "updateSelected(this)");
+			newInput.setAttribute("meta", fieldMeta);
+			newInput.setAttribute("array", "true");
+			newInput.setAttribute("object", objType);
+			fieldParent.appendChild(newInput);
+			
+		}
 	}
 	if(activeCell){
 		var pos = activeCell.dataset.pos;
@@ -2870,10 +2975,11 @@ function updateSelected(field){
 				cellObject.meta[fieldMeta] = field.checked;
 				
 			}
-			else if (field.getAttribute("array") == true){
+			else if (field.getAttribute("array") == "true"){
 				//console.log("array")
-				cellObject.meta[fieldMeta][field.getAttribute("index")] = fieldValue;
-				
+				mySibs = field.parentElement.children;
+				myIndex = mySibs.indexOf(field);
+				cellObject.meta[fieldMeta][myIndex] = fieldValue;
 			}
 			else{
 				//console.log("standard field")
