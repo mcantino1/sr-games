@@ -1716,7 +1716,10 @@ function enterCell(prefix) {
 	  
 	  if(haz.meta.stairs){
 		
-		//take stairs
+}
+		
+}
+		//{ "type": "trigger", "pos": "B1", "meta": { "name": "Good Void", "hint": "Glittering Fog", "text": "You fall through a glittering void", "void": false, "stairs": true, "value": "5", "effect": "fall", "level": "level3", "cell": "E2", "kind": "life", "icon": "void" } }
 		preserveStatsOnNextLoad = true;
 		targetLevel = haz.meta.level;
 		targetCell = haz.meta.cell;
@@ -1724,7 +1727,7 @@ function enterCell(prefix) {
 		stairsMessage = haz.meta.text + " " + effectMessage;
 		if (targetLevel != currentLevelId){	tookStairs.level = targetLevel;}
 		tookStairs.cell = targetCell;
-		
+	    tookStairs.trigger = true;
 		if (targetLevel == currentLevelId){
 			player.col = targetCell.charCodeAt(0) - 65;
 			player.row = targetCell.substring(1) - 1;
