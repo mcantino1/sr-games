@@ -94,7 +94,7 @@ buttonZone = document.getElementById("gameButtons");
 function backupDemo(){
 	if (Object.keys(myGames).length == 0){
 		console.log("oh no!")
-		demoGame = {"title": "Demo", "levels": LEVELS};
+		demoGame = {"title": "Feature Testing", "levels": LEVELS};
 		myGames["game01"] = demoGame;
 		addGame("01")
 	}
@@ -418,11 +418,6 @@ var soundBank = {"step": {"dur": 0.1, "type": "sine", "frequency": 15, "layers":
 				"slay": {"layers": 2, "dur": 0.5, "type": "triangle", "frequency": 200, "nodes": [{"type": "frequency", "value": 40, "time": 1}, {"type": "gain", "value": 0.5, "time": 0.01}, {"type": "gain", "value": 1, "time": 0.5},  {"type": "gain", "value": 0.01, "time":1}], "nodes2": [{"type": "frequency", "value": 50, "time": 0}, {"type": "frequency", "value": 100, "time": 1}, {"type": "gain", "value": 1 , "time": 0 }, {"type": "gain", "value": 0.01 , "time": 0.083 }, {"type": "gain", "value": 1 , "time": 0.084 }, {"type": "gain", "value": 0.01 , "time": 0.166 }, {"type": "gain", "value": 1 , "time": 0.167 }, {"type": "gain", "value": 0.01 , "time": 0.25 }, {"type": "gain", "value": 1 , "time": 0.251 }, {"type": "gain", "value": 0.01 , "time": 0.333 }, {"type": "gain", "value": 1 , "time": 0.334 }, {"type": "gain", "value": 0.01 , "time": 0.416 }, {"type": "gain", "value": 1 , "time": 0.417 }, {"type": "gain", "value": 0.01 , "time": 0.5 }] },
 				"hiss": {"dur": 1, "type": "sawtooth", "frequency": 10, "layers": 1, "nodes": [{"type": "frequency", "value": 10, "time": 1},{"type": "gain", "value": 0.1, "time": 0.01},{"type": "gain", "value": 0.1, "time": 1}]}
 				};
-				
-  
-
-
-
 
 let currentLevelId = "level1";
 let level = null;
@@ -539,7 +534,7 @@ let LEVELS = {
     cols: 6,
     items: [
       {type:"wall", pos:"B1"},
-      {type:"wall", pos:"B2"},
+      {type:"wall", pos:"B2",  "meta": {"name": "Bouncy Wall","effectBump": "hiss"}},
       {type:"wall", pos:"B3"},
       {type:"monster", pos:"D3", meta: {boss: true}},
       {type:"treasure", pos:"C4"},
@@ -1867,8 +1862,10 @@ function tryMove(dr, dc) {
 		announce("A " + wallName + " blocks your way. ");}
 	}
 	let bumpEffect = "wall";
+	//level.items[0].meta.effectBump
+
 	if(wall && wall.meta && wall.meta.effectBump){
-		let bumpEffect = wall.meta.effectBump;
+		bumpEffect = wall.meta.effectBump;
 	}
 	
 	playSound(bumpEffect);
