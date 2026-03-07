@@ -1408,7 +1408,7 @@ function enterCell(prefix) {
   
   
   
-  const text = describeCurrentLocation();
+  
   
   // Auto actions (announce discoveries)
   const discoveryMsgs = [];
@@ -1746,7 +1746,7 @@ function enterCell(prefix) {
   
   // Prepare final text by removing redundant "A ... is here. " sentences when
   // discovery messages already describe the item (prevents duplicates).
-  var finalText = String(text || '');
+  let finalText = describeCurrentLocation();
   const discAll = discoveryMsgs.join(' ').toLowerCase();
 	console.log(discAll);
 
@@ -1757,7 +1757,8 @@ function enterCell(prefix) {
   // Show the full spoken text in the Current location area and log it.
   let fullSpoken = spoken.join(' ');
   fullSpoken = trimText(fullSpoken)
-  currentText.innerHTML = fullSpoken;
+	console.log(fullSpoken);
+  currentText.innerHTML = fullSpoken;	
   if (speechOn){speechSay(currentText.textContent)}
   
  
@@ -1766,6 +1767,7 @@ function enterCell(prefix) {
 	updateUI();
   
 }
+
 var defeat = false;
 var voided = false;
 var voidMessage = "";
