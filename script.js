@@ -1432,7 +1432,7 @@ function enterCell(prefix) {
 				discoveryMsgs.push("You are now in " + tookStairs.cell + " of " + tookStairs.level + ".\n");
 			}
 			else{
-				discoveryMsgs.push(stairMessage);
+				discoveryMsgs.push(stairMessage);	
 				discoveryMsgs.push("You are now in " + tookStairs.cell + ".\n");
 			}
 		}
@@ -1714,11 +1714,7 @@ function enterCell(prefix) {
 		return;
 	  }
 	  
-	  if(haz.meta.stairs){
-		
-}
-		
-}
+	  if(haz.meta.stairs){		
 		//{ "type": "trigger", "pos": "B1", "meta": { "name": "Good Void", "hint": "Glittering Fog", "text": "You fall through a glittering void", "void": false, "stairs": true, "value": "5", "effect": "fall", "level": "level3", "cell": "E2", "kind": "life", "icon": "void" } }
 		preserveStatsOnNextLoad = true;
 		targetLevel = haz.meta.level;
