@@ -1782,7 +1782,7 @@ for (var i = 0; i < itemButtons.length; i++) {
 		myIndex = -1;
 		if(activeCell){
 			let myPos = activeCell.getAttribute("data-pos");
-			let myIndex = getItemIndex(pos);
+			let myIndex = getItemIndex(myPos);
 		}
 		if(currentItem == "select" && myIndex != -1 && items[myIndex].type == this.dataset.item){
 			currentItem = this.dataset.item;

@@ -144,6 +144,10 @@
 						<div id="monDescGroup" class="descriptionGroup">
 						<input array="true" object="monster" title="Attack Description 1"  meta="descriptions" id="monsterDesc1" placeholder="Description 1 (attacked)" />
 						</div>
+				<div class="floatGroup">
+				<label for="monRandom">Randomize</label>
+				<input object="monster" meta="random" id="monRandom"  type="checkbox"  />
+                </div>						
                     </div>	
 					<div class="floatGroup">
 						<div class="floatGroup">
@@ -389,12 +393,17 @@
 				<option  value="">none</option>
 				</select>
 				</div>
+
+
 				<div class="floatGroup">
 					<p>Bump Descriptions</p>
 					<div id="wallDescGroup" class="descriptionGroup">
 						<input array="true" object="wall" title="Bump Description 1"  meta="descriptions" id="wallDesc1" placeholder="Bump Description 1" />
 					</div>
-                    </div>	
+		
+					<label for="wallUnique" >Suppress Defaults</label>
+					<input object="wall" meta="special" id="wallUnique"  type="checkbox"  />
+                </div>					
 				<div style="width: fit-content;">
 				<label for="wallIcon">Icon</label>
 				<select  object="wall" meta="icon" value="wall" meta="icon" div="wallIconDisplay" onchange="updateWallIcon();"  id="wallIcon" >
