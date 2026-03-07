@@ -1714,11 +1714,11 @@ function enterCell(prefix) {
 	  }
 	  
 	  if(haz.meta.stairs){
-		  console.log("We haven't prepared for this kind of trigger yet.")	  
+		
 		//take stairs
 		preserveStatsOnNextLoad = true;
-		targetLevel = itemsAt(pos)[0].meta.level;
-		targetCell = itemsAt(pos)[0].meta.cell;
+		targetLevel = haz.meta.level;
+		targetCell = haz.meta.cell;
 		tookStairs.bool = true;
 		stairsMessage = haz.meta.text + " " + effectMessage;
 		if (targetLevel != currentLevelId){	tookStairs.level = targetLevel;}
@@ -1801,6 +1801,7 @@ function tryMove(dr, dc) {
   // Edge treated like wall
   if (!inBounds(nr, nc, level)) {
 	wallCount += 1;
+	//level.items[0].meta.descriptions
 	if (wallCount > 10){
 		max = wallPhrases.length
 		var i = Math.floor(Math.random() * max);
@@ -1847,8 +1848,22 @@ function tryMove(dr, dc) {
 	wall = itemsAt(nextPos)[0]
 	wallCount += 1;
 	
+	//level.items[0].meta.descriptions
 	if(wall.meta && wall.meta.name && wall.meta.name.length > 0){ wallName = wall.meta.name}
-	if(wallName.substr(wallName.length - 1) == "s"){
+	let myPhrases = wallPhrases;
+	if(wall.meta && wall.meta.descriptions && wall.meta.descriptions.length > 0){
+		if(wall.meta.special = true){
+			myPhrases = wall.meta.descriptions;
+		}
+		else{
+			for(desc of wall.meta.descriptions){
+				myPhrases.push(desc);
+			}
+		}
+		myPhrase = myPhrases[Math.floor(Math.random(myPhrases.length))].replace("wall", wallName).replace("Wall", wallName);
+		announce(myPhrase);
+		
+	} else if(wallName.substr(wallName.length - 1) == "s"){
 		announce("Some " + wallName + " blocks your way. ");
 	}
 	else{
@@ -1872,7 +1887,7 @@ function tryMove(dr, dc) {
 	playSound(bumpEffect);
     renderMap();
     return;
-  }
+  }	
 
   // Monster encounter: acts like a blocked path until defeated.
   if (hasMonster(nextPos)) {
@@ -1898,7 +1913,7 @@ function tryMove(dr, dc) {
     if (monster.descriptions && monster.descriptions.length) {
       var idx = typeof monster.nextDescIndex === 'number' ? monster.nextDescIndex : 0;
 	  if(monster.random == true || monster.random == "true"){
-		  idx = Math.floor(Math.random() * monster.descriptions.length);
+		  idx = Math.floor(Math.random() * monster.descriptions.length);	
 	  }
       attackDesc = monster.descriptions[idx];
       monster.nextDescIndex = (idx + 1) % monster.descriptions.length;
