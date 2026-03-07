@@ -1897,6 +1897,9 @@ function tryMove(dr, dc) {
     var attackDesc = null;
     if (monster.descriptions && monster.descriptions.length) {
       var idx = typeof monster.nextDescIndex === 'number' ? monster.nextDescIndex : 0;
+	  if(monster.random == true || monster.random == "true"){
+		  idx = Math.floor(Math.random() * monster.descriptions.length);
+	  }
       attackDesc = monster.descriptions[idx];
       monster.nextDescIndex = (idx + 1) % monster.descriptions.length;
     }
