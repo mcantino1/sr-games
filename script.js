@@ -167,7 +167,7 @@ function initGame(myButton){
 		 for(item of levels[key].items){
 			 //console.log(item)
 			 if (item.type == "key"){
-				 if (item.meta && item.meta.level){
+				 if (item.meta && item.meta.level && item.meta.level != ""){
 					 levels[item.meta.level].keyCount += 1;
 				 }
 				 else{
@@ -1458,7 +1458,8 @@ function enterCell(prefix) {
   if (hasKey(pos)) {
 	  let keyLevel;
 	  let mes = "You found a key"
-	if (itemsAt(pos)[0].meta){keyLevel = itemsAt(pos)[0].meta.level;
+	if (itemsAt(pos)[0].meta && itemsAt(pos)[0].meta.level && itemsAt(pos)[0].meta.level != "")
+	{keyLevel = itemsAt(pos)[0].meta.level;
 		mes += " for " + keyLevel  + ". "}
 		else {keyLevel = currentLevelId; mes += ". "}
 	levels[keyLevel].foundKey +=  1;
