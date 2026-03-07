@@ -1326,11 +1326,10 @@ function saveSet(){
 	
 	if(Object.keys(customIcons).length > 0){myGame["myIcons"] = customIcons}	
 	if(customSounds.length > 0){
-		myGame.customSounds = {};
+		myGame.mySounds = {};
 		for(sound of customSounds){
 			myGame.mySounds[sound] = soundBank[sound];
 		}
-		
 	}
 	
 	customStats = {}
@@ -2631,9 +2630,10 @@ function selectItem(cell){
 			myDiv.style.display = 'block'; 
 			message = type + " properties expanded."
 			myFields = metaMap[type];
-			resetFields(myFields);
+			
 			if(items[existingIdx].meta){
 			populateFromLibrary(items[existingIdx].meta, myFields);}
+			else{resetFields(myFields);}
 		}
 		
 		
