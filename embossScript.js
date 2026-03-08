@@ -265,6 +265,7 @@ function numFix(digits){
 }
 
 function selectGame(){
+	myBook.innerHTML = "";
 //console.log("selectGame");
 //console.log(levels);
 //console.log(items);	
