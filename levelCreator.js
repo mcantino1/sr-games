@@ -525,7 +525,7 @@ function clearList(myList){
 function selectGame(){
 //console.log("selectGame");
 //console.log(LEVELS);
-//console.log(items);
+//console.log(items);	
 
 	if(currentGame != ""){
 		//save current changes to loaded game
@@ -728,8 +728,10 @@ function initLevelSet(){
 		}
 		
 	}
-	sortLevelList();
 	loadLevel(LEVELS[myKeys[0]])
+	levelList.value = LEVELS[myKeys[0]];
+	sortLevelList();
+	
 }
 
 monIconSelect = document.getElementById("monIcon")
@@ -1047,6 +1049,7 @@ function sortLevelList(){
 	let myLevels = {}
 	let levelNames = []
 	let levelList = document.getElementById("levelSelect");
+	let currentSelection = levelList.value;
 	let listItems = document.getElementById("levelSelect").children;
 	for (l = 0; l < listItems.length; l++){
 		levelName = listItems[l].getAttribute("value")
@@ -1082,6 +1085,7 @@ function sortLevelList(){
 		levelList.append(levelList.children[0]);
 	}
 	}
+	levelList.value = currentId;
 }
 	
 
@@ -2065,6 +2069,7 @@ function findObj(level, pos, objectType){
 
 
 function libraryFromFields(m, myFields){
+	console.log(m);
 	for(field of myFields){
 		fieldMeta = field.getAttribute("meta");
 	
@@ -2113,7 +2118,12 @@ function getMetas(myFields){
 	console.log(myFields);
 	for(field of myFields){
 		fieldMeta = field.getAttribute("meta");
-	
+		console.log(field);
+		//<input object="monster" meta="name" id="monsterName" placeholder="Name" onchange="updateSelected(this);">
+		if(fieldMeta == "name" && field.value == "" && libraries[field.getAttribute("object")]){
+			field.value = field.getAttribute("object");	
+			}
+		console.log(field.value);
 		if(field.getAttribute("type") == "checkbox"){
 			//checkbox field
 			meta[fieldMeta] = field.checked;
@@ -2564,7 +2574,16 @@ function placeItem(pos){
 	}
 	
 	if(libraries[currentItem]){
-		myName = LEVELS[currentId].items[myIndex].meta.name;
+		if(!newObj.meta || !newObj.meta.name || !newObj.meta.name == ""){
+			myName = currentItem}
+		else{
+			myName = LEVELS[currentId].items[myIndex].meta.name;}
+		console.log("Name: " + myName);
+		if(!libraries[currentItem].lib[myName]){
+			//item never saved
+			libraries[currentItem].lib[myName] = {name: myName, meta: {}, refs: []}
+			libraryFromFields(libraries[currentItem].lib[myName].meta, metaMap[currentItem])
+		}
 		myLibSelf = libraries[currentItem].lib[myName];
 		if(!myLibSelf.refs){myLibSelf.refs = {}}
 		if(!myLibSelf.refs[currentId]){myLibSelf.refs[currentId] = [LEVELS[currentId].items[myIndex].pos]}
