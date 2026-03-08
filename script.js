@@ -563,7 +563,8 @@ let LEVELS = {
       {type:"monster", pos:"E5"},
       {type:"trigger", pos:"H8",  "meta": { "kind": "strength", "value": 1, "name": "sky blue treasure", "hint": "hidden passage", "text": "You found a yellow treasure chest. ", "icon": "treasure", "effect": "get" }},
       {type:"key", pos:"B5"},
-      {type:"door", pos:"L12"}
+      {type:"door", pos:"L12"},
+{"type":"trigger","pos":"B1","meta":{"name":"Good Void","hint":"Glittering Fog","text":"You fall through a glittering void","void":false,"stairs":true,"value":"5","effect":"fall","level":"level2","cell":"E2","kind":"life","icon":"void"}}
     ],
     scenes: { "A1":"A much larger maze. The air feels heavier. " },
     nextLevelId: null
@@ -1367,7 +1368,7 @@ function describeCurrentLocation() {
 /* ---------------- Discovery + entering a cell ---------------- */
 
 function enterCell(prefix) {
-  spoken = [];	
+  let spoken = [];	
   const pos = toPos(player.row, player.col);
   const firstVisit = !visited.has(pos);
   visited.add(pos);
@@ -1747,8 +1748,10 @@ function enterCell(prefix) {
   // Prepare final text by removing redundant "A ... is here. " sentences when
   // discovery messages already describe the item (prevents duplicates).
   let finalText = describeCurrentLocation();
-  const discAll = discoveryMsgs.join(' ').toLowerCase();
-	console.log(discAll);
+	console.log("spoken: " + spoken);
+	console.log("discovery messages: " + discoveryMsgs.join(" "));
+	console.log("describe location: " + finalText);
+	console.log("prefix: " + prefix);
 
   if (prefix) spoken.push(prefix);
   if (discoveryMsgs.length) spoken.push(discoveryMsgs.join(" "));
