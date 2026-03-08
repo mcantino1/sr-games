@@ -46,6 +46,7 @@ function makeLevelPages(){
 function addTypeOptions(){
 	myList = document.getElementById("itemList")
 	//<li><input  id="inclLevels"  type="checkbox"  /><label for="inclLevels">Levels</label></li>
+	myList.innerHTML = "";
 	for (type of myTypes){
 		myStyles[type] = "display: block; "
 		let newLi = document.createElement("li");
