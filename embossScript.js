@@ -339,7 +339,6 @@ function initCustomIcons(){
 		iconNames = Object.keys(newIcons);
 		for(icon of iconNames){
 			icons[icon] = newIcons[icon];
-			customIcons[icon] = newIcons[icon];
 		}
 	}
 }
