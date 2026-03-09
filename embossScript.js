@@ -241,7 +241,7 @@ function translate(english){
 	//quick and dirty translator for nowsies
 	//check for capital letters
 	//check for numbers
-	translated = translated.replace(/[\d]+/g,  "#" +  "$&");
+	translated = english.replace(/[\d]+/g,  "#" +  "$&");
 	if (translated.indexOf("#") != -1) {
 		numAt = translated.indexOf("#")
 		translated = translated.substring(numAt + 1, -1) + numFix(translated.substring(numAt + 1));
@@ -250,7 +250,7 @@ function translate(english){
 	for (key of brlKeys){
 		translated = translated.replaceAll(key, brlAlways[key])
 	}
-	var translated = english.replace(/[A-Z]/g,  "," + "$&".toLowerCase());
+	var translated = translated.replace(/[A-Z]/g,  "," + "$&".toLowerCase());
 
 	brlKeys = Object.keys(brlWholeWords);
 	for (key of brlKeys){
