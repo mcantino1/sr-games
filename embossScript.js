@@ -1,6 +1,3 @@
-//translation currently only checks for capitals and numbers because that's all we're using
-//no abbreviations
-//if you use more than one number in a name, this will need to be updated
 
 var name = "Super Dungeon"
 var myBook = document.getElementById("bookContent")
@@ -21,6 +18,7 @@ var customStyle = document.createElement("style");
 customStyle.type = 'text/css';
 document.getElementsByTagName("head")[0].appendChild(customStyle);
 var myStyles = {art: "display: block", level: "display: block;"};
+
 
 
 function revertDefaults(){
@@ -88,7 +86,6 @@ function updateStyles(){
 	for(page of pageTypes){
 		styleArray.push("." + page + "{ " + myStyles[page] + " }");
 	}
-	console.log(myStyles);
 	customStyle.innerHTML = styleArray.join("\n")
 }
 
@@ -131,7 +128,7 @@ function makeArtPages(){
 	for( let i = 0; i < myIcons.length; i++){
 		//new page every 4 icons
 		if(i > 0 && (i/4) === Math.floor(i/4)){
-			console.log("new page");
+			
 			num = Math.floor(i/4)
 			num = parseInt(num).toString().padStart(2, '0');
 			artPage = makePage("art" + num, artof + " " + head)
@@ -228,19 +225,21 @@ function getThings(items){
 	return things;
 }
 
+
 function translate(english){
 	//quick and dirty translator for nowsies
 	//check for capital letters
 	var translated = english.replace(/[A-Z]/g,  "," + "$&".toLowerCase());
 	//check for numbers
 	translated = translated.replace(/[\d]+/g,  "#" +  "$&");
-	if (translated.indexOf("#")) {
+	if (translated.indexOf("#") != -1) {
 		numAt = translated.indexOf("#")
 		translated = translated.substring(numAt + 1, -1) + numFix(translated.substring(numAt + 1));
-		
 	}
 	translated = translated.toLowerCase().replace("super", "sup]");
 	translated = translated.toLowerCase().replace("town", "t[n");
+	console.log(english + " | " + translated );
+
 	return translated;
 }
 
@@ -266,9 +265,6 @@ function numFix(digits){
 
 function selectGame(){
 	myBook.innerHTML = "";
-//console.log("selectGame");
-//console.log(levels);
-//console.log(items);	
 	revertDefaults();
 	if(currentGame != ""){
 		levels = {};
@@ -301,10 +297,11 @@ function getFile(num){
 }
 
 
+var tablePath = "./tables/";
+
+
+
 function backupDemo(num){
-//console.log("backupDemo");
-//console.log(levels);
-//	(items);
 
 	demoGame = {"title": "New Game", "levels": levels};	
 	myGames["game" + num] = demoGame;
@@ -318,9 +315,6 @@ function backupDemo(num){
 
 
 function addGame(num){
-//console.log("addGame");
-//console.log(levels);
-//console.log(items);
 
 	
 	let gameId = "game" + num;
