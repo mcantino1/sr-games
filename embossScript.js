@@ -1,7 +1,7 @@
 
 var name = "Super Dungeon"
 var myBook = document.getElementById("bookContent")
-var head = translate(name);
+
 var artof = ",>t (";
 var currentGame = "";
 var dataPath = "./data/game";
@@ -11,6 +11,15 @@ var	icons = { player: '<svg xmlns="http://www.w3.org/2000/svg" version="1.1" vie
 var myIcons = ["player"];
 var myTypes = [];
 var pageTypes = ["level", "art"];
+
+var brlAlways = {".": 4, "?": 8, "!": 6, ",": 1, ";": 2, ":": 3, "—": ",-", "$": ",-", "¢": "@c", "@": "@a", "’":  "'", "‘": ",8", "’": ",0", "(": '"<', ")": '">', "[": ".<", "]": ".>", "/": "_/" }
+var brlWholeWords = {"but": "b", "can": "c", "do": "d", "every": "e", "from": "f", "go": "g", "have": "h", "just": "j", "knowledge": "k", "like": "l", "more": "m", "not": "n", "people": "p", "quite": "q", "rather": "r", "so": "s", "that": "t", "us": "u", "very": "v", "will": "w", "it": "x", "you": "y", "as": "z", "child": "*", "shall": "v", "this": "?",  "which": ":", "out": "\\", "still": "/", "enough": "5", "his": "8", "was": "0", "were": "7"}
+var brlEndings = {"-ound": ".d", "-ance": ".e", "-ence": ";e", "-ong": ";g", "-ful": ";l", "-sion": ".n", "-tion": ";n", "-less": ".s", "-ness": ";s", "-ount": ".t", "-ment": ";t", "-ity": ";y"}
+var brlGroupSigns = {"and": "&",  "for": "=", "with": ")", "of": "(", "ou": "\\", "st": "/", "ar": ">", "ed": "$", "er": "]", "gh": "<", "ow": "[", "ing": "+", "in": "9", "en": "5", "be": "2", "con": "3", "dis": "4", "about": "ab", "because": "2c", "first": "f/", "above": "abv", "below": "2l", "great": "grt", "cannot": "_c", "day": "\"d", "ever": "\"e", "father": "\"f", "here": "\"h", "had": "_h", "know": "\"k", "lord": "\"l", "mother": "\"m", "many": "_m", "name": "\"n", "one": "\"o", "part": "\"p", "question": "\"q", "right": "\"r", "some": "\"s", "spirit": "_s", "time": "\"t", "under": "\"u", "upon": "^u", "work": "\"w", "word": "^w", "world": "_w", "young": "\"y", "character": "\"*", "through": "\"?", "those": "^?", "where": "\":", "whose": "^:", "ought": "\"|", "there": "\"!", "these": "^!", "their": "_!", "according": "ac", "braille": "brl", "perhaps": "p]h", "always": "alw", "children": "*n", "across": "acr", "almost": "alm", "must": "m/", "also": "al", "immediate": "imm", "necessary": "nec", "about": "ab", "friend": "*fr", "him": "hm", "above": "abv", "good": "*gd", "himself": "hmf", "according": "ac", "great": "*grt", "its": "xs", "across": "acr", "immediate": "imm", "itself": "xf", "after": "af", "letter": "*lr", "your": "yr", "afternoon": "afn", "little": "*ll", "yourself": "yrf", "afterward": "afw", "must": "m/", "yourselves": "yrvs", "again": "ag", "necessary": "nec", "herself": "h]f", "against": "ag/", "paid": "pd", "myself": "myf", "almost": "alm", "perhaps": "p]h", "oneself": "\"of", "already": "alr", "quick": "*qk", "ourselves": "|rvs", "also": "al", "said": "sd", "themselves": "!mvs", "although": "al?", "together": "tgr", "thyself": "?yf", "altogether": "alt", "could": "cd", "declare": "dcl", "always": "alw", "should": "vd", "declaring": "dclg", "because": "2c", "would": "wd", "rejoice": "rjc", "before": "2f", "either": "ei", "rejoicing": "rjcg", "behind": "2h", "neither": "nei", "conceive": "3cv", "below": "2l", "much": "m*", "conceiving": "3cvg", "beneath": "2n", "such": "s*", "deceive": "dcv", "beside": "2s", "today": "td", "deceiving": "dcvg", "between": "2t", "tonight": "tn", "perceive": "p]cv", "beyond": "2y", "tomorrow": "tm", "perceiving": "p]cvg", "blind": "*bl", "receive": "rcv", "braille": "*brl", "receiving": "rcvg", "children": "*n", "first": "f/"}
+var brlSpecHs = {"the": "!", "ch": "*", "sh": "v", "th": "?",  "wh": ":", "ou": "\\", "st": "/"}
+var brlSandwich = {"bb": "2", "cc": "3", "ff": "6", "gg": "7", "ea": "1", "tio": ";"}
+var head = translate(name);
+
 
 getIcon = {wall: "wall", custom_wall: "wall", armor_shop: "armor", weapon_shop: "weapon", inn: "inn", monster: "monster", key: "key", door: "door", exit: "door", stairs: "stairs", trigger: "void", shop: "villager", villager: "villager", treasure: "treasure", potion: "potion", "void": "void"}
 
@@ -86,6 +95,7 @@ function updateStyles(){
 	for(page of pageTypes){
 		styleArray.push("." + page + "{ " + myStyles[page] + " }");
 	}
+	
 	customStyle.innerHTML = styleArray.join("\n")
 }
 
@@ -236,12 +246,39 @@ function translate(english){
 		numAt = translated.indexOf("#")
 		translated = translated.substring(numAt + 1, -1) + numFix(translated.substring(numAt + 1));
 	}
-	translated = translated.toLowerCase().replace("super", "sup]");
-	translated = translated.toLowerCase().replace("town", "t[n");
-	console.log(english + " | " + translated );
-
+    brlKeys = Object.keys(brlAlways);
+	for (key of brlKeys){
+		translated = translated.replaceAll(key, brlAlways[key])
+	}
+	brlKeys = Object.keys(brlWholeWords);
+	for (key of brlKeys){
+		regex = new RegExp("([\\s\\(\\[\\{\\\"“'‘])" + key + "([\\s\\)\\]\\}\\\"”'’.,;:.!?…])", "g")
+		translated = translated.replace(regex, "$1" + brlWholeWords[key] + "$2")
+	}
+	brlKeys = Object.keys(brlEndings);
+	for (key of brlKeys){
+		regex = new RegExp("([a-z])" + key + "([\\s\\)\\]\\}\\\"”'’\\.,;:.!?…])", "g")
+		translated = translated.replace(regex, "$1" + brlEndings[key] + "$2")
+	}
+    brlKeys = Object.keys(brlGroupSigns);
+	for (key of brlKeys){
+		translated = translated.replaceAll(key, brlGroupSigns[key])
+	}
+    brlKeys = Object.keys(brlSpecHs);
+	for (key of brlKeys){
+		translated = translated.replaceAll(key, brlSpecHs[key])
+	}
+	brlKeys = Object.keys(brlSandwich);
+	for (key of brlKeys){
+		regex = new RegExp("([a-z])" + key + "([a-z])", "g")
+		translated = translated.replace(regex, "$1" + brlSandwich[key] + "$2")
+	}
+	
+	
+	console.log(english + " --> " + translated)
 	return translated;
 }
+
 
 function numFix(digits){
 	letters = ""
@@ -265,6 +302,7 @@ function numFix(digits){
 
 function selectGame(){
 	myBook.innerHTML = "";
+//
 	revertDefaults();
 	if(currentGame != ""){
 		levels = {};
@@ -297,10 +335,6 @@ function getFile(num){
 }
 
 
-var tablePath = "./tables/";
-
-
-
 function backupDemo(num){
 
 	demoGame = {"title": "New Game", "levels": levels};	
@@ -315,7 +349,7 @@ function backupDemo(num){
 
 
 function addGame(num){
-
+//
 	
 	let gameId = "game" + num;
 	let myOption = document.createElement("option");
