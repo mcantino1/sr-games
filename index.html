@@ -4,14 +4,14 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Welcome to Super Dungeon</title>
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="./styles/style.css">
 <link rel="stylesheet" href="https://use.typekit.net/hrj8jrm.css">
 <script type="text/javascript" src="https://chir.ag/projects/ntc/ntc.js"></script>
 <script src="https://cdn.jsdelivr.net/combine/npm/tone@14.7.58,npm/@magenta/music@1.23.1/es6/core.js,npm/html-midi-player@1.5.0"></script>
 </head>
 <body>
 
-<header>
+<header class="hideMe">
 	<div>
 		<h1><strong>Super Dungeon</strong></h1>
 	</div>	
@@ -141,14 +141,74 @@
 			</div>
 					
 			</div>
-
-		
-
 </header>
 <div id="welcome">
-<p>Welcome, hero.</p>
-<h2>Select your game</h2>
-<div id="gameButtons"></div>
+	<div id="welcomeMiddle">
+	<div id="welcomeLeft" class="panel">
+		<img src="./art/SDStartupLogo.svg" alt="">
+	</div>
+	
+	<div id="welcomeRight" class="panel main-menu">
+		<div id="titlePocket">
+		<h1> Welcome&nbsp;to SUPER&nbsp;DUNGEON</h1>
+		</div>
+			<div id="dragons">
+		
+		<img id="dragonRight" src="./art/SDDragonHead.svg">
+	<img id="dragonLeft" src="./art/SDDragonHead.svg">
+	</div>
+		<div id="menuStart">
+		<ul>
+			<li><button type="button" onclick="menuChange(this)" myScreen="menuStart" tarScreen="gameSelect"  id="btnPlay" >PLAY</button></li>
+			<li><button type="button" onclick="menuChange(this)" myScreen="menuStart" tarScreen="gameGuide"  id="btnGameGuide" >GAME GUIDE</button></li>
+			<li><button type="button" onclick="menuChange(this)" myScreen="menuStart" tarScreen="welcomeSettings" id="btnWelcomeSettings" >SETTINGS</button></li>
+			<!--<li><button type="button" onclick="" id="" >PATH TRAINER</button></li>-->
+			<li><button type="button" onclick="menuChange(this)" myScreen="menuStart" tarScreen="credits" id="btnCredits" >CREDITS</button></li>
+		</ul>
+		</div>
+		<div id="gameGuide" class="hideMe">
+		<h2 id="guideTitle" style="margin-top:0;">Gameplay Guide</h2>
+		<p><strong>Goal:</strong> Find the key, then unlock the door to finish the level.</p>
+		<dl>
+		<dt>Move</dt>
+		<dd>Use the Arrow Keys to move between grid cells.</dd>
+		<dt>W</dt>
+		<dd>Lists all items discovered on the current map.</dd>
+		<dt>A</dt>
+		<dd>Announce current location.</dd>
+		<dt>S</dt>
+		<dd>List player's current Stats.</dd>
+		<dt>D</dt>
+		<dd>Describe current location.</dd>		
+		<dt>Auto actions</dt><dd> Keys, treasure, and potions trigger automatically when you step onto them.</dd>
+		<dt>Manual actions</dt><dd> You can use <kbd>space</kbd> or <kbd>enter</kbd> to interact with shops and doors.</dd>
+		<dt>Door</dt><dd> You can only unlock the door if you have the key.</dd>
+		<dt>Fog of war</dt><dd> You only learn what's in a cell after you visit it.</dd>
+		<dt>Walls</dt><dd> You cannot move through walls.</dd>
+		</dl>
+		<button type="button" onclick="menuChange(this)" class="back" myScreen="gameGuide" tarScreen="menuStart" id="btnGuideBack" >back</button>
+		</div>
+		<div id="credits" class="hideMe">
+			<ul>
+	<li><a href="https://www.mcantino.com/">MCantino</a></li>
+	<li><a href="https://www.linkedin.com/in/jlucasor/">JLucas</a></li>
+	<li><a href="https://github.com/mcantino1/sr-games">GitHub</a></li>
+	<!--<li><a href="https://mcantino1.github.io/sr-games/level_creator.html">Game Editor</a></li>-->
+	<!--<li>Tactile Maps</li>-->
+	</ul>
+	<button type="button" onclick="menuChange(this)" class="back" myScreen="credits" tarScreen="menuStart" id="btnCreditsBack" >back</button>
+		</div>
+		<div id="gameSelect" class="hideMe">
+		<ul id="gameButtons"></ul>
+		<button type="button" onclick="menuChange(this)" class="back" myScreen="gameSelect" tarScreen="menuStart" id="btnSelectBack" >back</button>
+		</div>
+		<div id="welcomeSettings" class="hideMe">
+		<div id="otherSettingsBox"></div>
+		<button type="button" onclick="menuChange(this)" class="back" myScreen="welcomeSettings" tarScreen="menuStart" id="btnSettingsBack" >back</button>
+		</div>
+
+	</div>
+</div>
 </div>
 <main class="hideMe" id="game" tabindex="0" role="application" ">
   <section class="leftPane" aria-label="Grid panel">
@@ -178,21 +238,7 @@
       </ul>
          
     </footer>
-<dialog id="guideDialog" aria-labelledby="guideTitle">
-  <h2 id="guideTitle" style="margin-top:0;">Gameplay Guide</h2>
-  <p><strong>Goal:</strong> Find the key, then unlock the door to finish the level.</p>
-  <ul>
-    <li><strong>Move:</strong> Use the Arrow Keys to move between grid cells.</li>
-    <li><strong>Fog of war:</strong> You only learn what's in a cell after you visit it.</li>
-    <li><strong>Walls:</strong> You cannot move into a wall. If you bump a wall, it becomes visible.</li>
-    <li><strong>Auto actions:</strong> Keys, treasure, and potions trigger automatically when you step onto them.</li>
-    <li><strong>Door:</strong> You can only unlock the door if you have the key (step onto the door to unlock).</li>
-  </ul>
-  <div class="dialogActions">
-    <button id="closeGuideBtn">Close guide</button>
-  </div>
-</dialog>
-<script src="script.js"></script>
+<script src="./scripts/script.js"></script>
 <script>
 	
 
