@@ -9,25 +9,29 @@
 
 </head>
 <body>
-<div id="controls">
 <h1>Tactile Map Generator</h1>
+
+<div id="controls">
 <div class="controlGroup">
-<label for="gameSelect">Select Game: </label>
+<label for="gameSelect" class="h2">Select Game</label>
 <select id="gameSelect" onchange="selectGame();"></select>
 </div>
 <div class="controlGroup">
 <h2>Include Pages</h2>
 <ul class="checklist">
+<li><input  id="inclKey"  type="checkbox" object="key" onChange="toggleType(this)" checked /><label for="inclKey">Key</label></li>
 <li><input  id="inclLevels"  type="checkbox" object="level" onChange="toggleType(this)" checked /><label for="inclLevels">Levels</label></li>
 <li><input  id="inclArt"  type="checkbox" object="art" onChange="toggleType(this)" checked /><label for="inclArt">Art</label></li>
 </ul>
 </div>
 <div class="controlGroup">
 <h2>Include in Map</h2>
-<ul id="itemList" class="checklist">
+<ul id="itemList" class="selectList">
 
 </ul>
 </div>
+</div>
+<div id="keyContent" class="tiger">
 </div>
 <div id="bookContent" class="tiger">
 
