@@ -122,7 +122,7 @@ h1:before{
   #welcomeMiddle{
 	display: flex;
 	flex-direction: row;
-	padding: 0
+	padding: 0;
 	margin: auto;
 	height: 92%
 	}
@@ -375,29 +375,9 @@ dt {font-weight: bold;}
     border-radius: 6px;
     background: transparent;
   }
-@media (max-width: 600px) {
-	.baseDirections{display: none;}
-	:root{font-size: 20px;}
-	h1 strong{font-size: 1.25em;}
-}
-#speechDiv{margin-top: 0.5em;}
-@media (max-width: 800px) {
-	#speechDiv{margin-top: 0.25em;}
-	
-}
-  @media (max-width: 900px) {
-    main { grid-template-columns: 1fr; }
-    .leftPane { border-right: none; border-bottom: 1px solid  light-dark(rgba(var(--colDarkR), var(--colAlphaBorder)), rgba(var(--colLightR), var(--colAlphaBorder))); }
-	  #map {}
-	.statsList li, .foot button {width: 25%}
-	
-  }
- 
-.cell span{font-size: 0.8em;}
-@media (max-width: 1000px) {
-	:root{font-size: 26px;}
-} 
 
+#speechDiv{margin-top: 0.5em;}
+.cell span{font-size: 0.8em;}
 .colorPicker{display: flex;}  
 .colorPicker svg{width: 6em;}
 .colorPie{display: none;}
@@ -531,4 +511,55 @@ input:checked + .slider:before {
 
 .slider.round:before {
   border-radius: 50%;
+}
+	#welcomeLeft img{
+		width: 100%;
+		object-fit: contain
+	}
+
+@media (max-width: 600px) {
+	.baseDirections{display: none;}
+	:root{font-size: 20px;}
+	h1 strong{font-size: 1.25em;}
+}
+
+@media (max-width: 800px) {
+	#speechDiv{margin-top: 0.25em;}
+	
+}
+  @media (max-width: 900px) {
+    main { grid-template-columns: 1fr; }
+    .leftPane { border-right: none; border-bottom: 1px solid  light-dark(rgba(var(--colDarkR), var(--colAlphaBorder)), rgba(var(--colLightR), var(--colAlphaBorder))); }
+	  #map {}
+	.statsList li, .foot button {width: 25%}
+	body{overflow-y: auto;}
+	#welcomeMiddle{
+		height: auto;
+		flex-direction: column;
+		overflow-y: auto;
+		margin: auto;
+	}
+	#welcomeMiddle #welcomeLeft,#welcomeMiddle  #welcomeRight{
+		width: 93%
+		
+	}
+	#dragons{
+		position: fixed;
+		width: 93%;
+	}
+			#dragonLeft, #dragonRight {
+			width: 25%
+			
+		}
+  }
+ 
+
+@media (max-width: 1000px) {
+	:root{font-size: 26px;}
+} 
+
+
+@media (max-width: 1500px) {
+	#welcomeLeft{
+	width: 50%;}
 }
