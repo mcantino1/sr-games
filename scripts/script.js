@@ -580,7 +580,7 @@ let LEVELS = {
       {type:"wall", pos:"B1"},
       {type:"wall", pos:"B2",  "meta": {"name": "Bouncy Wall","effectBump": "hiss"}},
       {type:"wall", pos:"B3"},
-      {type:"monster", pos:"D3", meta: {boss: true}},
+      {type:"monster", pos:"D3", meta: {boss: true, intro: "Oh no, a monster!"}},
       {type:"treasure", pos:"C4"},
       {type:"potion", pos:"E2"},
       {type:"key", pos:"C5"},
@@ -678,6 +678,7 @@ function hasArmorShop(pos){ return itemsAt(pos).some(it => it.type === "armor_sh
 function hasInn(pos){ return itemsAt(pos).some(it => it.type === "inn"); }
 function hasVillager(pos){ return itemsAt(pos).some(it => it.type === "villager"); }
 function getMonster(pos){ return monsters.get(pos) || null; }
+
 function initMonsters(){
 	
   monsters = new Map();
@@ -699,6 +700,7 @@ function initMonsters(){
 		for (key of metKeys){
 			myMeta[key] = it.meta[key]
 		}
+		it.meta.met = false;
 		monsters.set(it.pos, myMeta);
     }
   }
@@ -1412,6 +1414,7 @@ function describeCurrentLocation() {
 /* ---------------- Discovery + entering a cell ---------------- */
 
 function enterCell(prefix) {
+	speechSynthesis.cancel();
   let spoken = [];	
   const pos = toPos(player.row, player.col);
   const firstVisit = !visited.has(pos);
@@ -1932,11 +1935,16 @@ function tryMove(dr, dc) {
       initMonsters();
     }
     const monster = getMonster(nextPos);
-
+	let msg = '';
     // Player attacks first. Account for monster.def and include the monster's name.
     const monsterDef = monster.def || 0;
     const monsterName = monster.name || 'the monster';
-
+	console.log(m);
+	if (!m.met){
+		m.met = true;
+		if(m.intro){msg += m.intro + "\n" }
+		
+	}
     // Cycle and read a description for this attack if available
     var attackDesc = null;
     if (monster.descriptions && monster.descriptions.length) {
@@ -1949,23 +1957,23 @@ function tryMove(dr, dc) {
     }
 
     let playerDamage = Math.max(0, stats.strength - monsterDef);
-    let msg = '';
+    
     // Track whether this attack was a critical (player-only)
     let isCrit = false;
     // Miss chance: 5% for both player and monster.
     const playerMiss = Math.random() < 0.05;
     if (playerMiss) {
-      msg = `Your attack misses. `;
+      msg += `Your attack misses. `;
     } else {
       if (playerDamage <= 0) {
-        msg = `Your attack couldn't penetrate ${monsterName}'s defense. `;
+        msg += `Your attack couldn't penetrate ${monsterName}'s defense. `;
       } else {
         // Player-only critical hit: 8% chance to deal 50% more damage
         isCrit = Math.random() < 0.08;
         let appliedDamage = playerDamage;
         if (isCrit) appliedDamage = Math.round(playerDamage * 1.5);
         monster.hp -= appliedDamage;
-        msg = `You attack for ${appliedDamage}. `;
+        msg += `You attack for ${appliedDamage}. `;
       }
     }
 
@@ -2126,6 +2134,7 @@ function activateCell(pos){
 		} else{
 			speechSynthesis.cancel();
 			announce("You have completed the final level. Congratulations!");
+			finishGame();
 		}
 		return;		
 	}
@@ -2459,7 +2468,6 @@ function speechSay(message) {
 }
 
 function updateVoice(){
-	
 	speechSynthesis.cancel();
 	setCookie("voiceBox", voiceBox.value);
 	let msg = voiceBox.value;
