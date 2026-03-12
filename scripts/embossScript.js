@@ -144,14 +144,11 @@ function toggleType(elem){
 			myIcon = icons[getIcon[myObj]];
 			myObject = item.object;
 			console.log(myObject);
-			iconKey = ""
 			if(myObject.type != myObj && getIcon[myObject.type]){
 				myIcon = icons[getIcon[myObject.type]];
-				iconKey = getIcon[myObject.type]
 			}
 			if(myObject.meta && myObject.meta.icon){
 				myIcon = icons[myObject.meta.icon];
-				iconKey = myObject.meta.icon;
 			}
 			item.cell.innerHTML = myIcon;
 			reduceBlack(item.cell);			
@@ -389,11 +386,16 @@ function makeTable(level){
 						myType = depTypes[myType];
 					}
 					myThing = myThings[getPOS(r, c)]
+					myIcon = getIcon[myType];
+					
 					myName = myThing.type;
+					if(getIcon[myName]){
+						myIcon = getIcon[myName];
+					}
 					if(myThing.meta && myThing.meta.name){
 						myName = myThing.meta.name;
 					}
-					myIcon = getIcon[myType];
+					
 					if(myThing.meta && myThing.meta.icon){
 						myIcon = myThing.meta.icon;
 					}
