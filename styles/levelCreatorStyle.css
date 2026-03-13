@@ -42,13 +42,45 @@
 	}
 
 .statBox{ width: 4em;}
+.iconOptions{
+	display: flex;
+	flex-direction: row;	
+}
+
+.iconOptionColumn{
+	display: flex;
+	flex-direction: column;	
+	margin-left: 1em;
+}
+
+
 
 div.descriptionGroup {
     display: flex;
     flex-direction: column;
 }
 
-#monIconDisplay, #triggerIconDisplay, #wallIconDisplay, #shopIconDisplay{width: 100px; margin: auto;}
+.iconDisplay {width: 100px; margin: auto;}
+
+
+#iconLayerSelect {
+    height: 10em;
+    overflow-y: auto;
+}
+
+.blockLabel{
+	display: block;
+	
+}
+#iconBox {
+		margin-left: 1em;
+	
+}
+
+svg .selected{
+	stroke: yellow !important;
+	
+}
 
 h2, h3{clear: both;}
 

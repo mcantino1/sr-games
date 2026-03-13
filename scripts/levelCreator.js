@@ -587,7 +587,9 @@ function initCustomStats(){
 
 function addOptions(selectorList, myLevel){
 	//levelSelectors
+
 	for (list of selectorList){
+
 		addOption(list, myLevel, myLevel)
 	}
 	
@@ -775,13 +777,10 @@ function initCustomSounds(){
 
 
 monIconDisplay = document.getElementById("monIconDisplay");
-monAddIcon = document.getElementById("monAddIcon");
 wallIconDisplay = document.getElementById("wallIconDisplay");
-wallAddIcon = document.getElementById("wallAddIcon");
 shopIconDisplay = document.getElementById("shopIconDisplay");
-shopAddIcon = document.getElementById("shopAddIcon");
+iconBoxDisplay = document.getElementById("iconDisplay");
 
-triggerAddIcon = document.getElementById('triggerAddIcon');
 
 triggerIcon = document.getElementById('triggerIcon');
 triggerIconDisplay = document.getElementById('triggerIconDisplay');
@@ -803,7 +802,6 @@ function triggerStairToggle(){
 //console.log("triggerStairToggle");
 //console.log(LEVELS);
 //console.log(items);
-
 	if(triggerStairs.checked){
 		triggerStairConfig.style = "";
 	}
@@ -822,142 +820,156 @@ function updateIcons(){
 	}	
 }
 
-function updateMonIcon(){
+function updateIcon(elem){
 //console.log("updateMonIcon");
 //console.log(LEVELS);
 //console.log(items);
-	myIcon = monIconSelect.value
-	monIconDisplay.innerHTML = itemIcons[myIcon];	
+	myIcon = elem.value
+	myDisplay = document.getElementById(elem.getAttribute("div"));
+	myDisplay.innerHTML = itemIcons[myIcon];
 	if(currentId.length > 0){
 		refreshCells();
 	}
-}
-
-
-function updateShopIcon(){
-//console.log("updateShopIcon");
-//console.log(LEVELS);
-//console.log(items);
-
-	myIcon = shopIconSelect.value
-	shopIconDisplay.innerHTML = itemIcons[myIcon];	
-	if(currentId.length > 0){
-		refreshCells();
+	if(elem.id == "iconSelect"){
+		document.getElementById("iconName").value = elem.value;
+		makeLayerList();
 	}
 }
 
-function updateTriggerIcon(){
-//console.log("updateTriggerIcon");
-//console.log(LEVELS);
-//console.log(items);
+function saveIcon(){
+	name = document.getElementById("iconName").value
+	icon = iconBoxDisplay.innerHTML
+	itemIcons[name] = icon;
+	customIcons[name] = icon;
+	addOptions(iconSelectors, name);
+	updateIcons();
 
-	myIcon = triggerIconSelect.value
-	triggerIconDisplay.innerHTML = itemIcons[myIcon];	
-	if(currentId.length > 0){
-		refreshCells();
+}
+
+var iconLayerList = document.getElementById("iconLayerSelect")
+var layerMap = {}
+
+
+function makeLayerList(){
+	iconLayerList.innerHTML = "";
+	layerMap = {}
+	index = 1;
+	myLayers = iconBoxDisplay.firstElementChild.children;
+	for (lay of myLayers){
+		if (!lay.getAttribute("name")){
+			lay.setAttribute("name", "layer" + index);
+		}
+		index += 1;
+		let myName = lay.getAttribute("name");
+		let myOption = document.createElement("option");
+		myOption.setAttribute("value", myName)
+		myOption.innerHTML = myName;
+		layerMap[myName] = {layer: lay, option: myOption};	
+		console.log(layerMap[myName]);
+		iconLayerList.appendChild(myOption);
+		if(lay.children && lay.children.length > 0){
+			addSubLayers(myOption, lay, 2);
+		}
+
 	}
 }
 
-function updateWallIcon(){
-//console.log("updateWallIcon");
-//console.log(LEVELS);
-//console.log(items);
-
-	myIcon = wallIconSelect.value
-	wallIconDisplay.innerHTML = itemIcons[myIcon];
-
-	var existingIdx = getItemIndex(selectedPos);
-	myWall = items[existingIdx];
-	
-	if(myWall){
-		if(myWall.meta){
-			myWall.meta.icon = myIcon;
-			}
-		else{
-			var wallMeta = {icon: myIcon}
-			myWall.meta = wallMeta;
-			}
+function addSubLayers(myOpt, myLayer, level){
+	//  selectedElem.insertAdjacentElement(position, newElement);
+	//    String.fromCharCode(97).toUpperCase();
+	let charIndex = 97;
+	let baseName = myLayer.getAttribute("name");
+	let myLayers = myLayer.children;
+	for (lay of myLayers){
+		if (!lay.getAttribute("name")){
+			lay.setAttribute("name", baseName + String.fromCharCode(charIndex).toUpperCase());
+		}
+		charIndex += 1;
+		let myName = lay.getAttribute("name");
+		let myOption = document.createElement("option");
+		myOption.setAttribute("value", myName)
+		myOption.innerHTML = "   " + myName;
+		myOption.setAttribute("level", level)
+		myOpt.insertAdjacentElement("afterend" , myOption);
+		myOpt = myOption;
+		layerMap[myName] = {layer: lay, option: myOption};	
+		if(lay.children && lay.children.length > 0){
+			console.log("more layers")
+			addSubLayers(myOption, lay, level + 1);
+		}
 	}
-	if(currentId.length > 0){
-		refreshCells();
+}
+
+var activeLayer
+
+function changeLayer(){
+	if(activeLayer){activeLayer.classList.remove("selected")}
+	activeLayer = layerMap[iconLayerList.value].layer;
+	activeLayer.classList.add("selected")
+	document.getElementById("iconLayerName").value = iconLayerList.value;
+	checkMe = false;
+	if(activeLayer.getAttribute("stroke") && activeLayer.getAttribute("stroke") != "none"){
+		checkMe = true;
 	}
+	layerFields.strokeCheck.checked = checkMe;
+	checkMe = false;
+	if(activeLayer.getAttribute("fill") && activeLayer.getAttribute("fill") != "none"){
+		checkMe = true;
+	}
+	layerFields.fillCheck.checked = checkMe;
+	myOpac = 1;
+	if (activeLayer.style.getPropertyValue("opacity")){
+		myOpac = activeLayer.style.getPropertyValue("opacity");
+	}
+	layerFields.opacity.value = myOpac
 }
 
-function addMonIcon(){
-//console.log("addMonIcon");
-//console.log(LEVELS);
-//console.log(items);
+var layerFields = {strokeCheck: document.getElementById("iconLayerStroke"), fillCheck: document.getElementById("iconLayerFill"), opacity: document.getElementById("iconLayerOpacity")}
 
-	const reader = new FileReader();
-	let fileName = monAddIcon.files[0].name.split(".")[0].split("-")[0]
+function iconSetValue(myField){
+	myVar = myField.getAttribute("meta");
+	if (myVar == "stroke" || myVar == "fill"){
+		newValue = "none";
+		if(myField.checked == true) {newValue = "currentColor"}
+		activeLayer.setAttribute(myVar, newValue);
+	}
+	else if(myVar == "opacity"){
+		activeLayer.setAttribute("style", "opacity: " + myField.value)
+	}
 	
-	reader.addEventListener("load", () => {
-    // this will then display a text file
-		newIcon(reader.result, fileName);
-	});
-	reader.readAsText(monAddIcon.files[0]);
 }
 
-function addShopIcon(){
-//console.log("addShopIcon");
-//console.log(LEVELS);
-//console.log(items);
-
-	const reader = new FileReader();
-	let fileName = shopAddIcon.files[0].name.split(".")[0].split("-")[0]
-	
-	reader.addEventListener("load", () => {
-    // this will then display a text file
-		newIcon(reader.result, fileName);
-	});
-	reader.readAsText(shopAddIcon.files[0]);
-}
+//stroke="none"
+//stroke="currentColor"
+//fill="none"
+//stroke-width="4"
+//style="opacity: 0.5;"
+//<label for="iconLayerStroke" > Stroke</label>
+//<input  id="iconLayerStroke"  type="checkbox"/>
+//<label for="iconLayerFill" > Fill</label>
+//<input  id="iconLayerFill"  type="checkbox"  />
+//<label  for="iconLayerOpacity">opacity</label>
+//<input  class="statBox" type="number"  id="iconLayerOpacity" value="100"/>
 
 
-function addTriggerIcon(){
-//console.log("addTriggerIcon");
-//console.log(LEVELS);
-//console.log(items);
 
-	const reader = new FileReader();
-	let fileName = triggerAddIcon.files[0].name.split(".")[0].split("-")[0]
-	
-	reader.addEventListener("load", () => {
-    // this will then display a text file
-		newIcon(reader.result, fileName);
-	});
-	reader.readAsText(triggerAddIcon.files[0]);
+function renameLayer(newName){
+	oldName = activeLayer.getAttribute("name");
+	myOption = layerMap[oldName].option;
+	myOption.setAttribute("value", newName)
+	myOption.innerHTML = newName;
+	activeLayer.setAttribute("name", newName)
+	layerMap[newName] = {layer: activeLayer, option: myOption}
 }
 
 
-
-function addWallIcon(){
-//console.log("addWallIcon");
-//console.log(LEVELS);
-//console.log(items);
-
-	
-	const reader = new FileReader();
-	let fileName = wallAddIcon.files[0].name.split(".")[0].split("-")[0]
-	
-	reader.addEventListener("load", () => {
-    // this will then display a text file
-		newIcon(reader.result, fileName);
-	});
-	reader.readAsText(wallAddIcon.files[0]);
-	
-}
 
 
 function newIcon(content, name){
-//console.log("newIcon");
-//console.log(LEVELS);
-//console.log(items);
-
-	monIconDisplay.innerHTML = content;
-	shopIconDisplay.innerHTML = content;
-	wallIconDisplay.innerHTML = content;
-	myVector = monIconDisplay.children[0];
+	
+	iconBoxDisplay.innerHTML = content;
+	
+	myVector = iconBoxDisplay.children[0];
 	
 	myParts = myVector.children;
 		for (part of myParts){
@@ -965,17 +977,21 @@ function newIcon(content, name){
 				part.remove();
 			}	
 		}
+	
 	vectorStyler(myParts)
 	itemIcons[name] = myVector.outerHTML;
 	customIcons[name] = myVector.outerHTML;
-	addOptions(iconSelectors, icon);
+	
+	addOptions(iconSelectors, name);
 	updateIcons();
+	document.getElementById("iconName").value = name;
+	makeLayerList();
 }
 	
 function vectorStyler(myParts){
-//console.log("vectorStyler");
-//console.log(LEVELS);
-//console.log(items);
+
+
+
 
 	for (part of myParts){
 		// fill="none" stroke="currentColor" stroke-width="4"
@@ -994,9 +1010,6 @@ function vectorStyler(myParts){
 
 
 function updateID(){
-//console.log("updateID");
-//console.log(LEVELS);
-//console.log(items);
 
 	newId = document.getElementById('inputLevelId').value
 	LEVELS[currentId].id = newId;
@@ -1026,9 +1039,6 @@ function updateID(){
 	}
 
 function updateOption(myList, oldValue, newValue, newText){
-//console.log("updateOption");
-//console.log(LEVELS);
-//console.log(items);
 
 	for (let l = 0; l < myList.length; l++){
 		if(myList[l].getAttribute("value") == oldValue){
@@ -1041,9 +1051,6 @@ function updateOption(myList, oldValue, newValue, newText){
 }
 
 function sortLevelList(){
-//console.log("sortLevelList");
-//console.log(LEVELS);
-//console.log(items);
 
 	//TODO
 	let myLevels = {}
@@ -1075,8 +1082,7 @@ function sortLevelList(){
 	
 	while (nextLevel != "null" && nextLevel != null && nextLevel != ""){
 		levelList.append(myLevels[nextLevel]);
-		console.log(nextLevel);
-		console.log(LEVELS[nextLevel]);
+		
 		nextLevel = LEVELS[nextLevel].nextLevelId;
 		
 	}
@@ -1091,9 +1097,6 @@ function sortLevelList(){
 
 
 function updateNext(){
-//console.log("updateNext");
-//console.log(LEVELS);
-//console.log(items);
 
 	newNext = document.getElementById('nextLevelSelect').value
 	LEVELS[currentId].nextLevelId = newNext;
@@ -1111,9 +1114,6 @@ function entryExists(myLibrary, itemName){
 
 
 function levelNew(){
-//console.log("levelNew");
-//console.log(LEVELS);
-//console.log(items);
 
 	myList = document.getElementById("levelSelect");
 	
@@ -1134,9 +1134,6 @@ function levelNew(){
 }
 
 function levelCopy(){
-//console.log("levelCopy");
-//console.log(LEVELS);
-//console.log(items);
 
 	newId = currentId + "copy"
 	LEVELS[newId] = structuredClone(LEVELS[currentId])
@@ -1147,10 +1144,7 @@ function levelCopy(){
 }
 
 function optionMissing(myList, myValue){
-//console.log("optionMissing");
-//console.log(LEVELS);
-//console.log(items);
-
+	
 	for(child of myList.children){
 		if (child.value == myValue){
 			return false;
@@ -1161,11 +1155,9 @@ function optionMissing(myList, myValue){
 }
 
 function addOption(myList, myValue, myText){
-//console.log("addOption");
-//console.log(LEVELS);
-//console.log(items);
 
 	if(optionMissing(myList,myValue)){
+		
 		let myOption = document.createElement("option");
 		myOption.textContent = myText;
 		myOption.setAttribute("value", myValue);
@@ -1175,10 +1167,6 @@ function addOption(myList, myValue, myText){
 }
 
 function levelDelete(){
-//console.log("levelDelete");
-//console.log(LEVELS);
-//console.log(items);
-
 	deleteMe = document.getElementById('levelSelect').value;
 	myLevels = document.getElementById("levelSelect").children;
 	myNextLevels = document.getElementById("nextLevelSelect");
@@ -1190,9 +1178,6 @@ function levelDelete(){
 }
 
 function deleteOption(myList, myValue){
-//console.log("deleteOption");
-//console.log(LEVELS);
-//console.log(items);
 
 	for (let l = 0; l < myList.length; l++){
 		if(myList[l].getAttribute("value") == myValue){
@@ -1202,9 +1187,6 @@ function deleteOption(myList, myValue){
 }
 
 function updateCellList(levelField){
-//console.log("updateStairCellList");
-//console.log(LEVELS);
-//console.log(items);
 	cellSelect = document.getElementById(levelField.getAttribute("cellSelect"));
 	//clear the cell list First
 	cellSelect.innerHTML = "";
@@ -1227,9 +1209,6 @@ function updateCellList(levelField){
 }
 
 function updateWallName(){
-//console.log("updateWallName");
-//console.log(LEVELS);
-//console.log(items);
 
 	
 	var existingIdx = getItemIndex(selectedPos);
@@ -1246,11 +1225,7 @@ function updateWallName(){
 }
 
 function changeLevel(){
-//console.log("changeLevel");
-//console.log(LEVELS);
-//console.log(items);
 
-	console.log(document.getElementById('levelSelect').value)
 	loadLevel(LEVELS[document.getElementById('levelSelect').value])
 }
 
@@ -1536,10 +1511,18 @@ function makeGrid() {
 	}
 }
 
-function addIcon(){
-//console.log("addIcon");
-//console.log(LEVELS);
-//console.log(items);
+var addIcon = document.getElementById("addIcon")
+
+function iconAdd(){
+
+	const reader = new FileReader();
+	let fileName = addIcon.files[0].name.split(".")[0].split("-")[0]
+	
+	reader.addEventListener("load", () => {
+    // this will then display a text file
+		newIcon(reader.result, fileName);
+	});
+	reader.readAsText(addIcon.files[0]);
 	
 }
 

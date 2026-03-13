@@ -184,11 +184,10 @@
 						<div class="floatGroup">
 						
 						<label for="monIcon">Icon</label>
-						<select div="monIconDisplay" object="monster" value="monster" meta="icon" onchange="updateMonIcon();"  id="monIcon" >
+						<select div="monIconDisplay" object="monster" value="monster" meta="icon" onchange="updateIcon(this);"  id="monIcon" >
 						<option  value="monster">monster</option>
 						</select>
-						<div id="monIconDisplay"></div>
-						<input type="file" onchange="addMonIcon();" style="width: 10em; height: 3em;" id="monAddIcon" accept=".svg" />
+						<div class="iconDisplay" id="monIconDisplay"></div>
 						</div>
 						
 					</div>
@@ -253,11 +252,11 @@
                 </select>
 				<div style="width: fit-content;">
 				<label for="shopIcon">Icon</label>
-				<select object="shop" meta="icon" value="villager" div="shopIconDisplay" onchange="updateShopIcon();"  id="shopIcon" >
+				<select object="shop" meta="icon" value="villager" div="shopIconDisplay" onchange="updateIcon(this);"  id="shopIcon" >
 				<option  value="villager">villager</option>
 				</select>
-				<div id="shopIconDisplay"></div>
-				<input type="file" onchange="addShopIcon();" style="width: 10em; height: 3em;" id="shopAddIcon" accept=".svg" />
+				<div class="iconDisplay" id="shopIconDisplay"></div>
+				
 				</div>
 				<div style="clear: both;">
                         <button object="shop" action="add" id="btnAddShop">Add Shop</button>
@@ -334,11 +333,11 @@
                 
 				<div style="width: fit-content;">
 				<label for="triggerIcon">Icon</label>
-				<select  object="trigger" meta="icon" value="void" onchange="updateTriggerIcon();"  div="triggerIconDisplay" id="triggerIcon" >
+				<select  object="trigger" meta="icon" value="void" onchange="updateIcon(this);"  div="triggerIconDisplay" id="triggerIcon" >
 				<option value="void">void</option>
 				</select>
-				<div id="triggerIconDisplay"></div>
-				<input type="file" onchange="addTriggerIcon();" style="width: 10em; height: 3em;" id="triggerAddIcon" accept=".svg" />
+				<div class="iconDisplay" id="triggerIconDisplay"></div>
+				
 				</div>
 				<div style="clear: both;">
                         <button  object="trigger" action="add" id="btnAddTrigger">Add Trigger</button>
@@ -389,16 +388,28 @@
                 <input object="wall" meta="name" id="customWallName"  type="text" placeholder="e.g. Stone Hedge"  />
 				</div>
 				<div class="floatGroup">
-				<label for="wallEffect">Bump Effect</label>
+				<label for="wallEffect">Bump Sound</label>
 				<select soundSelect="true" id="wallEffect" object="wall" value="wall" meta="effectBump"> </select>
 				</div>
 				<div class="floatGroup">
-				<label for="wallHintEffect">Proximity Effect</label>
+				<label for="wallHintEffect">Proximity Sound</label>
 				<select soundSelect="true" id="wallHintEffect" object="wall" meta="effectHint" value=""> 
 				<option  value="">none</option>
 				</select>
 				</div>
-
+				<div class="floatGroup">
+						<label for="monRewKind">Bump Damage</label>
+						<select object="wall" meta="rKind" id="wallDmgKind">
+							<option value="gold">Gold</option>
+							<option value="strength">Strength</option>
+							<option value="defense">Defense</option>
+							<option value="life">Life</option>
+						</select>
+						</div>
+						<div class="floatGroup">
+						<label for="wallDmgValue">Value:</label>
+						<input object="wall" meta="value" id="wallDmgValue" type="number" min="1" class="number" value="0" />
+						</div>
 
 				<div class="floatGroup">
 					<p>Bump Descriptions</p>
@@ -411,11 +422,11 @@
                 </div>					
 				<div style="width: fit-content;">
 				<label for="wallIcon">Icon</label>
-				<select  object="wall" meta="icon" value="wall" meta="icon" div="wallIconDisplay" onchange="updateWallIcon();"  id="wallIcon" >
+				<select  object="wall" meta="icon" value="wall" meta="icon" div="wallIconDisplay" onchange="updateIcon(this);"  id="wallIcon" >
 				<option  value="wall">wall</option>
 				</select>
-				<div id="wallIconDisplay"></div>
-				<input type="file" onchange="addWallIcon();" style="width: 10em; height: 3em;" id="wallAddIcon" accept=".svg" />
+				<div class="iconDisplay" id="wallIconDisplay"></div>
+				
 				</div>
             </div>
 			
@@ -465,6 +476,51 @@
 <button onClick="soundNodeAdd()">Add Node</button>
 </div>
     </div>
+</div>
+
+<div id="iconBox">
+<H3>Icon Bank</H3>
+<label for="iconSelect">Icon</label>
+<select div="iconDisplay" meta="icon" onchange="updateIcon(this);" object="icon"  id="iconSelect" >
+
+<input type="file" onchange="iconAdd();" style="width: 10em; height: 3em;" id="addIcon" accept=".svg" />
+
+</select>
+<div class="iconDisplay" id="iconDisplay"></div>
+<div>
+<label class="blockLabel" for="iconName">Icon Name</label>
+<input object="icon" onChange="renameIcon(this.value);"  meta="name" id="iconName"  type="text" />
+<button id="btnIconSave" onclick="saveIcon()" >Save Changes</button> 
+</div>
+
+<div class="iconOptions">
+<div>
+<label class="blockLabel" for="iconLayerSelect">Layers</label>
+<select object="icon" onchange="changeLayer();" id="iconLayerSelect" size="20"></select>
+</div>
+
+<div class="iconOptionColumn">
+<div>
+<label class="blockLabel" for="iconLayerName">Layer name</label>
+<input object="layer" onChange="renameLayer(this.value);"  meta="name" id="iconLayerName"  type="text" />
+</div>
+<div>
+<input  id="iconLayerStroke" onChange="iconSetValue(this)" meta="stroke" type="checkbox"/>	
+<label for="iconLayerStroke" > Stroke</label>
+
+</div>
+<div>
+<input  id="iconLayerFill"  onChange="iconSetValue(this)" meta="fill" type="checkbox"  />
+<label for="iconLayerFill" > Fill</label>
+
+</div>
+<div>
+<label  for="iconLayerOpacity">opacity</label>
+<input  class="statBox" type="number"  onChange="iconSetValue(this)" meta="opacity" id="iconLayerOpacity" value="100"/>
+
+</div>
+</div>
+</div>
 </div>
 </div>
 
