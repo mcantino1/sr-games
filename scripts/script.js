@@ -885,7 +885,7 @@ function renderMap() {
           else if (t === "exit") el.innerHTML = ICONS.exit ? ICONS.exit : ICONS.door;
           else if (t === "villager") el.innerHTML = ICONS.villager;
         } else if (level.scenes[pos]) {
-          el.innerHTML = `<span aria-hidden="true">•</span>`;
+          //el.innerHTML = `<span aria-hidden="true">•</span>`;
         }
 		if(item && item.meta && item.meta.icon){
 			el.innerHTML = ICONS[item.meta.icon];
@@ -2025,7 +2025,7 @@ function tryMove(dr, dc) {
         msg += `Your attack couldn't penetrate ${monsterName}'s defense. `;
       } else {
 		//successful hit - incriment hit counter
-
+		hitCount += 1;
         // Player-only critical hit: 8% chance to deal 50% more damage
         isCrit = Math.random() < critChance;
         let appliedDamage = playerDamage;
@@ -2051,6 +2051,7 @@ function tryMove(dr, dc) {
       if (monsterMiss) {
         msg += `${monsterName} misses. `;
       } else {
+		monHitCount += 1;
         let monsterDamage = Math.max(0, raw - stats.defense);
 		//TODO - magic effect point
 		mySpells = magicScripts.monatk;
