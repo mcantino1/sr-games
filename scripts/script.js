@@ -110,7 +110,7 @@ buttonZone = document.getElementById("gameButtons");
 
 function backupDemo(){
 	if (Object.keys(myGames).length == 0){
-		console.log("oh no!")
+		
 		demoGame = {"title": "Feature Testing", "levels": LEVELS};
 		myGames["game01"] = demoGame;
 		addGame("01")
@@ -123,18 +123,18 @@ function backupDemo(){
 
 
 function addGame(num){
-	console.log("adding button");
+	
 	let gameId = "game" + num;
 	let myButton = document.createElement("button");
 	let myLi = document.createElement("li");
 	myButton.setAttribute("onClick", "initGame(this)");
 	myButton.setAttribute("gameId", gameId);
 	myButton.setAttribute("type", "button");
-	console.log(gameId)
+	
 	myButton.innerHTML = myGames[gameId]["title"];
 	myLi.appendChild(myButton);
 	buttonZone.appendChild(myLi);
-	console.log("Button Added")
+	
 }
 headerDiv = document.getElementsByTagName("header")[0]
 welcomeDiv = document.getElementById("welcome");
@@ -181,7 +181,7 @@ function initGame(myButton){
 	}
 
 	 resetDefaults();
-	console.log("initGame")
+	
 	myGame = myGames[myButton.getAttribute("gameId")];
 	gameName = document.getElementsByTagName("H1")[0].children[0];
 	gameName.innerHTML = myGame["title"]
@@ -222,12 +222,12 @@ function initGame(myButton){
 		 levels[myKeys[k]].foundKey = 0;
 		 levels[myKeys[k]].keyCount = 0;
 	 }
-	 //console.log(levels)
+	 
 	 for(key of myKeys){
-		 //console.log(key)
+		 
 		 levels[key].overlaps = {};
 		 for(item of levels[key].items){
-			 //console.log(item)
+			 
 			 if (item.type == "key"){
 				 if (item.meta && item.meta.level && item.meta.level != ""){
 					 levels[item.meta.level].keyCount += 1;
@@ -377,10 +377,10 @@ function playTones(dirs){
 	toneSel.push(Math.floor(notes[noteNames[startPitch + 2]]));
 	toneSel.push(Math.floor(notes[noteNames[startPitch + 4]]));
 	toneSel.push(Math.floor(notes[noteNames[startPitch + 6]]));
-	console.log(toneSel)
+	
 //	pinkNoise.frequency.setValueAtTime(hissFreq, now)
 	hissOscillatorGain.gain.setValueAtTime(0, now);
-	console.log(dirs);
+	
 	for (let i = 0; i < dirs.length; i++){	
 		toneOscillator.frequency.setValueAtTime(toneSel[i], now + (toneLength * i));
 		if (dirs[i] == true){
@@ -893,7 +893,7 @@ function renderMap() {
 				//colorNames
 				for(color of colors){
 					if (item.meta.name.includes(color)){
-							console.log(color);
+							
 						myPaths = el.getElementsByTagName("path");
 						colorName = color;
 						if (color.includes(" ")){
@@ -937,18 +937,17 @@ function renderMap() {
 
 function updateCellSizing(cell){
 	
-	console.log("update cell sizing")
+	
 	cellWidth = cell.offsetWidth;
 	iconRef = cell.firstElementChild
 	iconrowspan = iconRef.getAttribute("rowspan") || 1;
 	iconcolspan = iconRef.getAttribute("colspan") || 1;
 	//currentList.lastElementChild.offsetTop
-	console.log(cell);
-	console.log(iconRef);
+	
 	myY = cell.offsetTop;
 	myX = cell.offsetLeft;
 	myBody = document.getElementsByTagName("body")[0];
-	//console.log(myY + ", " + myX)
+	
 	myParent = cell.offsetParent;
 	while (myParent && myParent != myBody){
 		myY += myParent.offsetTop;
@@ -959,7 +958,7 @@ function updateCellSizing(cell){
     //height: 200px;
     //padding-top: 100px;
     //padding-left: 100px;
-	console.log(cell.offsetWidth)
+
 	myWidth = cellWidth * iconcolspan;
 	myHeight = cellWidth * iconrowspan;
 	myStyles = []
@@ -976,11 +975,11 @@ function updateCellSizing(cell){
 	homeRow = cell.getAttribute("row");
 	homeCol	= cell.getAttribute("col");
 	homePos = cell.getAttribute("pos");
-	console.log(homeRow + " - " + homeCol + " - " + homePos)
+	
 	for(let c = 0; c < iconcolspan; c++){
 		for(let r = 0; r < iconrowspan; r++){		
 			thisPos = toPos(r + parseInt(homeRow), c + parseInt(homeCol));
-			console.log(thisPos);
+			
 			if(thisPos != homePos){
 				level.overlaps[thisPos] = homePos;
 			}
@@ -1183,9 +1182,9 @@ function groupedSurroundingsText() {
     const cue = contentsAt(r, c);
 	//TODO back here
 	let item = itemsAt(toPos(r, c))[0];
-	console.log(item);
+	
 	if(item && item.meta && item.meta.effectGrowl){
-		console.log()
+		
 		  //{name:"north", dr:-1, dc: 0}
 		soundDirs[d.name] = item.meta.effectGrowl;
 	}
@@ -1264,7 +1263,7 @@ function groupedSurroundingsText() {
   // Then add open paths
  
   toneDirs = ["hiss", "hiss", "hiss", "hiss"];
-  console.log(soundDirs);
+  
   if (openDirs.length){
 	parts.push(`Path: ${openDirs.join(", ")}. `)
 	if(tonesOn == true){
@@ -1476,7 +1475,7 @@ function enterCell(prefix) {
 
 	//did you take the stairs?
 	if (tookStairs.bool == true){
-		console.log(tookStairs);
+		
 		if(tookStairs.trigger == false){
 			if (tookStairs.level != null){
 				//You take the stairs to E5
@@ -1628,8 +1627,7 @@ function enterCell(prefix) {
 	if (hasShop(pos)){
 		revealedSpecial.set(pos, "shop");
 		shop = itemsAt(pos)[0].meta
-		console.log(shop)
-		console.log(shop.kind)
+		
 		message = "Welcome to the " + shop.name + "! "
 		if(shop.text){
 			if(shop.bought){
@@ -1797,10 +1795,6 @@ function enterCell(prefix) {
   // Prepare final text by removing redundant "A ... is here. " sentences when
   // discovery messages already describe the item (prevents duplicates).
   let finalText = describeCurrentLocation();
-	console.log("spoken: " + spoken);
-	console.log("discovery messages: " + discoveryMsgs.join(" "));
-	console.log("describe location: " + finalText);
-	console.log("prefix: " + prefix);
 
   if (prefix) spoken.push(prefix);
   if (discoveryMsgs.length) spoken.push(discoveryMsgs.join(" "));
@@ -1809,7 +1803,7 @@ function enterCell(prefix) {
   // Show the full spoken text in the Current location area and log it.
   let fullSpoken = spoken.join(' ');
   fullSpoken = trimText(fullSpoken)
-	console.log(fullSpoken);
+	
   currentText.innerHTML = fullSpoken;	
   if (speechOn){speechSay(currentText.textContent)}
   
@@ -1821,10 +1815,10 @@ function enterCell(prefix) {
 }
 
 function ouchPause(){
-	console.log("lock")
+	
 	controlLock = true;
 	 setTimeout(() => {
-			  console.log("unlock")
+	
 			controlLock = false;
 			}, 500);
 
@@ -1878,8 +1872,7 @@ function tryMove(dr, dc) {
   }
 
   var nextPos = toPos(nr, nc);
-	console.log("Items at!")
-	console.log(itemsAt(nextPos));
+	
   if(itemsAt(nextPos).length == 0 && level.overlaps[nextPos]){
 		nextPos = level.overlaps[nextPos];
 	}
@@ -1995,7 +1988,7 @@ function tryMove(dr, dc) {
     // Player attacks first. Account for monster.def and include the monster's name.
     const monsterDef = monster.def || 0;
     const monsterName = monster.name || 'the monster';
-	console.log(m);
+	
 	if (!m.met){
 		m.met = true;
 		if(m.intro){msg += m.intro + "\n" }
@@ -2124,7 +2117,7 @@ function tryMove(dr, dc) {
     // is spoken first, followed by a critical notice when appropriate.
     const prefix = (attackDesc ? attackDesc + ' ' : '') + (isCrit ? 'Critical hit! ' : '') + msg + ` You are in ${posNow}. `;
     enterCell(prefix);
-	console.log(monster);
+	
 	if(monster.boss){
 		//FINAL boss
 		msg += "CONGRATULATIONS"
@@ -2225,7 +2218,7 @@ function activateCell(pos){
 				if (stats[shop.currency] >= shop.cost){
 					if(shop.text && shop.text.length > 0){
 						shop.bought = true;
-						console.log(shop)
+						
 						stats[shop.currency] -= shop.cost;
 						enterCell();
 					}
