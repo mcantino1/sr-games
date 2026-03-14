@@ -482,10 +482,10 @@
 <H3>Icon Bank</H3>
 <label for="iconSelect">Icon</label>
 <select div="iconDisplay" meta="icon" onchange="updateIcon(this);" object="icon"  id="iconSelect" >
-
+</select>
 <input type="file" onchange="iconAdd();" style="width: 10em; height: 3em;" id="addIcon" accept=".svg" />
 
-</select>
+
 <div class="iconDisplay" id="iconDisplay"></div>
 <div>
 <label class="blockLabel" for="iconName">Icon Name</label>
@@ -494,7 +494,14 @@
 </div>
 
 <div class="iconOptions">
+<div class="iconOptionColumn">
+<label for="iconRows">Row span</label>
+<input meta="rowspan" object="icon" type="number" id="iconRows" min="1" max="12" value="1" >
+<label for="iconCols">Column span</label>
+<input meta="colspan" object="icon" type="number" id="iconCols" min="1" max="12" value="1" >
+</div>
 <div>
+
 <label class="blockLabel" for="iconLayerSelect">Layers</label>
 <select object="icon" onchange="changeLayer();" id="iconLayerSelect" size="20"></select>
 </div>

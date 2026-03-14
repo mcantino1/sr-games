@@ -47,6 +47,10 @@
 	flex-direction: row;	
 }
 
+.iconOptions div{
+	margin-left: 1em;
+	
+}
 .iconOptionColumn{
 	display: flex;
 	flex-direction: column;	
