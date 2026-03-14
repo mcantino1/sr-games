@@ -207,6 +207,7 @@ function initGame(myButton){
 	 //console.log(levels)
 	 for(key of myKeys){
 		 //console.log(key)
+		 levels[key].overlaps = {};
 		 for(item of levels[key].items){
 			 //console.log(item)
 			 if (item.type == "key"){
@@ -517,7 +518,7 @@ var ICONS = {
     <path d="M10.89,5.91l3.37,2.03c.17.69.68,1.3,1.33,1.59" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="2"/>
   </svg>`,
   monster: 
-    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 88.2 88.2" aria-hidden="true" focusable="false">' +
+    '<svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 88.2 88.2" aria-hidden="true" focusable="false">' +
     '<g stroke="currentColor" stroke-miterlimit="10" stroke-width="4" fill="none">' +
       '<path d="M77.9,37.4c0,11.5-5.7,21.7-14.5,27.8v18.2H24.8v-18.2c-8.8-6.1-14.5-16.3-14.5-27.8C10.3,18.7,25.4,3.6,44.1,3.6s33.8,15.1,33.8,33.8Z"/>' +
       '<polyline points="63.4 72.9 63.4 83.4 24.8 83.4 24.8 72.9"/>' +
@@ -893,6 +894,7 @@ function renderMap() {
       const pos = toPos(r, c);
       const el = document.createElement("div");
       el.className = "cell";
+	  mapEl.appendChild(el);
 
       const isVisited = visited.has(pos);
       const isRevealedWall = revealedByBump.has(pos) && hasWall(pos);
@@ -900,7 +902,9 @@ function renderMap() {
       const show = isVisited || isRevealedWall || isRevealedSpecial || revealedNeighbors.has(pos);
       el.classList.add(show ? "visited" : "unknown");
 	  el.setAttribute("onclick", "mapTouch('" + pos + "\')")
-      if (show) {
+      el.setAttribute("row", r)
+      el.setAttribute("col", c)
+      el.setAttribute("pos", pos)
         const items = itemsAt(pos);
 		item = items[0]
 		
@@ -968,7 +972,19 @@ function renderMap() {
 			el.innerHTML = el.innerHTML;
 			}
 		}
-      }
+		if(item && el.firstElementChild && (el.firstElementChild.getAttribute("rowspan") || el.firstElementChild.getAttribute("colspan"))){
+			updateCellSizing(el);
+			
+		}
+		
+      if(el.classList.contains("unknown")){
+		 solidDiv = document.createElement("div");
+		 grayDiv = document.createElement("div");
+		 el.appendChild(solidDiv);
+		 solidDiv.appendChild(grayDiv);
+		 solidDiv.classList.add("solid")
+		 grayDiv.classList.add("gray")
+	  }
 
       if (player.row === r && player.col === c) {
         el.classList.add("player");
@@ -976,13 +992,71 @@ function renderMap() {
 		focusSquare = el;
       }
 
-      mapEl.appendChild(el);
+      
     }
   }
 
   focusSquare.scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
   
 }
+
+function updateCellSizing(cell){
+	
+	console.log("update cell sizing")
+	cellWidth = cell.offsetWidth;
+	iconRef = cell.firstElementChild
+	iconrowspan = iconRef.getAttribute("rowspan") || 1;
+	iconcolspan = iconRef.getAttribute("colspan") || 1;
+	//currentList.lastElementChild.offsetTop
+	console.log(cell);
+	console.log(iconRef);
+	myY = cell.offsetTop;
+	myX = cell.offsetLeft;
+	myBody = document.getElementsByTagName("body")[0];
+	//console.log(myY + ", " + myX)
+	myParent = cell.offsetParent;
+	while (myParent && myParent != myBody){
+		myY += myParent.offsetTop;
+		myX += myParent.offsetLeft;
+		myParent = myParent.offsetParent;
+	}
+    //width: 200px;
+    //height: 200px;
+    //padding-top: 100px;
+    //padding-left: 100px;
+	console.log(cell.offsetWidth)
+	myWidth = cellWidth * iconcolspan;
+	myHeight = cellWidth * iconrowspan;
+	myStyles = []
+	myStyles.push("position: absolute");
+	myStyles.push("top: " + myY + "px");
+	myStyles.push("left: " + myX + "px");
+	myStyles.push("width: " + myWidth + "px");
+	myStyles.push("height: " + myHeight + "px");
+
+	iconRef.setAttribute("style", myStyles.join("; "));
+	
+	//levels[key].overlaps = {};
+	
+	homeRow = cell.getAttribute("row");
+	homeCol	= cell.getAttribute("col");
+	homePos = cell.getAttribute("pos");
+	console.log(homeRow + " - " + homeCol + " - " + homePos)
+	for(let c = 0; c < iconcolspan; c++){
+		for(let r = 0; r < iconrowspan; r++){		
+			thisPos = toPos(r + parseInt(homeRow), c + parseInt(homeCol));
+			console.log(thisPos);
+			if(thisPos != homePos){
+				level.overlaps[thisPos] = homePos;
+			}
+		}
+	}
+	
+}
+
+
+
+
 
 /* ---------------- UI ---------------- */
 function updateStatsUI(){
@@ -1106,9 +1180,12 @@ function contentsAt(r, c) {
   // Everything else returns null (no cue).
  
   if (!inBounds(r, c, level)) return null;
-  const pos = toPos(r, c);
+  var posList = [toPos(r, c)];
+	if(level.overlaps[posList[0]]){posList.push(level.overlaps[posList[0]])}
   // If a custom wall is present, prefer its configured name as the sensory cue.
+ for (pos of posList){
   const items = itemsAt(pos);
+  
   const customWall = items.find(i => i.type === 'custom_wall');
 	if (customWall) {
     if (customWall.meta && customWall.meta.name) return [String(customWall.meta.name), 5] ;
@@ -1141,6 +1218,7 @@ function contentsAt(r, c) {
   if (items.some(i=>i.type==="potion")) return ["small pouch", 4];
   if (items.some(i=>i.type==="treasure")) return ["hidden passage", 4];
 	if (items.some(i=>i.type==="stairs")) return ["stairs", 4];
+}
   return null;
 }
 
@@ -1728,17 +1806,7 @@ function enterCell(prefix) {
 		  }
 		  
 		  //allow death
-		  if (stats.life < 1){
-			playSound("fall");
-			const curPos = toPos(player.row, player.col);
-			stats.life = baseLife;
-			defeat = true;
-			stats.key = levels[currentLevelId].foundKey;
-			// Tell loadLevel to preserve the current stats object when reloading.
-			preserveStatsOnNextLoad = true;
-			loadLevel(currentLevelId);
-			return;
-		  }
+		  considerDeath();
 		  
 		  //not dead - hold up a second
 		  console.log(hval)
@@ -1818,10 +1886,28 @@ function enterCell(prefix) {
   
 }
 
+
+function considerDeath(){
+	if (stats.life < 1){
+		playSound("fall");
+		const curPos = toPos(player.row, player.col);
+		stats.life = baseLife;
+		defeat = true;
+		stats.key = levels[currentLevelId].foundKey;
+		// Tell loadLevel to preserve the current stats object when reloading.
+		preserveStatsOnNextLoad = true;
+		loadLevel(currentLevelId);
+		return;
+  }
+
+	
+}
+
 var defeat = false;
 var voided = false;
 var voidMessage = "";
 /* ---------------- Movement ---------------- */
+
 function tryMove(dr, dc) {
 	var spoken = [];
 	speechSynthesis.cancel();
@@ -1847,7 +1933,13 @@ function tryMove(dr, dc) {
     return;
   }
 
-  const nextPos = toPos(nr, nc);
+  var nextPos = toPos(nr, nc);
+	console.log("Items at!")
+	console.log(itemsAt(nextPos));
+  if(itemsAt(nextPos).length == 0 && level.overlaps[nextPos]){
+		nextPos = level.overlaps[nextPos];
+	}
+
 
    if(hasEnd(nextPos)){
 	   announce("You win!");
@@ -1857,6 +1949,8 @@ function tryMove(dr, dc) {
 	let needKey = level.keyCount - level.foundKey;
 
   // Prevent stepping onto a locked door tile even if other checks miss it.
+  //level.overlaps[thisPos] = homePos;
+
   if (hasDoor(nextPos) && needKey > 0) {
     // Reveal the door so the player knows where it is and block movement.
     revealedByBump.add(nextPos);
@@ -1883,6 +1977,7 @@ function tryMove(dr, dc) {
 	//level.items[0].meta.descriptions
 	if(wall.meta && wall.meta.name && wall.meta.name.length > 0){ wallName = wall.meta.name}
 	let myPhrases = wallPhrases;
+	var myPhrase
 	if(wall.meta && wall.meta.descriptions && wall.meta.descriptions.length > 0){
 		if(wall.meta.special = true){
 			myPhrases = wall.meta.descriptions;
@@ -1893,7 +1988,7 @@ function tryMove(dr, dc) {
 			}
 		}
 		myPhrase = myPhrases[Math.floor(Math.random()* myPhrases.length	)].replace("wall", wallName).replace("Wall", wallName);
-		announce(myPhrase);
+		//announce(myPhrase);
 		
 	} else if(wallName.substr(wallName.length - 1) == "s"){
 		announce("Some " + wallName + " blocks your way. ");
@@ -1904,10 +1999,10 @@ function tryMove(dr, dc) {
 			var i = Math.floor(Math.random() * max);
 			myPhrase = wallPhrases[i].replace("wall", wallName).replace("Wall", wallName);
 			myPhrase = myPhrase[0].toUpperCase() + myPhrase.substring(1);
-			announce(myPhrase);
+			//announce(myPhrase)+;
 		}
 		else{
-		announce("A " + wallName + " blocks your way. ");}
+		myPhrase = ("A " + wallName + " blocks your way. ");}
 	}
 	let bumpEffect = "wall";
 	//level.items[0].meta.effectBump
@@ -1915,6 +2010,22 @@ function tryMove(dr, dc) {
 	if(wall && wall.meta && wall.meta.effectBump){
 		bumpEffect = wall.meta.effectBump;
 	}
+	
+	//check for wall hazard
+	//type meta.rKind
+	//value (always positive rn)
+	if (wall && wall.meta && wall.meta.value && wall.meta.value > 0){
+		statChange = "life"
+		if (wall.meta.rKind && wall.meta.rKind != ""){
+			statChange = wall.meta.rKind;
+		}
+		stats[statChange] -= wall.meta.value;
+		myPhrase = [myPhrase, "you lose", wall.meta.value, statChange].join(" ");
+		updateStatsUI();
+		considerDeath();
+	}
+	
+	announce(myPhrase);
 	
 	playSound(bumpEffect);
     renderMap();
@@ -2071,6 +2182,7 @@ function tryMove(dr, dc) {
 	
     return;
   }
+
 //hasKey(pos)
 	if(hasKey(nextPos)){playSound("key");}
 	else if(hasDoor(nextPos)){playSound("door");}
@@ -2088,6 +2200,8 @@ function tryMove(dr, dc) {
   updateUI();
   enterCell();
 }
+
+
 var gameFinished = false;
 function finishGame(){
 	announce("You have beaten " + myGame.title + "!. Press <kbd>enter</kbd> to return to the game selection screen.");
