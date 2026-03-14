@@ -1357,7 +1357,7 @@ function groupedSurroundingsTextAt(pos) {
 function trimText(myMessage){
 	
    //remove leading line breaks	
-	
+	if(myMessage && myMessage.length > 4){
    while(myMessage.substring(0,4) == "<br>")
    { myMessage = myMessage.substring(4)}
    //remove double line breaks
@@ -1365,7 +1365,7 @@ function trimText(myMessage){
    {myMessage = myMessage.replace("<br><br>", "<br>")}
 	while(myMessage.includes(".<br>"))
    {myMessage = myMessage.replace(".<br>", ". <br>")}
-
+}
 	return myMessage
 }
 
@@ -2223,6 +2223,7 @@ function activateCell(pos){
 						enterCell();
 					}
 					if(shop.myMagic){
+						shop.bought = true;
 						if(shop.magicCat == "instant"){
 							//run the script immediately
 							tempFunction = new Function(shop.myMagic.arguments, shop.myMagic.body);
