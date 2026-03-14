@@ -1315,7 +1315,7 @@ function selectLibItem(row){
 		myMeta = myLibrary.lib[itemName].meta
 
 		myFields = metaMap[objectType];
-		populateFromLibrary(myMeta, myFields);
+		populateFromLibrary(myMeta, myFields, objectType);
 
 		updateIcons();
 		
@@ -1330,7 +1330,7 @@ function selectLibItem(row){
 	}
 }
 
-function populateFromLibrary(m, myFields){
+function populateFromLibrary(m, myFields, type){
 	for(field of myFields){
 		fieldMeta = field.getAttribute("meta");
 		
@@ -1402,7 +1402,11 @@ function populateFromLibrary(m, myFields){
 			
 		}
 	}
-	
+	scriptField = document.getElementById("shopMagicScript");
+	scriptField.value = ""
+	if(type == "shop" && m.myMagic){
+		scriptField.value = m.myMagic.body;
+	}
 }
 
 
@@ -2676,7 +2680,7 @@ function selectItem(cell){
 			myFields = metaMap[type];
 			
 			if(items[existingIdx].meta){
-			populateFromLibrary(items[existingIdx].meta, myFields);}
+			populateFromLibrary(items[existingIdx].meta, myFields, type);}
 			else{resetFields(myFields);}
 		}
 		
