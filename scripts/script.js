@@ -1805,18 +1805,13 @@ function enterCell(prefix) {
 			stats[hstat] = parseInt(stats[hstat]) + parseInt(hval); 
 		  }
 		  
-		  //allow death
+
 		  considerDeath();
 		  
 		  //not dead - hold up a second
-		  console.log(hval)
+
 		  if(hval < 0){
-			  console.log("lock")
-		  controlLock = true;
-		  setTimeout(() => {
-			  console.log("unlock")
-			controlLock = false;
-			}, 500);
+			  ouchPause();
 		  }
 	  }
 	  
@@ -1886,6 +1881,15 @@ function enterCell(prefix) {
   
 }
 
+function ouchPause(){
+	console.log("lock")
+	controlLock = true;
+	 setTimeout(() => {
+			  console.log("unlock")
+			controlLock = false;
+			}, 500);
+
+}
 
 function considerDeath(){
 	if (stats.life < 1){
@@ -2023,6 +2027,7 @@ function tryMove(dr, dc) {
 		myPhrase = [myPhrase, "you lose", wall.meta.value, statChange].join(" ");
 		updateStatsUI();
 		considerDeath();
+		ouchPause();
 	}
 	
 	announce(myPhrase);
@@ -2103,20 +2108,7 @@ function tryMove(dr, dc) {
       msg += `\nYour life: ${Math.max(0, stats.life)}. ${monsterName} life: ${Math.max(0, monster.hp)}. \n`;
 
       // If player dies, reset level.
-      if (stats.life <= 0) {
-		playSound("fall");
-        const curPos = toPos(player.row, player.col);
-
-        //announce(msg);
-        // Reset life to default and remove any held key, but preserve other stats.
-        stats.life = baseLife;
-		defeat = true;
-        stats.key = levels[currentLevelId].foundKey;
-        // Tell loadLevel to preserve the current stats object when reloading.
-        preserveStatsOnNextLoad = true;
-        loadLevel(currentLevelId);
-        return;
-      }
+		considerDeath()
 
       // After combat, when the monster survives, report the combat
       // results and also include surrounding-tile information so the
@@ -2143,6 +2135,7 @@ function tryMove(dr, dc) {
 	  if (speechOn){speechSay(currentText.textContent)}
       
       updateUI();
+		ouchPause();
       //announceSequence(spokenSeq);
       return;
     }
