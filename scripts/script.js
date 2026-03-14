@@ -245,7 +245,7 @@ s			 }
 		myMagics = myGame["myMagic"];
 		magicKeys = Object.keys(myMagics);
 		for (mag of magicKeys){
-			magicSripts[key] = new Function(myMagics[mag].arguments, myMagics[mag].body)
+			magicScripts[key] = new Function(myMagics[mag].arguments, myMagics[mag].body)
 		}
 	 }
 	 try {
