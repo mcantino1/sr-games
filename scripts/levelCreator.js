@@ -2565,7 +2565,10 @@ function setupGridKeyboard() {
 function placeItem(pos){
 	var existingIdx = getItemIndex(pos);
 	console.log(currentItem);
-	newObj = {type: currentItem, pos: pos, meta: getMetas(metaMap[currentItem])};
+	newObj = {type: currentItem, pos: pos};
+	if (metaMap[currentItem]){
+		newObj.meta = getMetas(metaMap[currentItem]);
+	}
 	myIndex = existingIdx;
 	message = "";
 	objName = currentItem
