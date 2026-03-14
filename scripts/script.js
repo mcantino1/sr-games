@@ -2242,8 +2242,8 @@ function activateCell(pos){
 					else {
 						stats[shop.currency] -= shop.cost;
 						stats[shop.kind] = parseInt(stats[shop.kind]) + parseInt(shop.value);
-						
-					announce("You lose " + shop.cost  + " " + shop.currency + " and gain " + shop.value + " " + shop.kind + ".");	
+					if(shop.kind){announce("You lose " + shop.cost  + " " + shop.currency + " and gain " + shop.value + " " + shop.kind + ".");	}
+					else{announce("You lose " + shop.cost  + " " + shop.currency + ".");	}
 					}
 					
 					
