@@ -202,7 +202,8 @@
 
 
             <div object="treasure" class="configDiv" id="treasureConfig">
-                <label " for="treasureKind">Treasure type:</label>
+
+                <label for="treasureKind">Treasure type:</label>
                 <select object="game" meta="kind"   id="treasureKind">
                     <option value="gold">Gold</option>
                     <option value="strength">Strength</option>
@@ -213,57 +214,90 @@
                 <span >Set the amount of gold or the buff amount.</span>
 			</div>
 
-			<div object="shop" class="configDiv"id="shopConfig">
-				<div>
+			<div object="shop" class="configDiv" id="shopConfig">
 				<h4>Shop Library</h4>
 					<div class="libraryParent" id="shopParent">
 						<table id="shopList" library="true" object="shop" class="monster-list">	
 						</table>
 					</div>
-				<button object="shop" action="export" id="btn+ExportShop" >Export CSV</button>
+		
+				<div class="configRow">
+						<button object="shop" action="export" id="btn+ExportShop" >Export CSV</button>
 						<input id="shopImport" btn="btnShopImport" class="hidden" onchange="libraryUpload(this)" accept=".csv" type="file" />
 						<button id="btnShopImport"  object="shop" action="import" input="shopImport" type="button">Import CSV </button>
 				</div>
-			    <div class="floatGroup">
-					<label for="shopName" > Shop Name:     </label>
-                    <input object="shop" meta="name" id="shopName" placeholder="the ..." />
+				<div class="configRow">
+					<div class="configCol">
+						<label for="shopName" > Shop Name:     </label>
+						<input object="shop" meta="name" id="shopName" placeholder="the ..." />
 					</div>
-                <label  for="shopKind">shop type:</label>
-                <select object="shop" meta="kind"   id="shopKind">
-					<option value="gold">gold</option>
-                    <option value="strength">Strength</option>
-                    <option value="defense">Defense</option>
-					<option value="life">Life</option>
-                </select>
-                <label for="shopValue">Value:</label>
-                <input object="shop" meta="value"   class="number" id="shopValue" type="number" min="1" value="25" />
-				<label for="shopValue">Hint:</label>
-                <input object="shop" meta="hint" placeholder="I can tell you what lies ahead." id="shopText"/>
-				<label for="shopValue">Fortune:</label>
-                <input object="shop" meta="text"  placeholder="You'll need your strength." id="shopText"/>
-				  <label for="shopCost">cost:</label>
-                <input  object="shop" meta="cost"  class="number" id="shopCost" type="number" min="1" value="25" />
-				<label  for="shopCurrency">Currency:</label>
-                <select object="shop" meta="currency"   id="shopCurrency">
-					<option value="gold">gold</option>
-                    <option value="strength">Strength</option>
-                    <option value="defense">Defense</option>
-					<option value="life">Life</option>
-                </select>
-				<div style="width: fit-content;">
-				<label for="shopIcon">Icon</label>
-				<select object="shop" meta="icon" value="villager" div="shopIconDisplay" onchange="updateIcon(this);"  id="shopIcon" >
-				<option  value="villager">villager</option>
-				</select>
-				<div class="iconDisplay" id="shopIconDisplay"></div>
-				
+
+					<div class="configCol">
+						<label for="shopCost">cost:</label>
+						<input  object="shop" meta="cost"  class="number" id="shopCost" type="number" min="1" value="25" />
+					</div>
+					<div class="configCol">
+						<label  for="shopCurrency">Currency:</label>
+						<select object="shop" meta="currency"   id="shopCurrency">
+							<option value="gold">gold</option>
+							<option value="strength">Strength</option>
+							<option value="defense">Defense</option>
+							<option value="life">Life</option>
+						</select>
+					</div>
+					<div class="configCol">
+					<label  for="shopKind">shop stat</label>
+					<select object="shop" meta="kind"   id="shopKind">
+						<option value="gold">gold</option>
+						<option value="strength">Strength</option>
+						<option value="defense">Defense</option>
+						<option value="life">Life</option>
+					</select>
+					</div>
+					<div class="configCol">
+						<label for="shopValue">Value:</label>
+						<input object="shop" meta="value"   class="number" id="shopValue" type="number" min="1" value="25" />
+					</div>
 				</div>
-				<div style="clear: both;">
+				<p>Fortune tellers and magicians can only be purchased from once.</p>
+				<div class="configRow">
+					<div class="configCol">
+						<label for="shopValue">Hint:</label>
+						<input object="shop" meta="hint" placeholder="I can tell you what lies ahead." id="shopText"/>
+					</div>
+					<div class="configCol">
+						<label for="shopValue">Fortune:</label>
+						<input object="shop" meta="text"  placeholder="You'll need your strength." id="shopText"/>
+					</div>
+					<div class="configCol">
+						<label  for="shopMagicCat">Spell Type:</label>
+						<select object="shop" meta="magicCat"  onChange="updateMagicShopNote(this); " id="shopmagicCat">
+							<option value="none">none</option>
+							<option value="instant">instant</option>
+							<option value="pcatk">player attack mod</option>
+							<option value="monatk">monster attack mod</option>
+						</select>
+					</div>
+					<div class="configCol">
+						<label for="inputDesc">Magic Script</label>
+						<textarea object="shop" type="script" id="shopMagicScript"  > </textArea>
+						<p id="shopScriptInfo">Select a spell type before writing a script.</p>
+					</div>
+				</div>
+				<div class="configRow" style="width: fit-content;">
+					<div class="configCol">
+						<label for="shopIcon">Icon</label>
+						<select object="shop" meta="icon" value="villager" div="shopIconDisplay" onchange="updateIcon(this);"  id="shopIcon" >
+						<option  value="villager">villager</option>
+						</select>
+						<div class="iconDisplay" id="shopIconDisplay"></div>
+					</div>
+					<div class="configCol">
                         <button object="shop" action="add" id="btnAddShop">Add Shop</button>
                         <button object="shop" action="cancel" id="btnCancelShop" >New Shop</button>
 						
 					</div>
-
+				</div>
 				
             </div>
 

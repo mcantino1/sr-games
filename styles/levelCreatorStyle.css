@@ -41,6 +41,22 @@
 	overflow:auto; 
 	}
 
+.configDiv{
+	display: flex;
+	flex-direction: column;
+}
+
+.configCol{
+	display: flex;
+	flex-direction: column;
+
+}
+
+.configRow{
+	display: flex;
+	flex-direction: row;
+
+}
 .statBox{ width: 4em;}
 .iconOptions{
 	display: flex;

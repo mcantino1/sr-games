@@ -36,7 +36,7 @@ var monMissChance = 0.05;
 var critChance = 0.08;
 var hitCount = 0;
 var monHitCount = 0;
-var magicScripts = {};
+var magicScripts = {"pcatk": [], "monatk": []};
 
 let stats = { life: baseLife, strength: 2, defense: 0, gold: 0, key: false };
 
@@ -47,7 +47,7 @@ var colors = ["red", "tan", "aqua", "blue", "cyan", "gold", "gray", "grey", "lim
 var notes = {"C0": "16.3516", "D0": "18.35405", "E0": "20.60172", "F0": "21.82676", "G0": "24.49971", "A0": "27.5", "B0": "30.86771", "C1": "32.7032", "D1": "36.7081", "E1": "41.20344", "F1": "43.65353", "G1": "48.99943", "A1": "55", "B1": "61.73541", "C2": "65.40639", "D2": "73.41619", "E2": "82.40689", "F2": "87.30706", "G2": "97.99886", "A2": "110", "B2": "123.4708", "C3": "130.8128", "D3": "146.8324", "E3": "164.8138", "F3": "174.6141", "G3": "195.9977", "A3": "220", "B3": "246.9417", "C4": "261.6256", "D4": "293.6648", "E4": "329.6276", "F4": "349.2282", "G4": "391.9954", "B4": "493.8833", "C5": "523.2511", "D5": "587.3295", "E5": "659.2551", "F5": "698.4565", "G5": "783.9909", "A5": "880", "B5": "987.7666", "C6": "1046.502", "D6": "1174.659", "E6": "1318.51", "F6": "1396.913", "G6": "1567.982", "A6": "1760", "B6": "1975.533", "C7": "2093.005", "D7": "2349.318", "E7": "2637.02", "F7": "2793.826", "G7": "3135.963", "A7": "3520", "B7": "3951.066", "C8": "4186.009", "D8": "4698.636", "E8": "5274.041", "F8": "5587.652", "G8": "6271.927", "A8": "7040", "B8": "7902.133"}
 
 function resetDefaults(){
-	magicScripts = {}
+	magicScripts = {"pcatk": [], "monatk": []};
 	playerMissChance = 0.05;
 	monMissChance = 0.05;
 	critChance = 0.08;
@@ -241,13 +241,7 @@ s			 }
 	 }
 	 
 	//var f = new Function(function.arguments, function.body);	 
-	if(myGame["myMagic"]){
-		myMagics = myGame["myMagic"];
-		magicKeys = Object.keys(myMagics);
-		for (mag of magicKeys){
-			magicScripts[mag] = new Function(myMagics[mag].arguments, myMagics[mag].body)
-		}
-	 }
+	
 	 try {
 	  window.__campaignStartup = true;
 	  loadLevel(myKeys[0]);
@@ -1251,8 +1245,6 @@ function groupedSurroundingsText() {
   const parts = [];
 
   // Add cue lines FIRST in priority order: door, void, key, monster, potion, treasure
-  // Include Inn so it's described when adjacent. We'll insert 'Inn' after armor shop.
-  //TODO: FIX THIS
   // I think the exit and the void are the highest priorities, followed by monsters, then I don’t really care
   // Basically, if anything of interest is nearby, it should be read before open path.
 	for (let p = 1; p < 5; p++){
@@ -1650,20 +1642,24 @@ function enterCell(prefix) {
 			message += "It only costs " + shop.cost + " " + shop.currency + ". \nPress <kbd>Space</kbd> to agree. ";
 			}
 		}
+		else if(shop.magicCat && magicCat != "" && magicCat != "none"){
+			message += "This is a magic shop. Purchase my spell for " + shop.cost + " " + shop.currency + ".";
+		}
 		else{
 		message += "Press <kbd>Space</kbd> to gain " + shop.value + " " + shop.kind + " for " + shop.cost + " " + shop.currency + ".";
 		}
+
 		discoveryMsgs.push(message);
 	}
 
   if (hasWeaponShop(pos)) {
-    // Do NOT auto-purchase. Prompt the player and leave the shop available until they Press <kbd>Space</kbd>.
+    
     revealedSpecial.set(pos, "weapon_shop");
     discoveryMsgs.push("Welcome to the weapon shop! Press <kbd>Space</kbd> to upgrade your strength 1 points for 18 gold. ");
   }
 
   if (hasArmorShop(pos)) {
-    // Do NOT auto-purchase. Prompt the player and leave the shop available until they Press <kbd>Space</kbd>.
+
     revealedSpecial.set(pos, "armor_shop");
     discoveryMsgs.push("Welcome to the armor shop! Press <kbd>Space</kbd> to upgrade your defense 1 points for 14 gold. ");
   }
@@ -2036,7 +2032,12 @@ function tryMove(dr, dc) {
         if (isCrit) appliedDamage = Math.round(playerDamage * 1.5);
 		
 		//TODO - magic effect point
-		
+		mySpells = magicScripts.pcatk;
+		if(mySpells && mySpells.length > 0){
+			for (spell of mySpells){
+				appliedDamage = spell(appliedDamage);
+			}
+		}
         monster.hp -= appliedDamage;
         msg += `You attack for ${appliedDamage}. `;
       }
@@ -2052,7 +2053,12 @@ function tryMove(dr, dc) {
       } else {
         let monsterDamage = Math.max(0, raw - stats.defense);
 		//TODO - magic effect point
-
+		mySpells = magicScripts.monatk;
+		if(mySpells && mySpells.length > 0){
+			for (spell of mySpells){
+				monsterDamage = spell(monsterDamage);
+			}
+		}
         stats.life -= monsterDamage;
         msg += `${monsterName} attacks for ${monsterDamage}. `;
       }
@@ -2221,6 +2227,16 @@ function activateCell(pos){
 						console.log(shop)
 						stats[shop.currency] -= shop.cost;
 						enterCell();
+					}
+					if(shop.myMagic){
+						if(shop.magicCat == "instant"){
+							//run the script immediately
+							tempFunction = new Function(shop.myMagic.arguments, shop.myMagic.body);
+							tempFunction();
+						}
+						else{
+							magicScripts[shop.magicCat].push(new Function(shop.myMagic.arguments, shop.myMagic.body))
+						}
 					}
 					if(shop.kind == "life"){
 						stats[shop.currency] -= shop.cost;

@@ -2075,7 +2075,7 @@ function findObj(level, pos, objectType){
 
 
 
-function libraryFromFields(m, myFields){
+function libraryFromFields(m, myFields, type){
 	console.log(m);
 	for(field of myFields){
 		fieldMeta = field.getAttribute("meta");
@@ -2116,6 +2116,21 @@ function libraryFromFields(m, myFields){
 		}
 		field.value = field.getAttribute("value") || '';
 	}
+	//{"function":{"arguments":"a,b,c","body":"return a*b+c;"}}
+	if(type == "shop" && m.magicCat && m.magicCat != "none" && m.magicCat != ""){
+		scriptField = document.getElementById("shopMagicScript");
+		let myArgs = "";
+		let myBody = scriptField.value;
+		if (m.magicCat == "pcatk"){
+			myArgs = "playerDamage";
+		}
+		else if (m.magicCat == "monatk"){
+			myArgs = "monsterDamage";
+		}
+		
+		m["myMagic"] = {"arguments": myArgs, "body": myBody};
+	}
+
 }
 
 
@@ -2187,7 +2202,7 @@ function libraryAction(btn){
 		else if(!myLibrary.lib[name]){
 			myLibrary.lib[name] = {name: name, meta: {}};
 		}
-		libraryFromFields(myLibrary.lib[name].meta, metaMap[objectType]);
+		libraryFromFields(myLibrary.lib[name].meta, metaMap[objectType], objectType);
 		
 		//update refs!
 		myItem = myLibrary.lib[name];
@@ -2592,7 +2607,7 @@ function placeItem(pos){
 		if(!libraries[currentItem].lib[myName]){
 			//item never saved
 			libraries[currentItem].lib[myName] = {name: myName, meta: {}, refs: []}
-			libraryFromFields(libraries[currentItem].lib[myName].meta, metaMap[currentItem])
+			libraryFromFields(libraries[currentItem].lib[myName].meta, metaMap[currentItem], currentItem)
 		}
 		myLibSelf = libraries[currentItem].lib[myName];
 		if(!myLibSelf.refs){myLibSelf.refs = {}}
@@ -2950,6 +2965,23 @@ function updateScene(field){
 			delete scenes[selectedPos];
 		}
 	}
+}
+
+function updateMagicShopNote(field){
+	let scriptType = field.value
+	let scriptNote = document.getElementById("shopScriptInfo")
+		if(scriptType == "" || scriptType == "none"){
+			scriptNote.innerHTML = "Select a spell type before writing a script."
+		}
+		else if(scriptType == "instant"){
+			scriptNote.innerHTML = "Write a javascript function to manipulate at least one game variable. Try adjusting the player character health variable: stats.life"
+		}
+		else if(scriptType == "pcatk"){
+			scriptNote.innerHTML = "Receives the playerDamage variable, must return a numeric value."
+		}
+		else if(scriptType == "monatk"){
+			scriptNote.innerHTML = "Receives the monsterDamage variable, must return a numeric value."
+		}	
 }
 
 function updateSelected(field){
