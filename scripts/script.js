@@ -1642,7 +1642,7 @@ function enterCell(prefix) {
 			message += "It only costs " + shop.cost + " " + shop.currency + ". \nPress <kbd>Space</kbd> to agree. ";
 			}
 		}
-		else if(shop.magicCat && magicCat != "" && magicCat != "none"){
+		else if(shop.magicCat && shop.magicCat != "" && shop.magicCat != "none"){
 			message += "This is a magic shop. Purchase my spell for " + shop.cost + " " + shop.currency + ".";
 		}
 		else{
