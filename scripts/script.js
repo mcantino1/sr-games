@@ -952,21 +952,20 @@ function findSuitableFill(oHex){
 			}
 	console.log(oHex + " : " + lineHex)
 	cHex = oHex;
-	console.log(contrast(cHex, lineHex));
 	checks = 0;
 		while(contrast(cHex, lineHex) < 3 && checks < 50){
 			//which adjustment makes the largest difference
 			checks += 1;
 			let conMap = {};
 			cRGB = hexToRgb(cHex);
-			console.log(cRGB);
+			
 			cHSL = rgbToHsl(cRGB.r, cRGB.g, cRGB.b);
 			cHSL[0] = cHSL[0] * 360
 			cHSL[1] = cHSL[1] * 100
 			cHSL[2] = cHSL[2] * 100
-			console.log(cHSL);
+			
 			let thisHex = hslToHex(cHSL[0], cHSL[1], Math.max(cHSL[2] - 1), 0);
-			console.log(thisHex)
+			
 			conMap[contrast(thisHex, lineHex)] = thisHex;
 			thisHex = hslToHex(cHSL[0], cHSL[1], Math.min(cHSL[2] + 1, 100));
 			conMap[contrast(thisHex, lineHex)] = thisHex;
@@ -980,13 +979,9 @@ function findSuitableFill(oHex){
 			conMap[contrast(thisHex, lineHex)] = thisHex;
 			conKeys = Object.keys(conMap);
 			conList = []
-			for (con of conKeys){
-				conList.push(parseFloat(con));
-			}
-			console.log(conList)
-			console.log(Math.max(...conList))
-			cHex = conMap[Math.max(...conList)];
-			console.log(cHex);
+
+			cHex = conMap[Math.max(...Object.keys(conMap))];
+	
 		}
 	console.log(oHex + " --> " + cHex);
 	return cHex;
