@@ -953,8 +953,10 @@ function findSuitableFill(oHex){
 	console.log(oHex + " : " + lineHex)
 	cHex = oHex;
 	console.log(contrast(cHex, lineHex));
-		while(contrast(cHex, lineHex) < 3){
+	checks = 0;
+		while(contrast(cHex, lineHex) < 3 && checks < 50){
 			//which adjustment makes the largest difference
+			checks += 1;
 			let conMap = {};
 			cRGB = hexToRgb(cHex);
 			console.log(cRGB);
