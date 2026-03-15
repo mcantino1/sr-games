@@ -44,6 +44,7 @@ var controlLock = false;
 
 
 var colors = ["red", "tan", "aqua", "blue", "cyan", "gold", "gray", "grey", "lime", "navy", "peru", "pink", "plum", "snow", "teal", "azure", "beige", "black", "brown", "coral", "green", "ivory", "khaki", "linen", "olive", "wheat", "white", "bisque", "indigo", "maroon", "orange", "orchid", "purple", "salmon", "sienna", "silver", "tomato", "violet", "yellow", "crimson", "dark red", "dim gray", "dim grey", "fuchsia", "hot pink", "magenta", "old lace", "sky blue", "thistle", "cornsilk", "dark blue", "dark cyan", "dark gray", "dark grey", "deep pink", "honey dew", "lavender", "moccasin", "sea green", "sea shell", "alice blue", "burly wood", "cadet blue", "chocolate", "dark green", "dark khaki", "fire brick", "gainsboro", "golden rod", "indian red", "lawn green", "light blue", "light cyan", "light gray", "light grey", "light pink", "lime green", "mint cream", "misty rose", "olive drab", "orange red", "pale green", "peach puff", "rosy brown", "royal blue", "slate blue", "slate gray", "slate grey", "steel blue", "turquoise", "aquamarine", "blue violet", "chartreuse", "dark orange", "dark orchid", "dark salmon", "dark violet", "dodger blue", "ghost white", "light coral", "light green", "medium blue", "papaya whip", "powder blue", "sandy brown", "white smoke", "dark magenta", "deep sky blue", "floral white", "forest green", "green yellow", "light salmon", "light yellow", "navajo white", "saddle brown", "spring green", "yellow green", "antique white", "dark sea green", "lemon chiffon", "light sky blue", "medium orchid", "medium purple", "midnight blue", "dark golden rod", "dark slate blue", "dark slate gray", "dark slate grey", "dark turquoise", "lavender blush", "light sea green", "pale golden rod", "pale turquoise", "pale violet red", "rebecca purple", "blanched almond", "cornflower blue", "dark olive green", "light slate gray", "light slate grey", "light steel blue", "medium sea green", "medium slate blue", "medium turquoise", "medium violet red", "medium aqua marine", "medium spring green", "light golden rod yellow"];
+var colorMap = {"aliceblue": "#f0f8ff", "antiquewhite": "#faebd7", "aqua": "#00ffff", "aquamarine": "#7fffd4", "azure": "#f0ffff", "beige": "#f5f5dc", "bisque": "#ffe4c4", "black": "#000000", "blanchedalmond": "#ffebcd", "blue": "#0000ff", "blueviolet": "#8a2be2", "brown": "#a52a2a", "burlywood": "#deb887", "cadetblue": "#5f9ea0", "chartreuse": "#7fff00", "chocolate": "#d2691e", "coral": "#ff7f50", "cornflowerblue": "#6495ed", "cornsilk": "#fff8dc", "crimson": "#dc143c", "cyan": "#00ffff", "darkblue": "#00008b", "darkcyan": "#008b8b", "darkgoldenrod": "#b8860b", "darkgray": "#a9a9a9", "darkgrey": "#a9a9a9", "darkgreen": "#006400", "darkkhaki": "#bdb76b", "darkmagenta": "#8b008b", "darkolivegreen": "#556b2f", "darkorange": "#ff8c00", "darkorchid": "#9932cc", "darkred": "#8b0000", "darksalmon": "#e9967a", "darkseagreen": "#8fbc8f", "darkslateblue": "#483d8b", "darkslategray": "#2f4f4f", "darkslategrey": "#2f4f4f", "darkturquoise": "#00ced1", "darkviolet": "#9400d3", "deeppink": "#ff1493", "deepskyblue": "#00bfff", "dimgray": "#696969", "dimgrey": "#696969", "dodgerblue": "#1e90ff", "firebrick": "#b22222", "floralwhite": "#fffaf0", "forestgreen": "#228b22", "fuchsia": "#ff00ff", "gainsboro": "#dcdcdc", "ghostwhite": "#f8f8ff", "gold": "#ffd700", "goldenrod": "#daa520", "gray": "#808080", "grey": "#808080", "green": "#008000", "greenyellow": "#adff2f", "honeydew": "#f0fff0", "hotpink": "#ff69b4", "indianred": "#cd5c5c", "indigo": "#4b0082", "ivory": "#fffff0", "khaki": "#f0e68c", "lavender": "#e6e6fa", "lavenderblush": "#fff0f5", "lawngreen": "#7cfc00", "lemonchiffon": "#fffacd", "lightblue": "#add8e6", "lightcoral": "#f08080", "lightcyan": "#e0ffff", "lightgoldenrodyellow": "#fafad2", "lightgray": "#d3d3d3", "lightgrey": "#d3d3d3", "lightgreen": "#90ee90", "lightpink": "#ffb6c1", "lightsalmon": "#ffa07a", "lightseagreen": "#20b2aa", "lightskyblue": "#87cefa", "lightslategray": "#778899", "lightslategrey": "#778899", "lightsteelblue": "#b0c4de", "lightyellow": "#ffffe0", "lime": "#00ff00", "limegreen": "#32cd32", "linen": "#faf0e6", "magenta": "#ff00ff", "maroon": "#800000", "mediumaquamarine": "#66cdaa", "mediumblue": "#0000cd", "mediumorchid": "#ba55d3", "mediumpurple": "#9370db", "mediumseagreen": "#3cb371", "mediumslateblue": "#7b68ee", "mediumspringgreen": "#00fa9a", "mediumturquoise": "#48d1cc", "mediumvioletred": "#c71585", "midnightblue": "#191970", "mintcream": "#f5fffa", "mistyrose": "#ffe4e1", "moccasin": "#ffe4b5", "navajowhite": "#ffdead", "navy": "#000080", "oldlace": "#fdf5e6", "olive": "#808000", "olivedrab": "#6b8e23", "orange": "#ffa500", "orangered": "#ff4500", "orchid": "#da70d6", "palegoldenrod": "#eee8aa", "palegreen": "#98fb98", "paleturquoise": "#afeeee", "palevioletred": "#db7093", "papayawhip": "#ffefd5", "peachpuff": "#ffdab9", "peru": "#cd853f", "pink": "#ffc0cb", "plum": "#dda0dd", "powderblue": "#b0e0e6", "purple": "#800080", "rebeccapurple": "#663399", "red": "#ff0000", "rosybrown": "#bc8f8f", "royalblue": "#4169e1", "saddlebrown": "#8b4513", "salmon": "#fa8072", "sandybrown": "#f4a460", "seagreen": "#2e8b57", "seashell": "#fff5ee", "sienna": "#a0522d", "silver": "#c0c0c0", "skyblue": "#87ceeb", "slateblue": "#6a5acd", "slategray": "#708090", "slategrey": "#708090", "snow": "#fffafa", "springgreen": "#00ff7f", "steelblue": "#4682b4", "tan": "#d2b48c", "teal": "#008080", "thistle": "#d8bfd8", "tomato": "#ff6347", "turquoise": "#40e0d0", "violet": "#ee82ee", "wheat": "#f5deb3", "white": "#ffffff", "whitesmoke": "#f5f5f5", "yellow": "#ffff00", "yellowgreen": "#9acd32"};
 var notes = {"C0": "16.3516", "D0": "18.35405", "E0": "20.60172", "F0": "21.82676", "G0": "24.49971", "A0": "27.5", "B0": "30.86771", "C1": "32.7032", "D1": "36.7081", "E1": "41.20344", "F1": "43.65353", "G1": "48.99943", "A1": "55", "B1": "61.73541", "C2": "65.40639", "D2": "73.41619", "E2": "82.40689", "F2": "87.30706", "G2": "97.99886", "A2": "110", "B2": "123.4708", "C3": "130.8128", "D3": "146.8324", "E3": "164.8138", "F3": "174.6141", "G3": "195.9977", "A3": "220", "B3": "246.9417", "C4": "261.6256", "D4": "293.6648", "E4": "329.6276", "F4": "349.2282", "G4": "391.9954", "B4": "493.8833", "C5": "523.2511", "D5": "587.3295", "E5": "659.2551", "F5": "698.4565", "G5": "783.9909", "A5": "880", "B5": "987.7666", "C6": "1046.502", "D6": "1174.659", "E6": "1318.51", "F6": "1396.913", "G6": "1567.982", "A6": "1760", "B6": "1975.533", "C7": "2093.005", "D7": "2349.318", "E7": "2637.02", "F7": "2793.826", "G7": "3135.963", "A7": "3520", "B7": "3951.066", "C8": "4186.009", "D8": "4698.636", "E8": "5274.041", "F8": "5587.652", "G8": "6271.927", "A8": "7040", "B8": "7902.133"}
 
 function resetDefaults(){
@@ -514,11 +515,11 @@ let LEVELS = {
     cols: 6,
     items: [
       {type:"wall", pos:"B1"},
-      {type:"wall", pos:"B2",  "meta": {"name": "Bouncy Wall","effectBump": "hiss"}},
+      {type:"wall", pos:"B2",  "meta": {"name": "Bouncy Green Wall","effectBump": "hiss"}},
       {type:"wall", pos:"B3"},
-      {type:"monster", pos:"D3", meta: {boss: true, intro: "Oh no, a monster!"}},
+      {type:"monster", pos:"D3", meta: {name: "yellow monster", icon: "monster",  boss: true, intro: "Oh no, a monster!"}},
       {type:"treasure", pos:"C4"},
-      {type:"potion", pos:"E2"},
+      {type:"potion", pos:"E2", meta: {"icon": "potion", "name": "orange potion"}},
       {type:"key", pos:"C5"},
 	  {type:"key", pos:"C6"},
       {type:"void", pos:"E4"},
@@ -898,8 +899,10 @@ function renderMap() {
 						colorName = color;
 						if (color.includes(" ")){
 						colorName = color.split(" ").join("");}
+						colorHex = colorMap[colorName];
+						myColor = findSuitableFill(colorHex);
 						for (path of myPaths){
-							path.setAttribute("fill", colorName);
+							path.setAttribute("fill", myColor);
 						}
 					}
 					//indexOf(searchString, position)
@@ -933,6 +936,58 @@ function renderMap() {
 
   focusSquare.scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
   
+}
+
+function findSuitableFill(oHex){
+	console.log("finding color")
+	
+	darkModeMql = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)');
+	
+	lineHex = getCookie("--colDark")
+	if(lineHex == ""){lineHex = "#000000"}
+	console.log(lineHex)
+	if(darkModeMql.media == "(prefers-color-scheme: dark)"){
+		lineHex = getCookie("--colLight")
+		if(lineHex == ""){lineHex = "#ffffff"}
+			}
+	console.log(oHex + " : " + lineHex)
+	cHex = oHex;
+	console.log(contrast(cHex, lineHex));
+		while(contrast(cHex, lineHex) < 3){
+			//which adjustment makes the largest difference
+			let conMap = {};
+			cRGB = hexToRgb(cHex);
+			console.log(cRGB);
+			cHSL = rgbToHsl(cRGB.r, cRGB.g, cRGB.b);
+			cHSL[0] = cHSL[0] * 360
+			cHSL[1] = cHSL[1] * 100
+			cHSL[2] = cHSL[2] * 100
+			console.log(cHSL);
+			let thisHex = hslToHex(cHSL[0], cHSL[1], Math.max(cHSL[2] - 1), 0);
+			console.log(thisHex)
+			conMap[contrast(thisHex, lineHex)] = thisHex;
+			thisHex = hslToHex(cHSL[0], cHSL[1], Math.min(cHSL[2] + 1, 100));
+			conMap[contrast(thisHex, lineHex)] = thisHex;
+			thisHex = hslToHex(cHSL[0], Math.max(cHSL[1] - 1, 0), cHSL[2]);
+			conMap[contrast(thisHex, lineHex)] = thisHex;
+			thisHex = hslToHex(cHSL[0], Math.min(cHSL[1] + 1, 100), cHSL[2]);
+			conMap[contrast(thisHex, lineHex)] = thisHex;
+			thisHex = hslToHex(Math.max(cHSL[0] -1, 0), cHSL[1], cHSL[2]);
+			conMap[contrast(thisHex, lineHex)] = thisHex;
+			thisHex = hslToHex(Math.min(cHSL[0] +1, 359), cHSL[1], cHSL[2]);
+			conMap[contrast(thisHex, lineHex)] = thisHex;
+			conKeys = Object.keys(conMap);
+			conList = []
+			for (con of conKeys){
+				conList.push(parseFloat(con));
+			}
+			console.log(conList)
+			console.log(Math.max(...conList))
+			cHex = conMap[Math.max(...conList)];
+			console.log(cHex);
+		}
+	console.log(oHex + " --> " + cHex);
+	return cHex;
 }
 
 function updateCellSizing(cell){
