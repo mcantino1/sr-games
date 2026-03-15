@@ -973,9 +973,9 @@ function findSuitableFill(oHex){
 			conMap[contrast(thisHex, lineHex)] = thisHex;
 			thisHex = hslToHex(cHSL[0], Math.min(cHSL[1] + 1, 100), cHSL[2]);
 			conMap[contrast(thisHex, lineHex)] = thisHex;
-			thisHex = hslToHex(Math.max(cHSL[0] -1, 0), cHSL[1], cHSL[2]);
+			thisHex = hslToHex(Math.max(cHSL[0] -3, 0), cHSL[1], cHSL[2]);
 			conMap[contrast(thisHex, lineHex)] = thisHex;
-			thisHex = hslToHex(Math.min(cHSL[0] +1, 359), cHSL[1], cHSL[2]);
+			thisHex = hslToHex(Math.min(cHSL[0] +3, 359), cHSL[1], cHSL[2]);
 			conMap[contrast(thisHex, lineHex)] = thisHex;
 			conKeys = Object.keys(conMap);
 			conList = []
