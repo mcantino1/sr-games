@@ -483,7 +483,7 @@ function translate(english){
 	//quick and dirty translator for nowsies
 	//check for capital letters
 	//check for numbers
-	translated = english.replace(/[\d]+/g,  "#" +  "$&");
+	translated = english.replace(/[\d]+/g,  " #" +  "$&");
 	if (translated.indexOf("#") != -1) {
 		numAt = translated.indexOf("#")
 		translated = translated.substring(numAt + 1, -1) + numFix(translated.substring(numAt + 1));
