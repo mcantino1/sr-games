@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>midi Test</title>
+   <link rel="stylesheet" href="./styles/style.css">
+<script src="https://cdn.jsdelivr.net/combine/npm/tone@14.7.58,npm/@magenta/music@1.23.1/es6/core.js,npm/html-midi-player@1.5.0"></script>
+</head>
+<body>
+<h1>Midi Test</h1>
+<midi-player
+  src="./art/testTrack.mid"
+  sound-font visualizer="#myVisualizer">
+</midi-player>
+<midi-visualizer type="piano-roll" id="myVisualizer"></midi-visualizer>
+<midi-player
+  src="./art/intro.mid"
+  sound-font >
+</midi-player>
+<script>
+
+</script>
+</body>
+</html>
