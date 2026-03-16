@@ -211,7 +211,12 @@ function makeKeyPages(){
 				let myTerm = document.createElement("dt");
 				let myDef = document.createElement("dd");
 				myTerm.innerHTML = icons[icon];
-				myDef.innerHTML = translate(keyMap[itemType].icons[icon].join(", "));
+				let myNames = keyMap[itemType].icons[icon];
+				for (name of myNames){
+					if(name.includes(myNames[0])){name = myNames[0]}
+				}
+				
+				myDef.innerHTML = translate([...new Set(myNames)].join(", "));
 				reduceBlack(myTerm);
 				myIconList.appendChild(myTerm);
 				myIconList.appendChild(myDef);
@@ -297,6 +302,14 @@ function makeKeyPages(){
 
 }
 
+function arrayRemove(array, thing){
+	index = array.indexOf(thing);
+	if (index > -1) { // only splice array when item is found
+		array.splice(index, 1); // 2nd parameter means remove one item only
+	}
+	return array;
+	
+}
 
 
 function makePage(id, header, name = "", loc = myBook){
