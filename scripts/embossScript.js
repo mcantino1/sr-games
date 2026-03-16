@@ -212,10 +212,11 @@ function makeKeyPages(){
 				let myDef = document.createElement("dd");
 				myTerm.innerHTML = icons[icon];
 				let myNames = keyMap[itemType].icons[icon];
-				for (name of myNames){
-					if(name.includes(myNames[0])){name = myNames[0]}
+				console.log(myNames);
+				for (n in myNames){
+					if(myNames[n].includes(myNames[0])){myNames[n] = myNames[0]}
 				}
-				
+				console.log(myNames);
 				myDef.innerHTML = translate([...new Set(myNames)].join(", "));
 				reduceBlack(myTerm);
 				myIconList.appendChild(myTerm);
