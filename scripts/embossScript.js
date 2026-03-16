@@ -537,10 +537,11 @@ function numFix(digits){
 			//no longer reading numbers!
 			letters += ";"
 			letters += digits.substring(num);
-			return letters;
+			return letters.toLowerCase();
+			//sentence.toLowerCase()
 		}
 	}
-	return letters;
+	return letters.toLowerCase();
 	
 }
 
