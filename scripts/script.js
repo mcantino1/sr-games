@@ -939,18 +939,18 @@ function renderMap() {
 }
 
 function findSuitableFill(oHex){
-	console.log("finding color")
+	
 	
 	darkModeMql = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)');
 	
 	lineHex = getCookie("--colDark")
 	if(lineHex == ""){lineHex = "#000000"}
-	console.log(lineHex)
+	
 	if(darkModeMql.media == "(prefers-color-scheme: dark)"){
 		lineHex = getCookie("--colLight")
 		if(lineHex == ""){lineHex = "#ffffff"}
 			}
-	console.log(oHex + " : " + lineHex)
+	
 	cHex = oHex;
 	checks = 0;
 		while(contrast(cHex, lineHex) < 3 && checks < 50){
@@ -983,7 +983,7 @@ function findSuitableFill(oHex){
 			cHex = conMap[Math.max(...Object.keys(conMap))];
 	
 		}
-	console.log(oHex + " --> " + cHex);
+	
 	return cHex;
 }
 
@@ -2577,12 +2577,13 @@ function speechSay(message) {
 	hushedPause.volume = 0.001;
 	hushedPause.voice = myVoice
 	hushedPause.rate = 10;
-	
+	console.log(hushTime)	
+	if(hushTime > 0.1){
 	for(let i = 0; i < hushTime; i++){
-		
+			console.log("hushedpause")
 			speechSynthesis.speak(hushedPause);
 	}
-	
+	}
 	speechSynthesis.speak(utterance);
 }
 
