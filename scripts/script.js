@@ -842,6 +842,8 @@ function renderMap() {
       el.setAttribute("row", r)
       el.setAttribute("col", c)
       el.setAttribute("pos", pos)
+      el.setAttribute("id", "cell_" + pos)
+	  
         const items = itemsAt(pos);
 		item = items[0]
 		
@@ -2075,6 +2077,8 @@ function tryMove(dr, dc) {
   // Monster encounter: acts like a blocked path until defeated.
   if (hasMonster(nextPos)) {
 	  wallBump(dr, dc)
+	  monVect = document.getElementById("cell_" + nextPos).firstElementChild
+	  playAnim(monVect, "monReact")
     // Reveal monster icon as soon as the player first engages it.
     // Also mark the monster square as "known" (visited) so it renders as discovered.
     revealedSpecial.set(nextPos, "monster");

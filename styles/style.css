@@ -124,6 +124,16 @@ svg.bumpd{
 }
 
 
+svg.monReact [name="eye"]{
+	animation: squint 0.5s;
+}
+
+@keyframes squint{
+	0%{transform: scaleY(1);}
+	20%{transform: scaleY(0.7);}
+	80%{transform: scaleY(0.7);}
+	100%{transform: scaleY(1);}
+}
 
 h1 strong{font-size: 1.25em; margin-left: 0.25em}
 

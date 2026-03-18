@@ -821,6 +821,7 @@ function updateIconBank(){
 }
 
 function saveIcon(){
+	if(activeLayer){activeLayer.classList.remove("selected")}
 	name = document.getElementById("iconName").value
 	icon = iconBoxDisplay.innerHTML
 	itemIcons[name] = icon;
