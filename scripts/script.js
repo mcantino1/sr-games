@@ -820,6 +820,7 @@ function mapTouch(pos){
 
 /* ---------------- Rendering ---------------- */
 function renderMap() {
+	console.log("renderMap");
   mapEl.innerHTML = "";
   mapEl.style.gridTemplateColumns = `repeat(${level.cols}, 1fr)`;
   mapEl.style.gridTemplateRows    = `repeat(${level.rows}, 1fr)`;
@@ -1081,7 +1082,7 @@ function updateUI(){
   posText.textContent = toPos(player.row, player.col) + " " + currentLevelId;
   locStat = document.getElementById("locText");
   updateStatsUI();
-  renderMap();
+  //renderMap();
   
 }
 
@@ -1496,6 +1497,7 @@ function enterCell(prefix) {
 	  
       let fullText = describeCurrentLocation();
       updateUI();
+	  renderMap();
       // Announce title then full location description (includes surroundings)
       //announce("Welcome to Super Dungeon");
       // Show the full description in the UI and log it
@@ -1581,6 +1583,7 @@ function enterCell(prefix) {
     removeItem("key", pos);
     revealedSpecial.delete(pos);
 	updateUI();	
+	renderMap();
     discoveryMsgs.push(mes);
   }
 
@@ -1770,6 +1773,7 @@ function enterCell(prefix) {
     // Mark all treasures in the reloaded level as empty so players can't farm them by falling into the void.
 	loadLevel(currentLevelId);
     updateUI();
+	renderMap();
     return;
   }
   if (hasTrigger(pos)){
@@ -1811,6 +1815,7 @@ function enterCell(prefix) {
 		preserveStatsOnNextLoad = true;
 		loadLevel(currentLevelId);
 		updateUI();
+		renderMap();
 		return;
 	  }
 	  
@@ -1863,6 +1868,7 @@ function enterCell(prefix) {
   // Announce everything in order.
 //  announceSequence(spoken);
 	updateUI();
+	renderMap();
   
 }
 
@@ -1874,6 +1880,40 @@ function ouchPause(){
 			controlLock = false;
 			}, 500);
 
+}
+
+function wallBump(ar, ac){
+	
+	myVect = document.getElementsByClassName("player")[0].firstElementChild;
+	console.log("Bump: " + ar + ", " + ac)
+	console.log(myVect);
+		if(ar == 1){
+		//down
+		playAnim(myVect, "bumpd")
+	}
+	else if(ar == -1){
+		//up
+		playAnim(myVect, "bumpu")
+	}
+	else if(ac == 1){
+		//right
+		playAnim(myVect, "bumpr")
+	}
+	else if(ac == -1){
+		//left
+		playAnim(myVect, "bumpl")
+	}
+	
+	
+}
+
+function playAnim(item, anim){
+	item.classList.add(anim);
+	 setTimeout(() => {
+			item.classList.remove(anim);
+			}, 500);	
+	
+	
 }
 
 
@@ -1907,7 +1947,13 @@ function tryMove(dr, dc) {
   const nc = player.col + dc;
 
   // Edge treated like wall
+
+  
   if (!inBounds(nr, nc, level)) {
+	  
+	  
+	wallBump(dr, dc);
+	
 	wallCount += 1;
 	//level.items[0].meta.descriptions
 	if (wallCount > 10){
@@ -1943,6 +1989,8 @@ function tryMove(dr, dc) {
   if (hasDoor(nextPos) && needKey > 0) {
     // Reveal the door so the player knows where it is and block movement.
     revealedByBump.add(nextPos);
+	wallBump(dr, dc);
+	console.log("door wall bump")
     // Tell the player a key is required, then repeat the player's current location info.
     const currentDesc = describeCurrentLocation();
 	if(level.keyCount == 1){
@@ -1951,7 +1999,7 @@ function tryMove(dr, dc) {
 	else{
 		announce(level.keyCount + " keys required. ");
 	}
-    renderMap();
+    //renderMap();
     return;
   }
  
@@ -1960,6 +2008,8 @@ function tryMove(dr, dc) {
   if (hasWall(nextPos)) {
 	  wallName = "wall"
     revealedByBump.add(nextPos);
+	wallBump(dr, dc);
+	
 	wall = itemsAt(nextPos)[0]
 	wallCount += 1;
 	
@@ -2018,18 +2068,19 @@ function tryMove(dr, dc) {
 	announce(myPhrase);
 	
 	playSound(bumpEffect);
-    renderMap();
+    //renderMap();
     return;
   }	
 
   // Monster encounter: acts like a blocked path until defeated.
   if (hasMonster(nextPos)) {
+	  wallBump(dr, dc)
     // Reveal monster icon as soon as the player first engages it.
     // Also mark the monster square as "known" (visited) so it renders as discovered.
     revealedSpecial.set(nextPos, "monster");
     visited.add(nextPos);
     // Re-render immediately so the icon appears even though the player hasn't moved.
-    renderMap();
+    //renderMap();
     const m = getMonster(nextPos);
     if (!m) {
       // Safety fallback: if item exists but monster state is missing, re-init.
@@ -2194,6 +2245,7 @@ function tryMove(dr, dc) {
   player.row = nr;
   player.col = nc;
   updateUI();
+  renderMap();
   enterCell();
 }
 

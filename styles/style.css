@@ -75,6 +75,54 @@ span.splab {
 
 
 
+@keyframes bumpr {
+    0% { transform: translate(0px, 0px) }
+   20% { transform: translate(10px, 0px)}
+   40% { transform: translate(-5px, 0px)}
+   60% { transform: translate(5px, 0px)}
+   80% { transform: translate(-2px, 0px)}
+   100% { transform: translate(0px, 0px) }
+}
+svg.bumpr{
+	 animation: bumpr 0.5s;	
+}
+
+@keyframes bumpl {
+    0% { transform: translate(0px, 0px) }
+   20% { transform: translate(-10px, 0px)}
+   40% { transform: translate(5px, 0px)}
+   60% { transform: translate(-5px, 0px)}
+   80% { transform: translate(2px, 0px)}
+   100% { transform: translate(0px, 0px) }
+}
+svg.bumpl{
+	 animation: bumpl 0.5s;	
+}
+
+@keyframes bumpu {
+    0% { transform: translate(0px, 0px) }
+   20% { transform: translate(0px, -10px)}
+   40% { transform: translate(0px, 5px)}
+   60% { transform: translate(0px, -5px)}
+   80% { transform: translate(0px, 2px)}
+   100% { transform: translate(0px, 0px) }
+}
+svg.bumpu{
+	 animation: bumpu 0.5s;	
+}
+
+@keyframes bumpd {
+    0% { transform: translate(0px, 0px) }
+   20% { transform: translate(0px, 10px)}
+   40% { transform: translate(0px, -5px)}
+   60% { transform: translate(0px, 5px)}
+   80% { transform: translate(0px, -2px)}
+   100% { transform: translate(0px, 0px) }
+}
+svg.bumpd{
+	 animation: bumpd 0.5s;	
+}
+
 
 
 h1 strong{font-size: 1.25em; margin-left: 0.25em}
