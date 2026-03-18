@@ -126,6 +126,7 @@ svg.bumpd{
 
 svg.monReact [name="eye"]{
 	animation: squint 0.5s;
+	transform-origin: unset;
 }
 
 @keyframes squint{
