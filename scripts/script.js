@@ -2207,11 +2207,14 @@ function tryMove(dr, dc) {
     revealedSpecial.delete(nextPos);
     // Append concise defeat notice immediately after the attack message.
     msg += `${monsterName} is defeated. `;
-	//get rewards
-	if (monster.rDesc != "") {
+	//get rewardsmonster.rDesc && 
+	console.log("monster defeat")
+	if (monster.rDesc && monster.rDesc != "") {
+		console.log(monster.rDesc)
 		msg += monster.rDesc 
 	}
 	if (monster.rVal > 0){
+		console.log(monster.rVal)
 		msg += " You gain " + monster.rVal + " " + monster.rKind + ". "
 		stats[monster.rKind] += parseInt(monster.rVal);
 	}
@@ -2223,7 +2226,8 @@ function tryMove(dr, dc) {
     // Compose a prefix that ensures the monster description (if any)
     // is spoken first, followed by a critical notice when appropriate.
     const prefix = (attackDesc ? attackDesc + ' ' : '') + (isCrit ? 'Critical hit! ' : '') + msg + ` You are in ${posNow}. `;
-    enterCell(prefix);
+    console.log(prefix)
+	enterCell(prefix);
 	
 	if(monster.boss){
 		//FINAL boss
