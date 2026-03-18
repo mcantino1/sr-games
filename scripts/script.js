@@ -2410,6 +2410,7 @@ function activateCell(pos){
       // Announce completion but do not immediately load next level; Enter will advance.
       announce("You exit and return to the dungeon. <br> press <kbd>enter</kbd> to continue. " + revealMap());
 	  updateUI();
+	  renderMap();
       return;
     }
     else {
