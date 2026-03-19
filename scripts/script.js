@@ -1887,8 +1887,8 @@ function ouchPause(){
 function wallBump(ar, ac){
 	
 	myVect = document.getElementsByClassName("player")[0].firstElementChild;
-	console.log("Bump: " + ar + ", " + ac)
-	console.log(myVect);
+	
+	
 		if(ar == 1){
 		//down
 		playAnim(myVect, "bumpd")
@@ -1992,7 +1992,7 @@ function tryMove(dr, dc) {
     // Reveal the door so the player knows where it is and block movement.
     revealedByBump.add(nextPos);
 	wallBump(dr, dc);
-	console.log("door wall bump")
+	
     // Tell the player a key is required, then repeat the player's current location info.
     const currentDesc = describeCurrentLocation();
 	if(level.keyCount == 1){
@@ -2020,30 +2020,40 @@ function tryMove(dr, dc) {
 	let myPhrases = wallPhrases;
 	var myPhrase
 	if(wall.meta && wall.meta.descriptions && wall.meta.descriptions.length > 0){
+		console.log("wall 01")
 		if(wall.meta.special = true){
+			console.log("wall 02")
 			myPhrases = wall.meta.descriptions;
 		}
 		else{
 			for(desc of wall.meta.descriptions){
+				console.log("wall 03")
 				myPhrases.push(desc);
 			}
 		}
+		console.log(myPhrases)
 		myPhrase = myPhrases[Math.floor(Math.random()* myPhrases.length	)].replace("wall", wallName).replace("Wall", wallName);
+		console.log(myPhrase)
 		//announce(myPhrase);
 		
 	} else if(wallName.substr(wallName.length - 1) == "s"){
+		console.log("wall 04")
 		announce("Some " + wallName + " blocks your way. ");
 	}
 	else{
 		if(wallCount > 10){
+			console.log("wall 05")
 			max = wallPhrases.length
 			var i = Math.floor(Math.random() * max);
+			console.log(myPhrases)
 			myPhrase = wallPhrases[i].replace("wall", wallName).replace("Wall", wallName);
 			myPhrase = myPhrase[0].toUpperCase() + myPhrase.substring(1);
+			console.log(myPhrase)
 			//announce(myPhrase)+;
 		}
 		else{
 		myPhrase = ("A " + wallName + " blocks your way. ");}
+		console.log(myPhrase)
 	}
 	let bumpEffect = "wall";
 	//level.items[0].meta.effectBump
@@ -2056,6 +2066,7 @@ function tryMove(dr, dc) {
 	//type meta.rKind
 	//value (always positive rn)
 	if (wall && wall.meta && wall.meta.value && wall.meta.value > 0){
+		console.log("Wall 06")
 		statChange = "life"
 		if (wall.meta.rKind && wall.meta.rKind != ""){
 			statChange = wall.meta.rKind;
@@ -2066,7 +2077,8 @@ function tryMove(dr, dc) {
 		considerDeath();
 		ouchPause();
 	}
-	
+	console.log("Wall 07")
+	console.log(myPhrase)
 	announce(myPhrase);
 	
 	playSound(bumpEffect);
