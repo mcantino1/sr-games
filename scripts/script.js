@@ -955,6 +955,7 @@ function checkColors(paths, nameColor){
 			path.setAttribute("fill", findSuitableFill(path.getAttribute("fill")));
 		}
 		else if(path.style.fill && path.style.fill != "" && path.style.fill != "none") {
+			console.log(path.style.fill);
 			path.setAttribute("fill", findSuitableFill(path.style.fill));
 			path.setAttribute("style", "");
 		}
