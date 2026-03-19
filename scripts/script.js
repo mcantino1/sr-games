@@ -972,7 +972,7 @@ function findSuitableFill(oHex){
 	if(oHex.substring(0,3) == "rgb"){
 	//rgb(96, 186, 70)'
 		myRGB = oHex.substring(4).replace(")","").replaceAll(" ", "").split(",");
-		oHex = rgbToHex(myRGB[0], myRGB[1], myRGB[2]);
+		oHex = rgbToHex(parseInt(myRGB[0]), parseInt(myRGB[1]), parseInt(myRGB[2]));
 	}
 	console.log(oHex)
 	darkModeMql = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)');
@@ -2812,6 +2812,7 @@ function hexToRgb(hex) {
 
 function componentToHex(c) {
   var hex = c.toString(16);
+  console.log(hex);
   return hex.length == 1 ? "0" + hex : hex;
 }
 
