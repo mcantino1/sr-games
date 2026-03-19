@@ -1914,8 +1914,8 @@ function addCellIcon(cell){
 		}
 	}
 	if(item && cell.firstElementChild && (cell.firstElementChild.getAttribute("rowspan") || cell.firstElementChild.getAttribute("colspan"))){
-		bigIcons.push(el);
-		updateCellSizing(el);
+		bigIcons.push(cell);
+		updateCellSizing(cell);
 		
 	}	
 
