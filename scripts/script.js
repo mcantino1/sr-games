@@ -819,6 +819,20 @@ function mapTouch(pos){
 }
 
 /* ---------------- Rendering ---------------- */
+var bigIcons = [];
+var mapShell = document.getElementsByClassName("mapShell")[0];
+mapShell.addEventListener("scrollend", (event) => { 
+  if(bigIcons.length > 0){
+	  for (elem of bigIcons){
+		  updateCellSizing(elem);
+	  }
+	  
+  }
+
+
+})
+
+
 function renderMap() {
 	bigIcons = [];
   mapEl.innerHTML = "";
@@ -937,8 +951,8 @@ function renderMap() {
     }
   }
 
-  focusSquare.scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
   
+  focusSquare.scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
   if(bigIcons.length > 0){
 	  for (elem of bigIcons){
 		  updateCellSizing(elem);
