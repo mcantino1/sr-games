@@ -2038,7 +2038,7 @@ function tryMove(dr, dc) {
 		
 	} else if(wallName.substr(wallName.length - 1) == "s"){
 		console.log("wall 04")
-		announce("Some " + wallName + " blocks your way. ");
+		myPhrase = "Some " + wallName + " blocks your way. ";
 	}
 	else{
 		if(wallCount > 10){
