@@ -893,23 +893,24 @@ function renderMap() {
         }
 		if(item && item.meta && item.meta.icon){
 			el.innerHTML = ICONS[item.meta.icon];
+			nameColor = "currentColour";
 			if(item.meta.name.includes(" ")){
 				//colorNames
 				for(color of colors){
 					if (item.meta.name.includes(color)){
-							
-						myPaths = el.getElementsByTagName("path");
 						colorName = color;
 						if (color.includes(" ")){
 						colorName = color.split(" ").join("");}
 						colorHex = colorMap[colorName];
-						myColor = findSuitableFill(colorHex);
-						for (path of myPaths){
-							path.setAttribute("fill", myColor);
-						}
+						nameColor = findSuitableFill(colorHex);
+						
 					}
 					//indexOf(searchString, position)
 				}
+			myPaths = el.getElementsByTagName("path");
+			console.log(item.meta.icon)
+			console.log(nameColor)
+			checkColors(myPaths, nameColor);
 			el.innerHTML = el.innerHTML;
 			}
 		}
@@ -939,6 +940,27 @@ function renderMap() {
 
   focusSquare.scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
   
+}
+
+function checkColors(paths, nameColor){	
+	
+	for (path of myPaths){
+		console.log(path);
+		console.log(path.style.fill);
+		if(path.getAttribute("fill") == "currentColor"){
+			path.setAttribute("fill", nameColor);
+		}
+		else if(path.getAttribute("fill") && path.getAttribute("fill") != "" && path.getAttribute("fill") != "none"){
+			console.log(path.getAttribute("fill"));
+			path.setAttribute("fill", findSuitableFill(path.getAttribute("fill")));
+		}
+		else if(path.style.fill && path.style.fill != "" && path.style.fill != "none") {
+			path.setAttribute("fill", findSuitableFill(path.style.fill));
+			path.setAttribute("style", "");
+		}
+		
+	if (path.children && path.children.length > 0){checkColors(path.children, nameColor)}
+	}
 }
 
 function findSuitableFill(oHex){
