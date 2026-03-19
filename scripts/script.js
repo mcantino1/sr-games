@@ -929,6 +929,7 @@ function renderMap() {
 		}
 		if(item && el.firstElementChild && (el.firstElementChild.getAttribute("rowspan") || el.firstElementChild.getAttribute("colspan"))){
 			bigIcons.push(el);
+			updateCellSizing(el);
 			
 		}
 		
@@ -952,14 +953,7 @@ function renderMap() {
   }
 
   
-  focusSquare.scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
-  if(bigIcons.length > 0){
-	  for (elem of bigIcons){
-		  updateCellSizing(elem);
-	  }
-	  
-  }
-  
+  focusSquare.scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });  
 }
 
 function checkColors(paths, nameColor){	
