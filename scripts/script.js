@@ -1038,6 +1038,7 @@ function updateCellSizing(cell){
 	myParent = cell.offsetParent;
 	while (myParent && myParent != myBody){
 		myY += myParent.offsetTop;
+		myY -= myParent.scrollTop;
 		myX += myParent.offsetLeft;
 		myParent = myParent.offsetParent;
 	}
