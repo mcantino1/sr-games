@@ -820,7 +820,7 @@ function mapTouch(pos){
 
 /* ---------------- Rendering ---------------- */
 function renderMap() {
-	console.log("renderMap");
+	
   mapEl.innerHTML = "";
   mapEl.style.gridTemplateColumns = `repeat(${level.cols}, 1fr)`;
   mapEl.style.gridTemplateRows    = `repeat(${level.rows}, 1fr)`;
@@ -908,8 +908,7 @@ function renderMap() {
 					//indexOf(searchString, position)
 				}
 			myPaths = el.getElementsByTagName("path");
-			console.log(item.meta.icon)
-			console.log(nameColor)
+			
 			checkColors(myPaths, nameColor);
 			el.innerHTML = el.innerHTML;
 			}
@@ -945,16 +944,16 @@ function renderMap() {
 function checkColors(paths, nameColor){	
 	
 	for (path of myPaths){
-		console.log(path);
+		
 		if(path.getAttribute("fill") == "currentColor"){
 			path.setAttribute("fill", nameColor);
 		}
 		else if(path.getAttribute("fill") && path.getAttribute("fill") != "" && path.getAttribute("fill") != "none"){
-			console.log(path.getAttribute("fill"));
+			
 			path.setAttribute("fill", findSuitableFill(path.getAttribute("fill")));
 		}
 		else if(path.style.fill && path.style.fill != "" && path.style.fill != "none") {
-			console.log(path.style.fill);
+			
 			path.setAttribute("fill", findSuitableFill(path.style.fill));
 			path.setAttribute("style", "");
 		}
@@ -968,13 +967,13 @@ function findSuitableFill(oHex){
 	if(colorMap[oHex]){
 		oHex = colorMap[oHex];
 	}
-	console.log(oHex)
+	
 	if(oHex.substring(0,3) == "rgb"){
 	//rgb(96, 186, 70)'
 		myRGB = oHex.substring(4).replace(")","").replaceAll(" ", "").split(",");
 		oHex = rgbToHex(parseInt(myRGB[0]), parseInt(myRGB[1]), parseInt(myRGB[2]));
 	}
-	console.log(oHex)
+	
 	darkModeMql = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)');
 	
 	lineHex = getCookie("--colDark")
@@ -1038,6 +1037,8 @@ function updateCellSizing(cell){
 	myParent = cell.offsetParent;
 	while (myParent && myParent != myBody){
 		myY += myParent.offsetTop;
+		console.log(myParent)
+		console.log(myParent.scrollTop)
 		myY -= myParent.scrollTop;
 		myX += myParent.offsetLeft;
 		myParent = myParent.offsetParent;
@@ -2053,40 +2054,40 @@ function tryMove(dr, dc) {
 	let myPhrases = wallPhrases;
 	var myPhrase
 	if(wall.meta && wall.meta.descriptions && wall.meta.descriptions.length > 0){
-		console.log("wall 01")
+		
 		if(wall.meta.special = true){
-			console.log("wall 02")
+			
 			myPhrases = wall.meta.descriptions;
 		}
 		else{
 			for(desc of wall.meta.descriptions){
-				console.log("wall 03")
+				
 				myPhrases.push(desc);
 			}
 		}
-		console.log(myPhrases)
+		
 		myPhrase = myPhrases[Math.floor(Math.random()* myPhrases.length	)].replace("wall", wallName).replace("Wall", wallName);
-		console.log(myPhrase)
+		
 		//announce(myPhrase);
 		
 	} else if(wallName.substr(wallName.length - 1) == "s"){
-		console.log("wall 04")
+		
 		myPhrase = "Some " + wallName + " blocks your way. ";
 	}
 	else{
 		if(wallCount > 10){
-			console.log("wall 05")
+			
 			max = wallPhrases.length
 			var i = Math.floor(Math.random() * max);
-			console.log(myPhrases)
+			
 			myPhrase = wallPhrases[i].replace("wall", wallName).replace("Wall", wallName);
 			myPhrase = myPhrase[0].toUpperCase() + myPhrase.substring(1);
-			console.log(myPhrase)
+			
 			//announce(myPhrase)+;
 		}
 		else{
 		myPhrase = ("A " + wallName + " blocks your way. ");}
-		console.log(myPhrase)
+		
 	}
 	let bumpEffect = "wall";
 	//level.items[0].meta.effectBump
@@ -2099,7 +2100,7 @@ function tryMove(dr, dc) {
 	//type meta.rKind
 	//value (always positive rn)
 	if (wall && wall.meta && wall.meta.value && wall.meta.value > 0){
-		console.log("Wall 06")
+		
 		statChange = "life"
 		if (wall.meta.rKind && wall.meta.rKind != ""){
 			statChange = wall.meta.rKind;
@@ -2110,8 +2111,8 @@ function tryMove(dr, dc) {
 		considerDeath();
 		ouchPause();
 	}
-	console.log("Wall 07")
-	console.log(myPhrase)
+	
+	
 	announce(myPhrase);
 	
 	playSound(bumpEffect);
@@ -2253,13 +2254,13 @@ function tryMove(dr, dc) {
     // Append concise defeat notice immediately after the attack message.
     msg += `${monsterName} is defeated. `;
 	//get rewardsmonster.rDesc && 
-	console.log("monster defeat")
+	
 	if (monster.rDesc && monster.rDesc != "") {
-		console.log(monster.rDesc)
+		
 		msg += monster.rDesc 
 	}
 	if (monster.rVal > 0){
-		console.log(monster.rVal)
+		
 		msg += " You gain " + monster.rVal + " " + monster.rKind + ". "
 		stats[monster.rKind] += parseInt(monster.rVal);
 	}
@@ -2271,7 +2272,7 @@ function tryMove(dr, dc) {
     // Compose a prefix that ensures the monster description (if any)
     // is spoken first, followed by a critical notice when appropriate.
     const prefix = (attackDesc ? attackDesc + ' ' : '') + (isCrit ? 'Critical hit! ' : '') + msg + ` You are in ${posNow}. `;
-    console.log(prefix)
+    
 	enterCell(prefix);
 	
 	if(monster.boss){
@@ -2683,10 +2684,10 @@ function speechSay(message) {
 	hushedPause.volume = 0.001;
 	hushedPause.voice = myVoice
 	hushedPause.rate = 10;
-	console.log(hushTime)	
+	
 	if(hushTime > 0.1){
 	for(let i = 0; i < hushTime; i++){
-			console.log("hushedpause")
+			
 			speechSynthesis.speak(hushedPause);
 	}
 	}
