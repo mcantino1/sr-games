@@ -964,15 +964,17 @@ function checkColors(paths, nameColor){
 }
 
 function findSuitableFill(oHex){
+	console.log(oHex)
 	if(colorMap[oHex]){
 		oHex = colorMap[oHex];
 	}
+	console.log(oHex)
 	if(oHex.substring(0,3) == "rgb"){
 	//rgb(96, 186, 70)'
 		myRGB = oHex.substring(4).replace(")","").replace(" ", "").split(",");
 		oHex = rgbToHex(myRGB[0], myRGB[1], myRGB[2]);
 	}
-	
+	console.log(oHex)
 	darkModeMql = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)');
 	
 	lineHex = getCookie("--colDark")
@@ -984,6 +986,7 @@ function findSuitableFill(oHex){
 			}
 	
 	cHex = oHex;
+	console.log(cHex + ":" + lineHex)
 	checks = 0;
 		while(contrast(cHex, lineHex) < 3 && checks < 50){
 			//which adjustment makes the largest difference
