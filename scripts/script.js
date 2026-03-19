@@ -964,7 +964,9 @@ function checkColors(paths, nameColor){
 }
 
 function findSuitableFill(oHex){
-	
+	if(colorMap[oHex]){
+		oHex = colorMap[oHex];
+	}
 	
 	darkModeMql = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)');
 	
