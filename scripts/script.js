@@ -820,7 +820,7 @@ function mapTouch(pos){
 
 /* ---------------- Rendering ---------------- */
 function renderMap() {
-	
+	bigIcons = [];
   mapEl.innerHTML = "";
   mapEl.style.gridTemplateColumns = `repeat(${level.cols}, 1fr)`;
   mapEl.style.gridTemplateRows    = `repeat(${level.rows}, 1fr)`;
@@ -914,7 +914,7 @@ function renderMap() {
 			}
 		}
 		if(item && el.firstElementChild && (el.firstElementChild.getAttribute("rowspan") || el.firstElementChild.getAttribute("colspan"))){
-			updateCellSizing(el);
+			bigIcons.push(el);
 			
 		}
 		
@@ -938,6 +938,13 @@ function renderMap() {
   }
 
   focusSquare.scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
+  
+  if(bigIcons.length > 0){
+	  for (elem of bigIcons){
+		  updateCellSizing(elem);
+	  }
+	  
+  }
   
 }
 
@@ -1035,14 +1042,19 @@ function updateCellSizing(cell){
 	myBody = document.getElementsByTagName("body")[0];
 	
 	myParent = cell.offsetParent;
+	console.log(myParent)
 	while (myParent && myParent != myBody){
 		myY += myParent.offsetTop;
 		console.log(myParent)
-		console.log(myParent.scrollTop)
-		myY -= myParent.scrollTop;
 		myX += myParent.offsetLeft;
 		myParent = myParent.offsetParent;
 	}
+	myParent = cell.parentElement.parentElement;
+	console.log(myParent);
+	console.log(myParent.scrollTop)
+	myY -= myParent.scrollTop;
+	
+	
     //width: 200px;
     //height: 200px;
     //padding-top: 100px;
