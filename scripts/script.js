@@ -971,7 +971,7 @@ function findSuitableFill(oHex){
 	console.log(oHex)
 	if(oHex.substring(0,3) == "rgb"){
 	//rgb(96, 186, 70)'
-		myRGB = oHex.substring(4).replace(")","").replace(" ", "").split(",");
+		myRGB = oHex.substring(4).replace(")","").replaceAll(" ", "").split(",");
 		oHex = rgbToHex(myRGB[0], myRGB[1], myRGB[2]);
 	}
 	console.log(oHex)
