@@ -1487,6 +1487,14 @@ function enterCell(prefix) {
 	  addCellIcon(oldCell);
 	  oldCell.classList.remove("player")
 	  newCell.classList.add("player")
+	  newCell.scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" }); 
+	  if(bigIcons.length > 0){
+	  for (elem of bigIcons){
+		  updateCellSizing(elem);
+	  }
+	  
+  }
+
 	}}
   // Reveal adjacent N/S/E/W tiles when entering a cell (fog of war).
   revealNeighbors(pos);
