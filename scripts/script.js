@@ -645,11 +645,13 @@ function initMonsters(){
 
 function removeMonster(pos){
   monsters.delete(pos);
+  document.getElementById("cell_" + pos).innerHTML = "";
   removeItem("monster", pos);
 } 
 
 function removeItem(type,pos){
   level.items = level.items.filter(it => !(it.type === type && it.pos === pos));
+
 }
 
 function posToRC(pos) {
@@ -668,10 +670,15 @@ function revealNeighbors(pos) {
     // If it's a wall, reveal via bump set so wall rendering rules apply.
     if (hasWall(npos)) {
       revealedByBump.add(npos);
-      continue;
     }
     // Reveal the neighbor tile so it becomes visible on the map.
     revealedNeighbors.add(npos);
+	console.log(npos);
+	nCell = document.getElementById("cell_" + npos)
+	if(nCell){
+		nCell.classList.remove("unknown");
+		nCell.classList.add("visited");
+	}
     // If neighbor contains a special icon, mark it discovered so its icon shows.
     if (hasKey(npos)) revealedSpecial.set(npos, "key");
     else if (hasTreasure(npos)) revealedSpecial.set(npos, "treasure");
@@ -857,81 +864,9 @@ function renderMap() {
       el.setAttribute("col", c)
       el.setAttribute("pos", pos)
       el.setAttribute("id", "cell_" + pos)
-	  
-        const items = itemsAt(pos);
-		item = items[0]
-		
-        if (items.some(i => i.type === "wall" || i.type === "bush" || i.type === "flower" || i.type === "custom_wall")) {
-          el.classList.add("wall");
-          el.innerHTML = ICONS.wall;
-        } else if (items.some(i => i.type === "door")) {
-          el.innerHTML = ICONS.door;
-        } else if (items.some(i => i.type === "key")) {
-          el.innerHTML = ICONS.key;
-        } else if (items.some(i => i.type === "monster")) {
-          el.innerHTML = ICONS.monster;
-        } else if (items.some(i => i.type === "treasure")) {
-          el.innerHTML = ICONS.treasure;
-        } else if (items.some(i => i.type === "stairs")) {
-          el.innerHTML = ICONS.stairs;
-        } else if (items.some(i => i.type === "potion")) {
-          el.innerHTML = ICONS.potion;
-        } else if (items.some(i => i.type === "exit")) {
-          el.innerHTML = ICONS.exit ? ICONS.exit : ICONS.door;
-        } else if (items.some(i => i.type === "exit_open")) {
-          el.innerHTML = ICONS.door;
-        } else if (items.some(i => i.type === "void")) {
-          el.innerHTML = ICONS.void;
-        } else if (items.some(i => i.type === "weapon_shop")) {
-          el.innerHTML = ICONS.weapon;
-        } else if (items.some(i => i.type === "armor_shop")) {
-          el.innerHTML = ICONS.armor;
-        } else if (items.some(i => i.type === "inn")) {
-          el.innerHTML = ICONS.inn;
-        } else if (items.some(i => i.type === "villager")) {
-          el.innerHTML = ICONS.villager;
-        } else if (revealedSpecial.has(pos)) {
-          const t = revealedSpecial.get(pos);
-          if (t === "key") el.innerHTML = ICONS.key;
-          else if (t === "treasure") el.innerHTML = ICONS.treasure;
-		  else if (t === "stairs") el.innerHTML = ICONS.stairs;
-          else if (t === "monster") el.innerHTML = ICONS.monster;
-          else if (t === "void") el.innerHTML = ICONS.void;
-          else if (t === "weapon_shop") el.innerHTML = ICONS.weapon;
-          else if (t === "armor_shop") el.innerHTML = ICONS.armor;
-          else if (t === "inn") el.innerHTML = ICONS.inn;
-          else if (t === "exit") el.innerHTML = ICONS.exit ? ICONS.exit : ICONS.door;
-          else if (t === "villager") el.innerHTML = ICONS.villager;
-        } else if (level.scenes[pos]) {
-          //el.innerHTML = `<span aria-hidden="true">•</span>`;
-        }
-		if(item && item.meta && item.meta.icon){
-			el.innerHTML = ICONS[item.meta.icon];
-			nameColor = "currentColour";
-			if(item.meta.name.includes(" ")){
-				//colorNames
-				for(color of colors){
-					if (item.meta.name.includes(color)){
-						colorName = color;
-						if (color.includes(" ")){
-						colorName = color.split(" ").join("");}
-						colorHex = colorMap[colorName];
-						nameColor = findSuitableFill(colorHex);
-						
-					}
-					//indexOf(searchString, position)
-				}
-			myPaths = el.getElementsByTagName("path");
-			
-			checkColors(myPaths, nameColor);
-			el.innerHTML = el.innerHTML;
-			}
-		}
-		if(item && el.firstElementChild && (el.firstElementChild.getAttribute("rowspan") || el.firstElementChild.getAttribute("colspan"))){
-			bigIcons.push(el);
-			updateCellSizing(el);
-			
-		}
+		addCellIcon(el);
+
+
 		
       if(el.classList.contains("unknown")){
 		 solidDiv = document.createElement("div");
@@ -1535,14 +1470,27 @@ function describeCurrentLocation() {
 /* ---------------- Discovery + entering a cell ---------------- */
 
 function enterCell(prefix) {
-	speechSynthesis.cancel();
+  speechSynthesis.cancel();
   let spoken = [];	
   const pos = toPos(player.row, player.col);
   const firstVisit = !visited.has(pos);
   visited.add(pos);
+  //remove player icon
+	if(document.getElementsByClassName("player").length > 0){
+	  let oldCell = document.getElementsByClassName("player")[0]
+	  let newCell = document.getElementById("cell_" + pos)
+	  if(oldCell != newCell){
+	  console.log("moving player");
+	  console.log(oldCell);
+	  newCell.innerHTML = "";
+	  newCell.appendChild(oldCell.firstElementChild);
+	  addCellIcon(oldCell);
+	  oldCell.classList.remove("player")
+	  newCell.classList.add("player")
+	}}
   // Reveal adjacent N/S/E/W tiles when entering a cell (fog of war).
   revealNeighbors(pos);
-	
+
   // If the page set a campaign startup flag, do a minimal announcement sequence:
   // 1) "Welcome to Super Dungeon"
   // 2) the level's A1 scene text (if any)
@@ -1639,7 +1587,7 @@ function enterCell(prefix) {
     removeItem("key", pos);
     revealedSpecial.delete(pos);
 	updateUI();	
-	renderMap();
+	//renderMap();
     discoveryMsgs.push(mes);
   }
 
@@ -1829,7 +1777,7 @@ function enterCell(prefix) {
     // Mark all treasures in the reloaded level as empty so players can't farm them by falling into the void.
 	loadLevel(currentLevelId);
     updateUI();
-	renderMap();
+	//renderMap();
     return;
   }
   if (hasTrigger(pos)){
@@ -1871,7 +1819,7 @@ function enterCell(prefix) {
 		preserveStatsOnNextLoad = true;
 		loadLevel(currentLevelId);
 		updateUI();
-		renderMap();
+		//renderMap();
 		return;
 	  }
 	  
@@ -1924,8 +1872,54 @@ function enterCell(prefix) {
   // Announce everything in order.
 //  announceSequence(spoken);
 	updateUI();
-	renderMap();
+	//renderMap();
   
+}
+
+
+function addCellIcon(cell){
+	let pos = cell.getAttribute("pos")
+	const items = itemsAt(pos);
+	if(items.length == 0){
+		cell.innerHTML = "";
+		return;
+		
+	}
+	item = items[0]
+	
+	if(ICONS[item.type]){
+		cell.innerHTML = ICONS[item.type];
+	}
+	
+	if(item && item.meta && item.meta.icon){
+		cell.innerHTML = ICONS[item.meta.icon];
+		nameColor = "currentColour";
+		if(item.meta.name.includes(" ")){
+			//colorNames
+			for(color of colors){
+				if (item.meta.name.includes(color)){
+					colorName = color;
+					if (color.includes(" ")){
+					colorName = color.split(" ").join("");}
+					colorHex = colorMap[colorName];
+					nameColor = findSuitableFill(colorHex);
+					
+				}
+				//indexOf(searchString, position)
+			}
+		myPaths = cell.getElementsByTagName("path");
+		
+		checkColors(myPaths, nameColor);
+		cell.innerHTML = cell.innerHTML;
+		}
+	}
+	if(item && cell.firstElementChild && (cell.firstElementChild.getAttribute("rowspan") || cell.firstElementChild.getAttribute("colspan"))){
+		bigIcons.push(el);
+		updateCellSizing(el);
+		
+	}	
+
+	
 }
 
 function ouchPause(){
@@ -2259,7 +2253,7 @@ function tryMove(dr, dc) {
 	  if (speechOn){speechSay(currentText.textContent)}
       
       updateUI();
-		ouchPause();
+	  ouchPause();
       //announceSequence(spokenSeq);
       return;
     }
@@ -2319,7 +2313,7 @@ function tryMove(dr, dc) {
   player.row = nr;
   player.col = nc;
   updateUI();
-  renderMap();
+  //renderMap();
   enterCell();
 }
 
@@ -2480,7 +2474,7 @@ function activateCell(pos){
       // Announce completion but do not immediately load next level; Enter will advance.
       announce("You exit and return to the dungeon. <br> press <kbd>enter</kbd> to continue. " + revealMap());
 	  updateUI();
-	  renderMap();
+	  //renderMap();
       return;
     }
     else {
@@ -2675,7 +2669,7 @@ function loadLevel(id, cell = "A1") {
   initMonsters();
   
   updateUI();
-  
+  renderMap()
   enterCell();
   gameEl.focus();
 }
