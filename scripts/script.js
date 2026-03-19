@@ -946,7 +946,6 @@ function checkColors(paths, nameColor){
 	
 	for (path of myPaths){
 		console.log(path);
-		console.log(path.style.fill);
 		if(path.getAttribute("fill") == "currentColor"){
 			path.setAttribute("fill", nameColor);
 		}
@@ -967,6 +966,11 @@ function checkColors(paths, nameColor){
 function findSuitableFill(oHex){
 	if(colorMap[oHex]){
 		oHex = colorMap[oHex];
+	}
+	if(oHex.substring(0,3) == "rgb"){
+	//rgb(96, 186, 70)'
+		myRGB = o.Hex.substring(4).replace(")","").replace(" ", "").split(",");
+		oHex = rgbToHex(myRGB[0], myRGB[1], myRGB[2]);
 	}
 	
 	darkModeMql = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)');
