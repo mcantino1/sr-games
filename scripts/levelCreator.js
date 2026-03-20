@@ -842,7 +842,12 @@ function makeLayerList(){
 	myLayers = iconBoxDisplay.firstElementChild.children;
 	for (lay of myLayers){
 		if (!lay.getAttribute("name")){
-			lay.setAttribute("name", "layer" + index);
+			if(lay.getAttribute("id")){
+				console.log(lay);
+				lay.setAttribute("name", lay.getAttribute("id"));
+			}
+			else{
+			lay.setAttribute("name", "layer" + index);}
 		}
 		index += 1;
 		let myName = lay.getAttribute("name");
@@ -867,8 +872,13 @@ function addSubLayers(myOpt, myLayer, level){
 	let myLayers = myLayer.children;
 	for (lay of myLayers){
 		if (!lay.getAttribute("name")){
+			if(lay.getAttribute("id")){
+				console.log(lay);
+				lay.setAttribute("name", lay.getAttribute("id"));
+			}
+			else{
 			lay.setAttribute("name", baseName + String.fromCharCode(charIndex).toUpperCase());
-		}
+		}}
 		charIndex += 1;
 		let myName = lay.getAttribute("name");
 		let myOption = document.createElement("option");
@@ -949,7 +959,6 @@ function renameLayer(newName){
 
 
 
-
 function newIcon(content, name){
 	
 	iconBoxDisplay.innerHTML = content;
@@ -957,12 +966,7 @@ function newIcon(content, name){
 	myVector = iconBoxDisplay.children[0];
 	
 	myParts = myVector.children;
-		for (part of myParts){
-			if(part.tagName == "defs"){
-				part.remove();
-			}	
-		}
-	
+
 	vectorStyler(myParts)
 	itemIcons[name] = myVector.outerHTML;
 	customIcons[name] = myVector.outerHTML;
@@ -974,17 +978,44 @@ function newIcon(content, name){
 }
 	
 function vectorStyler(myParts){
-
-
-
-
 	for (part of myParts){
 		// fill="none" stroke="currentColor" stroke-width="4"
-		part.setAttribute("fill", "none");
-		part.setAttribute("stroke", "currentColor");
+		//path.getAttribute("fill")
+		//path.style.fill
+		myFill = "none"
+		if(part.getAttribute("fill") && part.getAttribute("fill") != "none" && part.getAttribute("fill") != ""){
+			myFill = part.getAttribute("fill");
+		}
+		if(part.style.fill && part.style.fill != "" && part.style.fill != "none"){
+			myFill = part.style.fill;
+		}
+		
+		myStroke = "none"
+		if(part.getAttribute("stroke") && part.getAttribute("stroke") != "none" && part.getAttribute("stroke") != ""){
+			myStroke = part.getAttribute("stroke");
+		}
+		if(part.style.stroke && part.style.stroke != "" && part.style.stroke != "none"){
+			myStroke = part.style.stroke;
+		}
+		myFill = myFill.toLowerCase();
+		console.log(myFill);
+		if(myFill == "black" || myFill == "white" || myFill == "#000" || myFill == "#fff" || myFill == "#000000" || myFill == "#ffffff" || myFill == "rgb(0, 0, 0)"){
+			myFill = "currentColor";
+		}
+		console.log(myFill);
+		console.log(myStroke);
+		myStroke = myStroke.toLowerCase();
+		if(myStroke == "black" || myStroke == "white" || myStroke == "#000" || myStroke == "#fff" || myStroke == "#000000" || myStroke == "#ffffff"  || myStroke == "rgb(0, 0, 0)"){
+			myStroke = "currentColor";
+		}
+		console.log(myStroke);
+		
+		part.setAttribute("fill", myFill);
+		part.setAttribute("stroke", myStroke);
 		part.setAttribute("stroke-width", "4");
+		part.removeAttribute("style");
 		part.removeAttribute("class")
-		if(part.children){vectorStyler(part.children)}
+		if(part.children && part.children.length > 0){vectorStyler(part.children)}
 	}
 
 	

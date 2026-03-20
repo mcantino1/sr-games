@@ -82,6 +82,8 @@ div.descriptionGroup {
 
 .iconDisplay {width: 100px; margin: auto;}
 
+#iconDisplay{width: 300px; height: 300px; position: relative;}
+#iconDisplay svg {width: 300px; height: 300px; position: relative;}
 
 #iconLayerSelect {
     height: 10em;
