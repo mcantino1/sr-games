@@ -990,22 +990,23 @@ function updateCellSizing(cell){
 	iconcolspan = iconRef.getAttribute("colspan") || 1;
 	//currentList.lastElementChild.offsetTop
 	
-	myY = cell.offsetTop;
-	myX = cell.offsetLeft;
-	myBody = document.getElementsByTagName("body")[0];
+	//myY = cell.offsetTop;
+	//myX = cell.offsetLeft;
+	//myBody = document.getElementsByTagName("body")[0];
 	
-	myParent = cell.offsetParent;
-	console.log(myParent)
-	while (myParent && myParent != myBody){
-		myY += myParent.offsetTop;
-		console.log(myParent)
-		myX += myParent.offsetLeft;
-		myParent = myParent.offsetParent;
-	}
-	myParent = cell.parentElement.parentElement;
-	console.log(myParent);
-	console.log(myParent.scrollTop)
-	myY -= myParent.scrollTop;
+	//myParent = cell.offsetParent;
+	//console.log(myParent)
+//	while (myParent && myParent != myBody){
+//		myY += myParent.offsetTop;
+//		console.log(myParent)
+//		myX += myParent.offsetLeft;
+//		myParent = myParent.offsetParent;
+//	}
+
+//	myParent = cell.parentElement.parentElement;
+//	console.log(myParent);
+//	console.log(myParent.scrollTop)
+//	myY -= myParent.scrollTop;
 	
 	
     //width: 200px;
@@ -1013,12 +1014,12 @@ function updateCellSizing(cell){
     //padding-top: 100px;
     //padding-left: 100px;
 
-	myWidth = cellWidth * iconcolspan;
-	myHeight = cellWidth * iconrowspan;
+	myWidth = cellWidth * iconcolspan - 14;
+	myHeight = cellWidth * iconrowspan - 14;
 	myStyles = []
 	myStyles.push("position: absolute");
-	myStyles.push("top: " + myY + "px");
-	myStyles.push("left: " + myX + "px");
+	myStyles.push("top: 0px");
+	myStyles.push("left: 0px");
 	myStyles.push("width: " + myWidth + "px");
 	myStyles.push("height: " + myHeight + "px");
 
