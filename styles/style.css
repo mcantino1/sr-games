@@ -451,10 +451,10 @@ dt {font-weight: bold;}
 	position: fixed;
 	right:1em;
 	top: 0.5em;
-	z-index: 10;
+	z-index: 300;
 }
 .spSettings, .settings{display: none;}
-.spSettings.enabled{display: block;}
+.spSettings.enabled{display: block; z-index: 200;}
 .settings.enabled{
 	display: block; 
 	animation-duration:1s; 
