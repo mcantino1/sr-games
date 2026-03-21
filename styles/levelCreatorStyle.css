@@ -16,9 +16,9 @@
 	
 }
 .hidden{display: none;}
-.cell { width: 50px; height: 50px; line-height: 3em; 
+.cell { width: 50px; height: 50px; line-height: 3em; position: relative;
 	border: 1px solid light-dark(rgba(var(--colDarkR), var(--gridAlpha)), rgba(var(--colLightR), var(--gridAlpha))); 
-	align-items: center; justify-content: center; cursor: pointer; background: light-dark(#fff, #000); font-weight: bold; transition: background 0.2s; }
+	align-items: center; justify-content: center; cursor: pointer;  font-weight: bold; transition: background 0.2s; }
 .cell:focus { outline: 3px solid light-dark(#4A90E2, #0B2646); outline-offset: 2px; background: light-dark(#e0f7ff, #00759E); }
 .cell:hover { background: light-dark(#e8e8e8, #696969); }
 .cell.player { color: light-dark(#231f20, #938589); }
@@ -26,7 +26,7 @@
 .container { margin: 0 auto; background: light-dark(#fff, #000); padding: 20px; border-radius: 8px; transition: background 0.3s, color 0.3s; }
 .gen-btn { background: light-dark(#ff9800, #613A00); border-color: light-dark(#cc6600, #1A0D00); }
 .gen-btn:hover { background: light-dark(#e68900, #472B00); }
-.grid-section { text-align: center; margin: 20px 0 0 0; width: 550px; height: 620px;}
+.grid-section { text-align: center; margin: 20px 0 0 0; width: 550px; height: 620px; overflow: auto;}
 .grid-section h2 { margin-top: 0; font-size: 20px; }
 .item-btn { padding: 8px 12px; margin: 3px; background: light-dark(#d3d3d3, #595959); color: light-dark(#000, #fff); border: 2px solid light-dark(#999, #262626); font-weight: 500; }
 .item-btn:focus { outline: 3px solid light-dark(#4A90E2, #0B2646); outline-offset: 2px; }
@@ -154,7 +154,7 @@ h2, h3{clear: both;}
 .top-section { margin: 0 0 20px 0; padding: 15px; border: 1px solid light-dark(#999, #262626); border-radius: 4px; transition: background 0.3s, border-color 0.3s; }
 @media (prefers-reduced-motion: reduce) {* { transition: none; }}
 * { box-sizing: border-box; }
-#grid {padding: 1em; margin: auto; background: light-dark(#fff, #000); border: 2px solid light-dark(#333, #A6A6A6); border-radius: 4px; transition: background 0.3s; display: flex; flex-direction: column;}
+#grid {padding: 0 0 1em 0; auto; background: light-dark(#fff, #000); transition: background 0.3s; display: flex; flex-direction: column;}
 #grid .gridRow {display: flex; flex-direction: row; margin: auto;}
 #grid .gridRow .gridCell{width: 50px; height: 50px; line-height: 3em;}
 #gridAnnouncer {margin-top: 1em;}
@@ -198,4 +198,3 @@ input, select{font-size: 1em; height: 2em;}
 
 }
 .rightPanel{padding: 0em 1em;	}
-.rightPanel * {max-width: 100%; }

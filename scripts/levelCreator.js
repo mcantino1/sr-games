@@ -1634,10 +1634,10 @@ function updateCellSizing(cell){
 	myWidth = cell.offsetWidth;
 	myStyles = []
 	myStyles.push("position: absolute")
-	myStyles.push("top: " + myY + "px");
-	myStyles.push("left: " + myX + "px");
-	myStyles.push("width: " + (myWidth * iconrowspan) + "px");
-	myStyles.push("height: " + (myWidth * iconcolspan) + "px");
+	myStyles.push("top: 0px");
+	myStyles.push("left: 0px");
+	myStyles.push("width: " + (myWidth * iconcolspan) + "px");
+	myStyles.push("height: " + (myWidth * iconrowspan) + "px");
 	iconRef.setAttribute("style", myStyles.join("; "));
 	
 	//mark overlap cell
