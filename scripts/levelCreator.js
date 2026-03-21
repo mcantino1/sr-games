@@ -818,12 +818,13 @@ function updateIconBank(){
 		att.value = iconBoxDisplay.firstElementChild.getAttribute(myMeta) || att.getAttribute("value");
 	}
 	makeLayerList();
+	iconGridMake();
 }
 
 function saveIcon(){
 	if(activeLayer){activeLayer.classList.remove("selected")}
 	name = document.getElementById("iconName").value
-	icon = iconBoxDisplay.innerHTML
+	icon = iconBoxDisplay.firstElementChild.outerHTML
 	itemIcons[name] = icon;
 	customIcons[name] = icon;
 	addOptions(iconSelectors, name);
@@ -3030,8 +3031,9 @@ function updateSelected(field){
 	if(field.getAttribute("object") == "icon"){
 		if (field.getAttribute("meta") && iconSelect.value){
 			iconBoxDisplay.firstElementChild.setAttribute(field.getAttribute("meta"), field.value);
-			
 		}
+		if(field.getAttribute("meta") == "rowspan" || field.getAttribute("meta") == "colspan"){
+		iconGridMake();}
 	}
 	
 	if(field.getAttribute("array") == "true"){
@@ -3102,8 +3104,55 @@ function updateSelected(field){
 	}
 }
 
+function iconGridMake(){
+	let myRows = document.getElementById("iconRows").value;
+	let myCols = document.getElementById("iconCols").value;
+	let iconFrame = document.getElementById("iconDisplay");
+	myVect = iconFrame.firstElementChild;
+	iconFrame.innerHTML = myVect.outerHTML;
+	if(myRows > 1 && myCols > 1){
+		for(r = 0; r < myRows; r++){
+			let newRow = document.createElement("div");
+			newRow.setAttribute("class", "iconRow");
+			iconFrame.appendChild(newRow);
+			for(c = 0; c < myCols; c++){
+				let newCheck = document.createElement("input");
+				newCheck.setAttribute("type", "checkbox");
+				newCheck.setAttribute("id", "icon_" + toPos(r,c));
+				newCheck.setAttribute("myCell", toPos(r,c));
+				newCheck.setAttribute("title", "exclude icon subcell " + toPos(r,c));
+				myWidth = Math.min((300 / myCols), (300/myRows)) + "px";
+				newCheck.style.width = myWidth;
+				newCheck.style.height = myWidth;
+				newCheck.style.fontSize = myWidth;
+				newCheck.style.lineHeight = myWidth;
+				newCheck.setAttribute("onChange", "iconGridUpdate()")
+				newRow.appendChild(newCheck);
+			}
+		}
+	}
+	if(myVect.getAttribute("exclusions") && myVect.getAttribute("exclusions").length > 0){
+		myExclusions = myVect.getAttribute("exclusions").split(",")
+		
+		for(ex of myExclusions){
+			
+			document.getElementById("icon_" + ex).checked = true;
+			
+		}
+		
+	}
+}
 
-
+function iconGridUpdate(){
+	myChecks = iconFrame = document.getElementById("iconDisplay").getElementsByTagName("input");
+	myExclusions = []
+	for (check of myChecks){
+		if(check.checked){
+			myExclusions.push(check.getAttribute("myCell"));
+		}
+	}
+	document.getElementById("iconDisplay").firstElementChild.setAttribute("exclusions", myExclusions);
+}
 
 
 myOption = document.createElement("option");

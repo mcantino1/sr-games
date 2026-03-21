@@ -913,7 +913,6 @@ function checkColors(paths, nameColor){
 			path.setAttribute("fill", findSuitableFill(path.getAttribute("fill")));
 		}
 		else if(path.style.fill && path.style.fill != "" && path.style.fill != "none") {
-			
 			path.setAttribute("fill", findSuitableFill(path.style.fill));
 			path.setAttribute("style", "");
 		}
@@ -1030,12 +1029,23 @@ function updateCellSizing(cell){
 	homeRow = cell.getAttribute("row");
 	homeCol	= cell.getAttribute("col");
 	homePos = cell.getAttribute("pos");
-	
+	//posToRC(pos)
+	myExclusions = [];
+	if (iconRef.getAttribute("exclusions") && iconRef.getAttribute("exclusions").length > 0){
+		rawExclusions = iconRef.getAttribute("exclusions").split(",");
+		for (rex of rawExclusions){
+			let newR = homeRow + posToRC(rex).r;
+			let newC = homeCol + posToRC(rex).c;
+			myExclusions.push(toPos(newR, newC));
+			
+		}
+	}
 	for(let c = 0; c < iconcolspan; c++){
 		for(let r = 0; r < iconrowspan; r++){		
 			thisPos = toPos(r + parseInt(homeRow), c + parseInt(homeCol));
 			
-			if(thisPos != homePos){
+			
+			if(thisPos != homePos && !myExclusions.contains(thisPos)){
 				level.overlaps[thisPos] = homePos;
 			}
 		}

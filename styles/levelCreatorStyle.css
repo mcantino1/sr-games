@@ -82,13 +82,17 @@ div.descriptionGroup {
 
 .iconDisplay {width: 100px; margin: auto;}
 
-#iconDisplay{width: 300px; height: 300px; position: relative;}
-#iconDisplay svg {width: 300px; height: 300px; position: relative;}
+#iconDisplay{width: 300px; height: 300px; position: relative; display: flex; flex-direction: column;}
+#iconDisplay svg {width: 300px; height: 300px; position: absolute;}
 
-#iconLayerSelect {
-    height: 10em;
-    overflow-y: auto;
-}
+#iconLayerSelect {height: 10em; overflow-y: auto;}
+
+
+#iconDisplay .iconRow{display: flex; flex-direction: row; margin: auto;}
+#iconDisplay .iconRow input{margin: 0; padding: 0; z-index: 10; appearance: none;}
+#iconDisplay .iconRow input:checked{background: black; color: white;  text-align: center;}
+#iconDisplay .iconRow input:checked::before{content: "X"; text-align: center;}
+
 
 .blockLabel{
 	display: block;
