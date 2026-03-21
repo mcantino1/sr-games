@@ -591,14 +591,15 @@ input:checked + .slider:before {
 
 @media (max-width: 800px) {
 	#speechDiv{margin-top: 0.25em;}
-	
+	#statsList li{font-size: 0.65em;}
 }
   @media (max-width: 900px) {
     main { 
-	grid-template-columns: 1fr; 
+	flex-direction: column;
 	}
-    .leftPane { border-right: none; border-bottom: 1px solid  light-dark(rgba(var(--colDarkR), var(--colAlphaBorder)), rgba(var(--colLightR), var(--colAlphaBorder))); }
-	  #map {}
+    .leftPane { width: 95%; border-right: none; border-bottom: 1px solid  light-dark(rgba(var(--colDarkR), var(--colAlphaBorder)), rgba(var(--colLightR), var(--colAlphaBorder))); }
+	.rightPane{width: 95%; 
+	 
 	.statsList li, .foot button {width: 25%}
 	body{overflow-y: auto;}
 	#welcomeMiddle{
