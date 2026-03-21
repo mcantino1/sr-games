@@ -1477,27 +1477,31 @@ function makeGrid() {
 	grid.style.gridTemplateColumns = 'repeat(' + cols + ', 50px)';
 	//make the grid
 	//header row (A B C)
-	var row = document.createElement("thead");
-	let cell = 	document.createElement("th");
-	cell.setAttribute("scope","col");
+	var row = document.createElement("div");
+	let cell = 	document.createElement("div");
+	row.setAttribute("class", "gridRow")
+	cell.setAttribute("class", "gridCell")
 	cell.textContent = 0;
 	row.appendChild(cell)
 	for (var c = 0; c < cols; c++) {
-		let cell = 	document.createElement("th");
+		let cell = 	document.createElement("div");
 		cell.textContent = String.fromCharCode(65 + c);
+		cell.setAttribute("class", "gridCell")
 		row.appendChild(cell)
 	}
 	grid.appendChild(row)
 	for (var r = 0; r < rows; r++) {
-		row = document.createElement("tr");
-		let cell = 	document.createElement("th");
-		cell.setAttribute("scope","row");
+		row = document.createElement("div");
+		let cell = 	document.createElement("div");
+		cell.setAttribute("class", "gridCell")
 		cell.textContent = (r+1);
+		row.setAttribute("class", "gridRow")
 		row.appendChild(cell)
 		for (var c = 0; c < cols; c++) {
 			let title = ""
 			var pos = String.fromCharCode(65 + c) + (r + 1);
-			let cell = document.createElement('td');
+			let cell = document.createElement('div');
+			cell.setAttribute("class", "gridCell")
 			cell.className = 'cell';
 			cell.id = 'cell_' + pos;
 			cell.dataset.pos = pos;
@@ -3027,8 +3031,8 @@ function updateSelected(field){
 	if(field.getAttribute("soundselect")){
 		playSound(field.value);
 	}
-	
 	if(field.getAttribute("object") == "icon"){
+	
 		if (field.getAttribute("meta") && iconSelect.value){
 			iconBoxDisplay.firstElementChild.setAttribute(field.getAttribute("meta"), field.value);
 		}
