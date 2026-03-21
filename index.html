@@ -168,23 +168,43 @@
 		</div>
 		<div id="gameGuide" class="hideMe">
 		<h2 id="guideTitle" style="margin-top:0;">Gameplay Guide</h2>
-		<p><strong>Goal:</strong> Find the key, then unlock the door to finish the level.</p>
+		<p><strong>Goal:</strong> Escape the dungeon. Clear the monsters. Save the townspeople. </p>
 		<dl>
+		<dt>How to Play</dt>
+		<dd>Use your trusty book of tactile maps to help you explore the grid-based dungeon. You begin each level in the top left corner of the map (A1). </dd>
 		<dt>Move</dt>
-		<dd>Use the Arrow Keys to move between grid cells.</dd>
+		<dd>Use the Arrow Keys to move between grid cells, attack monsters, and collect items.</dd>
+		<dt>Interact</dt>
+		<dd>Interact with doors and shops by pressing Enter or Space bar.</dd>
+		<dt>Reveal the Map</dt>
+		<dd>Map spaces are hidden until you reach an adjacent square. After unlocking a door, all map spaces are revealed, and the location of any uncollected item(s) is announced. </dd>
+		<dt>Path Tones</dt>
+		<dd>Enable Path Tones in the Settings, and 4 tones will play to describe the path around you. Tones play in the following order: North, South, West, East (or Up, Down, Left, Right on the Arrow Keys). A static sound will play instead of a tone if the path is blocked in that direction. </dd>
+		<dt>Shortcut Keys</dt>
+		<dd>Use the W, A, S, D keys to quickly access information.
+		<dl>
 		<dt>W</dt>
-		<dd>Lists all items discovered on the current map.</dd>
+		<dd>Open the settings menu.</dd>
 		<dt>A</dt>
-		<dd>Announce current location.</dd>
+		<dd>Announce all available items on the map.</dd>
 		<dt>S</dt>
-		<dd>List player's current Stats.</dd>
+		<dd>List player's current stats.</dd>
 		<dt>D</dt>
-		<dd>Describe current location.</dd>		
-		<dt>Auto actions</dt><dd> Keys, treasure, and potions trigger automatically when you step onto them.</dd>
-		<dt>Manual actions</dt><dd> You can use <kbd>space</kbd> or <kbd>enter</kbd> to interact with shops and doors.</dd>
-		<dt>Door</dt><dd> You can only unlock the door if you have the key.</dd>
-		<dt>Fog of war</dt><dd> You only learn what's in a cell after you visit it.</dd>
-		<dt>Walls</dt><dd> You cannot move through walls.</dd>
+		<dd>Describe current location.</dd>
+		
+		</dl></dd>		
+		
+		<dt>Reset</dt>
+		<dd>Refresh the page to reset your game. You can use Ctrl + R, Cmd + R, or F5 to refresh.</dd>
+		<dt>Settings</dt>
+		<dd> Access the Settings menu from the home screen or by pressing W while playing. You can turn various audio features on and off and adjust your color scheme. When an audio feature is enabled, you can adjust its speed, pitch, and volume.
+		<ul>
+		<li>Sound Effects</li>
+		<li>Path Tones</li>
+		<li>Speech</li>
+		<li>Color Picker</li>
+		</ul>
+	</dd>
 		</dl>
 		<button type="button" onclick="menuChange(this)" class="back" myScreen="gameGuide" tarScreen="menuStart" id="btnGuideBack" >back</button>
 		</div>

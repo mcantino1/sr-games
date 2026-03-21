@@ -834,17 +834,6 @@ function mapTouch(pos){
 
 /* ---------------- Rendering ---------------- */
 var bigIcons = [];
-var mapShell = document.getElementsByClassName("mapShell")[0];
-mapShell.addEventListener("scrollend", (event) => { 
-  if(bigIcons.length > 0){
-	  for (elem of bigIcons){
-		  updateCellSizing(elem);
-	  }
-	  
-  }
-
-
-})
 
 
 function renderMap() {
@@ -1033,12 +1022,16 @@ function updateCellSizing(cell){
 	myExclusions = [];
 	if (iconRef.getAttribute("exclusions") && iconRef.getAttribute("exclusions").length > 0){
 		rawExclusions = iconRef.getAttribute("exclusions").split(",");
+		console.log(rawExclusions);
 		for (rex of rawExclusions){
-			let newR = homeRow + posToRC(rex).r;
-			let newC = homeCol + posToRC(rex).c;
+			console.log(rex);
+			console.log(posToRC(rex));
+			let newR = parseInt(homeRow) + parseInt(posToRC(rex).row);
+			let newC = parseInt(homeCol) + parseInt(posToRC(rex).col);
 			myExclusions.push(toPos(newR, newC));
 			
 		}
+		console.log(myExclusions);
 	}
 	for(let c = 0; c < iconcolspan; c++){
 		for(let r = 0; r < iconrowspan; r++){		
@@ -2552,13 +2545,14 @@ function speakMapContents(){
 }
 
 function  speakLocDesc(){
-	
+	//announce(toPos(player.row, player.col) + " " + currentLevelId  );	
 	speechSynthesis.cancel();
 	//rewrite the current location description so it announces again. 
 	let myText = currentText.innerHTML;
 	currentText.innerHTML = "";
 	currentText.innerHTML = myText;
-	if (speechOn){speechSay(currentText.textContent)}
+	locationName = currentLevelId + " " + toPos(player.row, player.col)+ ". "
+	if (speechOn){speechSay(locationName + currentText.textContent)}
 }
 
 const settings = document.getElementById("settings");
@@ -2600,7 +2594,7 @@ gameEl.addEventListener("keydown", (e) => {
   }
   if (e.key === "w" || e.key === "W") {
     e.preventDefault();
-    speakMapContents();
+    toggleSettings();
     return;
   }
 
@@ -2612,7 +2606,7 @@ gameEl.addEventListener("keydown", (e) => {
   
     if (e.key === "a" || e.key === "A") {
     e.preventDefault();
-    speakLoc();
+    speakMapContents();
     return;
   }
 
