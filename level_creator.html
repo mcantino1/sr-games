@@ -432,7 +432,7 @@
 				</select>
 				</div>
 				<div class="floatGroup">
-						<label for="monRewKind">Bump Damage</label>
+						<label for="wallDmgKind">Bump Damage</label>
 						<select object="wall" meta="rKind" id="wallDmgKind">
 							<option value="gold">Gold</option>
 							<option value="strength">Strength</option>
@@ -444,7 +444,12 @@
 						<label for="wallDmgValue">Value:</label>
 						<input object="wall" meta="value" id="wallDmgValue" type="number" min="1" class="number" value="0" />
 						</div>
-
+				<div class="floatGroup">
+					<label for="wallAnimBump">Bump Animation</label>
+					<select object="wall" meta="anim" id="wallAnimBump">
+						<option value="">None</option>
+					</select>
+				</div>				
 				<div class="floatGroup">
 					<p>Bump Descriptions</p>
 					<div id="wallDescGroup" class="descriptionGroup">

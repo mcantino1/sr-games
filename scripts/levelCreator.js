@@ -15,10 +15,7 @@ var currentGame = "";
 
 var libraries = {};
 
-var levelSelectors = [];
-var iconSelectors = [];
-var soundSelectors = [];
-
+var selectors = {}
 
 var nameField = document.getElementById("gameName");
 
@@ -52,7 +49,7 @@ itemIcons.custom_wall = itemIcons.wall;
 itemIcons.gameEnd = itemIcons.door;
 
 var colorNames = ["blanched almond","blue","blue violet","brown","burly wood","cadet blue","chartreuse","chocolate","coral","cornflower blue","cornsilk","crimson","cyan","dark blue","dark cyan","dark golden rod","dark gray","dark green","dark grey","dark khaki","dark magenta","dark olive green","dark orange","dark orchid","dark red","dark salmon","dark sea green","dark slate blue","dark slate gray","dark slate grey","dark turquoise","dark violet","deep pink","deep sky blue","dim gray","dim grey","dodger blue","fire brick","floral white","forest green","fuchsia","gainsboro","ghost white","gold","golden rod","gray","green","green yellow","grey","honey dew","hot pink","indian red","indigo","ivory","khaki","lavender","lavender blush","lawn green","lemon chiffon","light blue","light coral","light cyan","light golden rod yellow","light gray","light green","light grey","light pink","light salmon","light sea green","light sky blue","light slate gray","light slate grey","light steel blue","light yellow","lime","lime green","linen","magenta","maroon","medium aqua marine","medium blue","medium orchid","medium purple","medium sea green","medium slate blue","medium spring green","medium turquoise","medium violet red","midnight blue","mint cream","misty rose","moccasin","navajo white","navy","old lace","olive","olive drab","orange","orange red","orchid","pale golden rod","pale green","pale turquoise","pale violet red","papaya whip","peach puff","peru","pink","plum","powder blue","purple","rebecca purple","red","rosy brown","royal blue","saddle brown","salmon","sandy brown","sea green","sea shell","sienna","silver","sky blue","slate blue","slate gray","slate grey","snow","spring green","steel blue","tan","teal","thistle","tomato","turquoise","violet","wheat","white","white smoke","yellow","yellow green"];
-
+var animNames = ["bump", "flop"]
 
 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
@@ -141,7 +138,7 @@ var customSounds = [];
 function initSounds(){
 	mySounds = Object.keys(soundBank);
 	for(sound of mySounds){
-		addOptions(soundSelectors, sound);
+		addOptions(selectors.sound, sound);
 	}
 }
 
@@ -498,10 +495,10 @@ function addGame(num){
 getFile("01");
 
 function clearLevelLists(){
-	for (list of levelSelectors){
+	for (list of selectors.level){
 		clearList(list);
 	}
-	for (list of iconSelectors){
+	for (list of selectors.icon){
 		clearList(list);
 	}
 	
@@ -572,8 +569,7 @@ function initCustomStats(){
 }
 
 function addOptions(selectorList, myLevel){
-	//levelSelectors
-
+	//selectors.level
 	for (list of selectorList){
 
 		addOption(list, myLevel, myLevel)
@@ -581,13 +577,24 @@ function addOptions(selectorList, myLevel){
 	
 }
 
-function initLevelSet(){
+function initAnimOptions(){
+	for(anim of animNames){
+		addOptions(selectors.anim, anim)
+		
+	}
+	
+	
+	
+	
+}
 
+function initLevelSet(){
+	console.log("initLevelSet")
 	newLevels = myGames[currentGame]["levels"];
 	myKeys = Object.keys(newLevels);
 	for(i = 0; i < myKeys.length; i++){
 		LEVELS[myKeys[i]] = newLevels[myKeys[i]];
-		addOptions(levelSelectors, myKeys[i]);
+		addOptions(selectors.level, myKeys[i]);
 		myItems = LEVELS[myKeys[i]].items;
 		//update level items from previous versions
 		for (let o = 0; o < myItems.length; o++){
@@ -716,7 +723,7 @@ function initLevelSet(){
 	loadLevel(LEVELS[myKeys[0]])
 	levelList.value = LEVELS[myKeys[0]];
 	sortLevelList();
-	
+	console.log("levelsInited");
 }
 
 monIconSelect = document.getElementById("monIcon")
@@ -736,7 +743,7 @@ function initCustomIcons(){
 	}
 	myIcons = Object.keys(itemIcons);
 	for(icon of myIcons){
-		addOptions(iconSelectors, icon)
+		addOptions(selectors.icon, icon)
 	}
 	updateIcons()
 }
@@ -789,7 +796,7 @@ function triggerStairToggle(){
 
 function updateIcons(){
 	//div="monIconDisplay"
-	for (field of iconSelectors){
+	for (field of selectors.icon){
 		document.getElementById(field.getAttribute("div")).innerHTML = itemIcons[field.value];
 	}
 	if(currentId.length > 0){
@@ -827,7 +834,7 @@ function saveIcon(){
 	icon = iconBoxDisplay.firstElementChild.outerHTML
 	itemIcons[name] = icon;
 	customIcons[name] = icon;
-	addOptions(iconSelectors, name);
+	addOptions(selectors.icon, name);
 	updateIcons();
 	refreshCells()
 }
@@ -972,7 +979,7 @@ function newIcon(content, name){
 	itemIcons[name] = myVector.outerHTML;
 	customIcons[name] = myVector.outerHTML;
 	
-	addOptions(iconSelectors, name);
+	addOptions(selectors.icon, name);
 	updateIcons();
 	document.getElementById("iconName").value = name;
 	makeLayerList();
@@ -1144,7 +1151,7 @@ function levelNew(){
 	LEVELS[newId].scenes = {};
 	
 	myOtherList = document.getElementById("nextLevelSelect");
-	addOptions(levelSelectors, newId)
+	addOptions(selectors.level, newId)
 	myKeys = Object.keys(LEVELS);
 	
 
@@ -1155,7 +1162,7 @@ function levelCopy(){
 	newId = currentId + "copy"
 	LEVELS[newId] = structuredClone(LEVELS[currentId])
 	LEVELS[newId].id = newId
-	addOptions(levelSelectors, newId)
+	addOptions(selectors.level, newId)
 	myKeys = Object.keys(LEVELS);
 	
 }
@@ -2879,14 +2886,12 @@ setupGridKeyboard();
 //object="treasure" class="configDiv"
 
 function initForms(){
+	console.log("initForms")
 	arrayIndex = {};
 	console.log("initForms")
 	
-	levelSelectors = [];
-	iconSelectors = [];
+	selectors = {"sound": [], "level": [], "icon": [], "anim": []};
 	libraries = {};
-	soundSelectors = [];
-
 	var inputs = document.getElementsByTagName("input");
 	var selects = document.getElementsByTagName("select");
 	var configs = document.getElementsByClassName("configDiv");
@@ -2905,15 +2910,13 @@ function initForms(){
 		if (myObject && !objectKeys.includes(myObject)) {
 			objectKeys.push(myObject);
 		}
-		if (select.getAttribute("meta") && select.getAttribute("meta") == "level"){
-			levelSelectors.push(select);
-		}
-		else if (select.getAttribute("meta") && select.getAttribute("meta") == "icon"){
-			iconSelectors.push(select);
+		if (select.getAttribute("meta") && selectors[select.getAttribute("meta")]){
+			selectors[select.getAttribute("meta")].push(select);
 		}
 		if(select.getAttribute("soundSelect")){
-			soundSelectors.push(select);
+			selectors["sound"].push(select);
 		}
+		
 			//<select soundSelect="true" id="wallHintEffect" object="wall" optional="true" meta="effect" key="bump"> 
 	}
 	
@@ -2990,9 +2993,10 @@ function initForms(){
 		}
 	}
 	
-	console.log(libraries);
+	//console.log(libraries);
 	//console.log(metaMap);
-	
+	console.log("forms prepared")
+	initAnimOptions();
 }
 
 
