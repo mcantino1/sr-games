@@ -1045,7 +1045,7 @@ function updateCellSizing(cell){
 			thisPos = toPos(r + parseInt(homeRow), c + parseInt(homeCol));
 			
 			
-			if(thisPos != homePos && !myExclusions.contains(thisPos)){
+			if(thisPos != homePos && !myExclusions.includes(thisPos)){
 				level.overlaps[thisPos] = homePos;
 			}
 		}
