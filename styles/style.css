@@ -172,9 +172,10 @@ h1:before{
   header p { margin: 6px 0 0; color: light-dark(var(--colDark), var(--colLight)); max-width: 70ch; }
 
   main {
-    flex: 1 1 auto;
+    display: flex;
+	flex-direction: row;
     min-height: 0;
-    display: grid;
+    max-height: 78%;
     grid-template-columns: 1fr 1fr;
   }
 #welcomeFoot{margin: 1em;}
@@ -201,6 +202,7 @@ dt {font-weight: bold;}
     border-right: 1px solid  light-dark(rgba(var(--colDarkR), var(--colAlphaBorder)), rgba(var(--colLightR), var(--colAlphaBorder)));
     display: flex;
     flex-direction: column;
+	width: 60%;
     gap: 10px;
     min-height: 0;
   }
@@ -274,6 +276,7 @@ dt {font-weight: bold;}
     display: flex;
     flex-direction: column;
     gap: 12px;
+	width: 40%;
     min-height: 0;
   }
 	select{font-size: 1em; width: 10em;}
@@ -411,7 +414,7 @@ dt {font-weight: bold;}
  }
 
 
-.foot{padding-bottom: 1em;}
+.foot{padding-bottom: 1em; position: fixed; bottom: 0em; width: 100%;}
 #colP, #pieText	{text-align: center; margin: auto;}
  .statsList li {border-color:  light-dark(rgba(var(--colDarkR), var(--colAlphaBorder)), rgba(var(--colLightR), var(--colAlphaBorder)));}
   dialog {
@@ -591,7 +594,9 @@ input:checked + .slider:before {
 	
 }
   @media (max-width: 900px) {
-    main { grid-template-columns: 1fr; }
+    main { 
+	grid-template-columns: 1fr; 
+	}
     .leftPane { border-right: none; border-bottom: 1px solid  light-dark(rgba(var(--colDarkR), var(--colAlphaBorder)), rgba(var(--colLightR), var(--colAlphaBorder))); }
 	  #map {}
 	.statsList li, .foot button {width: 25%}
