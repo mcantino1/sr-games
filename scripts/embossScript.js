@@ -139,8 +139,15 @@ function toggleType(elem){
 		keyMap[myObj].mode = "skip"
 		for (item of myItems){
 			item.cell.innerHTML = "";
-		}
-		
+			if(item.cell.getAttribute("overlaps")){
+				myOverlaps = item.cell.getAttribute("overlaps").split(",");
+				myLevel = item.cell.getAttribute("level");
+				for(pos of myOverlaps){
+						console.log(pos);
+						oCell = document.getElementById(myLevel + "_" + pos);
+						oCell.innerHTML = "";
+			}
+		}}
 	}
 	else if(myValue == "baseIcon"){
 		keyMap[myObj].mode = "baseIcon";
@@ -148,7 +155,16 @@ function toggleType(elem){
 			item.cell.innerHTML = icons[getIcon[myObj]];
 			reduceBlack(item.cell);
 			//check for rowspan
-			
+			if(item.cell.getAttribute("overlaps")){
+				myOverlaps = item.cell.getAttribute("overlaps").split(",");
+				myLevel = item.cell.getAttribute("level");
+				for(pos of myOverlaps){
+						console.log(pos);
+						oCell = document.getElementById(myLevel + "_" + pos);
+						oCell.innerHTML = icons[getIcon[myObj]];
+						reduceBlack(oCell);
+				}
+			}
 			
 		}
 	}
@@ -164,6 +180,17 @@ function toggleType(elem){
 			if(myObject.meta && myObject.meta.icon){
 				myIcon = icons[myObject.meta.icon];
 			}
+			
+			if(item.cell.getAttribute("overlaps")){
+				myOverlaps = item.cell.getAttribute("overlaps").split(",");
+				myLevel = item.cell.getAttribute("level");
+				for(pos of myOverlaps){
+						console.log(pos);
+						oCell = document.getElementById(myLevel + "_" + pos);
+						oCell.innerHTML = "";
+				}
+			}
+			
 			item.cell.innerHTML = myIcon;
 			if(item.cell.firstElementChild.getAttribute("colspan")){
 				item.cell.firstElementChild.style.width = 1.85 * item.cell.firstElementChild.getAttribute("colspan") + "em";
@@ -176,6 +203,15 @@ function toggleType(elem){
 		keyMap[myObj].mode = "baseSymbol";
 		for (item of myItems){
 			item.cell.innerHTML = symbols[myObj];
+			if(item.cell.getAttribute("overlaps")){
+				myOverlaps = item.cell.getAttribute("overlaps").split(",");
+				myLevel = item.cell.getAttribute("level");
+				for(pos of myOverlaps){
+						console.log(pos);
+						oCell = document.getElementById(myLevel + "_" + pos);
+						item.cell.innerHTML = symbols[myObj];
+				}
+			}
 		}	
 	}
 	else if(myValue == "customSymbol"){
@@ -187,7 +223,15 @@ function toggleType(elem){
 				myName = myObject.meta.name
 			}
 			item.cell.innerHTML = symMap[myObj][myName];
-			
+			if(item.cell.getAttribute("overlaps")){
+				myOverlaps = item.cell.getAttribute("overlaps").split(",");
+				myLevel = item.cell.getAttribute("level");
+				for(pos of myOverlaps){
+						console.log(pos);
+						oCell = document.getElementById(myLevel + "_" + pos);
+						item.cell.innerHTML = symMap[myObj][myName];
+				}
+			}
 		}
 	}
 	else{console.log("impossible response in include list: " + myValue)}
@@ -411,6 +455,10 @@ function makeTable(level){
 		myRow.appendChild(myHead);
 		for(let c = 0; c < cols; c++){
 			var myCell = document.createElement("td");
+			//levels.level1.id
+			myCell.setAttribute("level", level.id);
+			myCell.setAttribute("cell", level.id + "_" + getPOS(r, c));
+			
 			//
 				if(myThings[getPOS(r, c)]){
 					myType = myThings[getPOS(r, c)].type;
@@ -448,10 +496,11 @@ function makeTable(level){
 							myCell.setAttribute("rows", myCell.firstElementChild.getAttribute("rowspan"))
 							exclusions = myCell.firstElementChild.getAttribute("exclusions").split(",");
 							overlaps = [];
+							
 							for(oR = 0; oR < myCell.firstElementChild.getAttribute("rowspan"); oR++){
 								for(oC = 0; oC < myCell.firstElementChild.getAttribute("colspan"); oC++){
 									if(!exclusions.includes(getPOS(oR, oC))){
-										overlaps.push(getPOS(r + oR, c + oC))
+										overlaps.push(getPOS(r + oR, c + oC));										
 									}
 								}
 							}
