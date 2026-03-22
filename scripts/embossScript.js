@@ -145,7 +145,8 @@ function toggleType(elem){
 				for(pos of myOverlaps){
 						console.log(pos);
 						oCell = document.getElementById(myLevel + "_" + pos);
-						oCell.innerHTML = "";
+						if(oCell){						
+						oCell.innerHTML = "";}
 			}
 		}}
 	}
@@ -161,8 +162,9 @@ function toggleType(elem){
 				for(pos of myOverlaps){
 						console.log(pos);
 						oCell = document.getElementById(myLevel + "_" + pos);
+						if(oCell){
 						oCell.innerHTML = icons[getIcon[myObj]];
-						reduceBlack(oCell);
+						reduceBlack(oCell);}
 				}
 			}
 			
@@ -187,7 +189,8 @@ function toggleType(elem){
 				for(pos of myOverlaps){
 						console.log(pos);
 						oCell = document.getElementById(myLevel + "_" + pos);
-						oCell.innerHTML = "";
+						if(oCell){
+						oCell.innerHTML = "";}
 				}
 			}
 			
@@ -209,7 +212,8 @@ function toggleType(elem){
 				for(pos of myOverlaps){
 						console.log(pos);
 						oCell = document.getElementById(myLevel + "_" + pos);
-						item.cell.innerHTML = symbols[myObj];
+						if(oCell){
+						item.cell.innerHTML = symbols[myObj];}
 				}
 			}
 		}	
@@ -229,7 +233,8 @@ function toggleType(elem){
 				for(pos of myOverlaps){
 						console.log(pos);
 						oCell = document.getElementById(myLevel + "_" + pos);
-						item.cell.innerHTML = symMap[myObj][myName];
+						if(oCell){
+						item.cell.innerHTML = symMap[myObj][myName];}
 				}
 			}
 		}
