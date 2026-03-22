@@ -469,7 +469,7 @@ function makeTable(level){
 			var myCell = document.createElement("td");
 			//levels.level1.id
 			myCell.setAttribute("level", level.id);
-			myCell.setAttribute("cell", level.id + "_" + getPOS(r, c));
+			myCell.setAttribute("id", level.id + "_" + getPOS(r, c));
 			
 			//
 				if(myThings[getPOS(r, c)]){
