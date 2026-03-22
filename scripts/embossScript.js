@@ -162,8 +162,10 @@ function toggleType(elem){
 				myIcon = icons[myObject.meta.icon];
 			}
 			item.cell.innerHTML = myIcon;
-			item.cell.firstElementChild.style.width = 1.85 * item.cell.firstElementChild.getAttribute("colspan") + "em";
-			item.cell.firstElementChild.style.height = 1.85 * item.cell.firstElementChild.getAttribute("rowspan") + "em";
+			if(item.cell.firstElementChild.getAttribute("colspan")){
+				item.cell.firstElementChild.style.width = 1.85 * item.cell.firstElementChild.getAttribute("colspan") + "em";
+				item.cell.firstElementChild.style.height = 1.85 * item.cell.firstElementChild.getAttribute("rowspan") + "em";
+			}
 			reduceBlack(item.cell);			
 		}
 	}
