@@ -674,7 +674,7 @@ function revealNeighbors(pos) {
     }
     // Reveal the neighbor tile so it becomes visible on the map.
     revealedNeighbors.add(npos);
-	console.log(npos);
+	
 	nCell = document.getElementById("cell_" + npos)
 	if(nCell){
 		nCell.classList.remove("unknown");
@@ -911,7 +911,7 @@ function checkColors(paths, nameColor){
 }
 
 function findSuitableFill(oHex){
-	console.log(oHex)
+	
 	if(colorMap[oHex]){
 		oHex = colorMap[oHex];
 	}
@@ -933,7 +933,7 @@ function findSuitableFill(oHex){
 			}
 	
 	cHex = oHex;
-	console.log(cHex + ":" + lineHex)
+	
 	checks = 0;
 		while(contrast(cHex, lineHex) < 3 && checks < 50){
 			//which adjustment makes the largest difference
@@ -976,31 +976,6 @@ function updateCellSizing(cell){
 	iconRef = cell.firstElementChild
 	iconrowspan = iconRef.getAttribute("rowspan") || 1;
 	iconcolspan = iconRef.getAttribute("colspan") || 1;
-	//currentList.lastElementChild.offsetTop
-	
-	//myY = cell.offsetTop;
-	//myX = cell.offsetLeft;
-	//myBody = document.getElementsByTagName("body")[0];
-	
-	//myParent = cell.offsetParent;
-	//console.log(myParent)
-//	while (myParent && myParent != myBody){
-//		myY += myParent.offsetTop;
-//		console.log(myParent)
-//		myX += myParent.offsetLeft;
-//		myParent = myParent.offsetParent;
-//	}
-
-//	myParent = cell.parentElement.parentElement;
-//	console.log(myParent);
-//	console.log(myParent.scrollTop)
-//	myY -= myParent.scrollTop;
-	
-	
-    //width: 200px;
-    //height: 200px;
-    //padding-top: 100px;
-    //padding-left: 100px;
 
 	myWidth = cellWidth * iconcolspan - 14;
 	myHeight = cellWidth * iconrowspan - 14;
@@ -1022,16 +997,16 @@ function updateCellSizing(cell){
 	myExclusions = [];
 	if (iconRef.getAttribute("exclusions") && iconRef.getAttribute("exclusions").length > 0){
 		rawExclusions = iconRef.getAttribute("exclusions").split(",");
-		console.log(rawExclusions);
+		
 		for (rex of rawExclusions){
-			console.log(rex);
-			console.log(posToRC(rex));
+			
+			
 			let newR = parseInt(homeRow) + parseInt(posToRC(rex).row);
 			let newC = parseInt(homeCol) + parseInt(posToRC(rex).col);
 			myExclusions.push(toPos(newR, newC));
 			
 		}
-		console.log(myExclusions);
+		
 	}
 	for(let c = 0; c < iconcolspan; c++){
 		for(let r = 0; r < iconrowspan; r++){		
@@ -1494,8 +1469,7 @@ function enterCell(prefix) {
 	  let oldCell = document.getElementsByClassName("player")[0]
 	  let newCell = document.getElementById("cell_" + pos)
 	  if(oldCell != newCell){
-	  console.log("moving player");
-	  console.log(oldCell);
+	  
 	  newCell.innerHTML = "";
 	  newCell.appendChild(oldCell.firstElementChild);
 	  addCellIcon(oldCell);
@@ -1955,6 +1929,7 @@ function ouchPause(){
 }
 //playAnim(wall.meta.anim, dr, dc)
 function findAnim(anim, ar, ac, myVect = document.getElementsByClassName("player")[0].firstElementChild){
+	
 	if(ar == 1){
 		//down
 		playAnim(myVect, anim + "d")
@@ -1974,6 +1949,7 @@ function findAnim(anim, ar, ac, myVect = document.getElementsByClassName("player
 }
 
 function playAnim(item, anim){
+	
 	item.classList.add(anim);
 	 setTimeout(() => {
 		item.classList.remove(anim);
@@ -2103,7 +2079,9 @@ function tryMove(dr, dc) {
 				statChange = wall.meta.rKind;
 			}
 			stats[statChange] -= wall.meta.value;
+			
 			if(wall.meta  && wall.meta.anim && wall.meta.anim != ""){
+			
 				findAnim(wall.meta.anim, -1 * dr, -1 * dc, document.getElementById("cell_" + nextPos).firstElementChild);
 			}
 			myPhrase = [myPhrase, "you lose", wall.meta.value, statChange].join(" ");
@@ -2799,7 +2777,7 @@ function hexToRgb(hex) {
 
 function componentToHex(c) {
   var hex = c.toString(16);
-  console.log(hex);
+  
   return hex.length == 1 ? "0" + hex : hex;
 }
 
