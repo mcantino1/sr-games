@@ -56,11 +56,22 @@ function makeLevelPages(){
 	levelNames = Object.keys(levels);
 
 	for(levName of levelNames){
+		
 		myPage = makePage(levName, head, translate(levName));
 		myPage.classList.add("level")
-		newTable = makeTable(levels[levName])	
-		myPage.appendChild(newTable);
 		
+		newTable = makeTable(levels[levName])	
+		//if(level.gridOpacity)
+		//root.style.setProperty("--gridAlpha", (opacity / 100));
+		//rgba(255, 0, 0, .5);
+		//.page table td{border: 1px solid;
+		if(levels[levName].gridOpacity && levels[levName].gridOpacity < 100){
+			myCells = newTable.getElementsByTagName("td");
+			for(cell of myCells){
+				cell.style.border = "1px solid rgba(0, 0, 0, " + levels[levName].gridOpacity/100 + ")";
+			}
+		}
+		myPage.appendChild(newTable);
 	}
 	addTypeOptions();
 }
@@ -406,6 +417,7 @@ function makeTable(level){
 					if(getIcon[myName]){
 						myIcon = getIcon[myName];
 					}
+					
 					if(myThing.meta && myThing.meta.name){
 						myName = myThing.meta.name;
 					}
@@ -414,12 +426,17 @@ function makeTable(level){
 						myIcon = myThing.meta.icon;
 					}
 
-						if(!keyMap[myType].icons[myIcon]){
-							keyMap[myType].icons[myIcon] = [];
-						}
-						if(!keyMap[myType].icons[myIcon].includes(myName)){
-					keyMap[myType].icons[myIcon].push(myName);}
+					if(!keyMap[myType].icons[myIcon]){
+						keyMap[myType].icons[myIcon] = [];
+					}
+					if(!keyMap[myType].icons[myIcon].includes(myName)){
+						keyMap[myType].icons[myIcon].push(myName);
+					}
 					myCell.innerHTML = icons[myIcon];
+					console.log(myCell.firstElementChild);
+					console.log(myCell.firstElementChild.getAttribute("colspan"));
+					console.log(myCell.firstElementChild.getAttribute("rowspan"));
+					
 					reduceBlack(myCell.children[0]);
 					myCell.classList.add(myType);
 					myCell.classList.add(myType);
