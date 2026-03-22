@@ -162,6 +162,8 @@ function toggleType(elem){
 				myIcon = icons[myObject.meta.icon];
 			}
 			item.cell.innerHTML = myIcon;
+			item.cell.firstElementChild.style.width = 1.85 * item.cell.firstElementChild.getAttribute("colspan") + "em";
+			item.cell.firstElementChild.style.height = 1.85 * item.cell.firstElementChild.getAttribute("rowspan") + "em";
 			reduceBlack(item.cell);			
 		}
 	}
@@ -433,10 +435,15 @@ function makeTable(level){
 						keyMap[myType].icons[myIcon].push(myName);
 					}
 					myCell.innerHTML = icons[myIcon];
-					console.log(myCell.firstElementChild);
-					console.log(myCell.firstElementChild.getAttribute("colspan"));
-					console.log(myCell.firstElementChild.getAttribute("rowspan"));
-					
+						console.log(myCell.firstElementChild);
+						console.log(myCell.firstElementChild.getAttribute("colspan"));
+						console.log(myCell.firstElementChild.getAttribute("rowspan"));
+						if(myCell.firstElementChild.getAttribute("colspan")){
+							myCell.setAttribute("cols", myCell.firstElementChild.getAttribute("colspan"))
+							myCell.setAttribute("rows", myCell.firstElementChild.getAttribute("rowspan"))
+							myCell.firstElementChild.style.width = 1.85 * myCell.firstElementChild.getAttribute("colspan") + "em";
+							myCell.firstElementChild.style.height = 1.85 * myCell.firstElementChild.getAttribute("rowspan") + "em";
+						}
 					reduceBlack(myCell.children[0]);
 					myCell.classList.add(myType);
 					myCell.classList.add(myType);
