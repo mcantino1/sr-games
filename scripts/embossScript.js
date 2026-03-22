@@ -142,6 +142,7 @@ function toggleType(elem){
 			if(item.cell.getAttribute("overlaps")){
 				myOverlaps = item.cell.getAttribute("overlaps").split(",");
 				myLevel = item.cell.getAttribute("level");
+				console.log(myOverlaps);
 				for(pos of myOverlaps){
 						console.log(pos);
 						oCell = document.getElementById(myLevel + "_" + pos);
@@ -159,9 +160,11 @@ function toggleType(elem){
 			if(item.cell.getAttribute("overlaps")){
 				myOverlaps = item.cell.getAttribute("overlaps").split(",");
 				myLevel = item.cell.getAttribute("level");
+				console.log(myOverlaps);
 				for(pos of myOverlaps){
-						console.log(pos);
+						console.log(myLevel + "_" + pos);
 						oCell = document.getElementById(myLevel + "_" + pos);
+						console.log(oCell);
 						if(oCell){
 						oCell.innerHTML = icons[getIcon[myObj]];
 						reduceBlack(oCell);}
@@ -186,6 +189,7 @@ function toggleType(elem){
 			if(item.cell.getAttribute("overlaps")){
 				myOverlaps = item.cell.getAttribute("overlaps").split(",");
 				myLevel = item.cell.getAttribute("level");
+				console.log(myOverlaps);
 				for(pos of myOverlaps){
 						console.log(pos);
 						oCell = document.getElementById(myLevel + "_" + pos);
@@ -209,6 +213,7 @@ function toggleType(elem){
 			if(item.cell.getAttribute("overlaps")){
 				myOverlaps = item.cell.getAttribute("overlaps").split(",");
 				myLevel = item.cell.getAttribute("level");
+				console.log(myOverlaps);
 				for(pos of myOverlaps){
 						console.log(pos);
 						oCell = document.getElementById(myLevel + "_" + pos);
@@ -230,9 +235,11 @@ function toggleType(elem){
 			if(item.cell.getAttribute("overlaps")){
 				myOverlaps = item.cell.getAttribute("overlaps").split(",");
 				myLevel = item.cell.getAttribute("level");
+				console.log(myOverlaps);
 				for(pos of myOverlaps){
-						console.log(pos);
+						console.log(myLevel + "_" + pos);
 						oCell = document.getElementById(myLevel + "_" + pos);
+						
 						if(oCell){
 						item.cell.innerHTML = symMap[myObj][myName];}
 				}
