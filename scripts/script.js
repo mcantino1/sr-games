@@ -1953,39 +1953,31 @@ function ouchPause(){
 			}, 500);
 
 }
-
-function wallBump(ar, ac){
-	
-	myVect = document.getElementsByClassName("player")[0].firstElementChild;
-	
-	
-		if(ar == 1){
+//playAnim(wall.meta.anim, dr, dc)
+function findAnim(anim, ar, ac, myVect = document.getElementsByClassName("player")[0].firstElementChild){
+	if(ar == 1){
 		//down
-		playAnim(myVect, "bumpd")
+		playAnim(myVect, anim + "d")
 	}
 	else if(ar == -1){
 		//up
-		playAnim(myVect, "bumpu")
+		playAnim(myVect, anim + "u")
 	}
 	else if(ac == 1){
 		//right
-		playAnim(myVect, "bumpr")
+		playAnim(myVect, anim + "r")
 	}
 	else if(ac == -1){
 		//left
-		playAnim(myVect, "bumpl")
+		playAnim(myVect, anim + "l")
 	}
-	
-	
 }
 
 function playAnim(item, anim){
 	item.classList.add(anim);
 	 setTimeout(() => {
-			item.classList.remove(anim);
-			}, 500);	
-	
-	
+		item.classList.remove(anim);
+		}, 500);
 }
 
 
@@ -2000,327 +1992,284 @@ function considerDeath(){
 		preserveStatsOnNextLoad = true;
 		loadLevel(currentLevelId);
 		return;
-  }
-
-	
+	}
 }
 
 var defeat = false;
 var voided = false;
 var voidMessage = "";
+
 /* ---------------- Movement ---------------- */
 
 function tryMove(dr, dc) {
 	var spoken = [];
 	speechSynthesis.cancel();
 	if(live.innerHTML != ""){announce("");}
- 
-  const nr = player.row + dr;
-  const nc = player.col + dc;
+	const nr = player.row + dr;
+	const nc = player.col + dc;
 
-  // Edge treated like wall
-
-  
-  if (!inBounds(nr, nc, level)) {
-	  
-	  
-	wallBump(dr, dc);
-	
-	wallCount += 1;
-	//level.items[0].meta.descriptions
-	if (wallCount > 10){
-		max = wallPhrases.length
-		var i = Math.floor(Math.random() * max);
-		myPhrase = wallPhrases[i];
-		myPhrase = myPhrase[0].toUpperCase() + myPhrase.substring(1);
-		announce(wallPhrases[i]);
-	}
-	else {
-		announce("A wall blocks your way. ");
-	}
-    return;
-  }
-
-  var nextPos = toPos(nr, nc);
-	
-  if(itemsAt(nextPos).length == 0 && level.overlaps[nextPos]){
-		nextPos = level.overlaps[nextPos];
-	}
-
-
-   if(hasEnd(nextPos)){
-	   announce("You win!");
-   }
-
-	//keyCheck
-	let needKey = level.keyCount - level.foundKey;
-
-  // Prevent stepping onto a locked door tile even if other checks miss it.
-  //level.overlaps[thisPos] = homePos;
-
-  if (hasDoor(nextPos) && needKey > 0) {
-    // Reveal the door so the player knows where it is and block movement.
-    revealedByBump.add(nextPos);
-	wallBump(dr, dc);
-	
-    // Tell the player a key is required, then repeat the player's current location info.
-    const currentDesc = describeCurrentLocation();
-	if(level.keyCount == 1){
-		announce("Key required. ");
-	}
-	else{
-		announce(level.keyCount + " keys required. ");
-	}
-    //renderMap();
-    return;
-  }
- 
-
-  // Wall bump
-  if (hasWall(nextPos)) {
-	  wallName = "wall"
-    revealedByBump.add(nextPos);
-	wallBump(dr, dc);
-	
-	wall = itemsAt(nextPos)[0]
-	wallCount += 1;
-	
-	//level.items[0].meta.descriptions
-	if(wall.meta && wall.meta.name && wall.meta.name.length > 0){ wallName = wall.meta.name}
-	let myPhrases = wallPhrases;
-	var myPhrase
-	if(wall.meta && wall.meta.descriptions && wall.meta.descriptions.length > 0){
-		
-		if(wall.meta.special = true){
-			
-			myPhrases = wall.meta.descriptions;
-		}
-		else{
-			for(desc of wall.meta.descriptions){
-				
-				myPhrases.push(desc);
-			}
-		}
-		
-		myPhrase = myPhrases[Math.floor(Math.random()* myPhrases.length	)].replace("wall", wallName).replace("Wall", wallName);
-		
-		//announce(myPhrase);
-		
-	} else if(wallName.substr(wallName.length - 1) == "s"){
-		
-		myPhrase = "Some " + wallName + " blocks your way. ";
-	}
-	else{
-		if(wallCount > 10){
-			
+	// Edge treated like wall
+	if (!inBounds(nr, nc, level)) {
+		findAnim("bump", dr, dc);
+		wallCount += 1;
+		//level.items[0].meta.descriptions
+		if (wallCount > 10){
 			max = wallPhrases.length
 			var i = Math.floor(Math.random() * max);
-			
-			myPhrase = wallPhrases[i].replace("wall", wallName).replace("Wall", wallName);
+			myPhrase = wallPhrases[i];
 			myPhrase = myPhrase[0].toUpperCase() + myPhrase.substring(1);
-			
-			//announce(myPhrase)+;
+			announce(wallPhrases[i]);
+		}
+		else {
+			announce("A wall blocks your way. ");
+		}
+		return;
+	}
+	
+	var nextPos = toPos(nr, nc);
+	if(itemsAt(nextPos).length == 0 && level.overlaps[nextPos]){
+		nextPos = level.overlaps[nextPos];
+	}
+	if(hasEnd(nextPos)){
+		announce("You win!");
+	}
+	//keyCheck
+	let needKey = level.keyCount - level.foundKey;
+	// Prevent stepping onto a locked door tile even if other checks miss it.
+	//level.overlaps[thisPos] = homePos;
+	if (hasDoor(nextPos) && needKey > 0) {
+		// Reveal the door so the player knows where it is and block movement.
+		revealedByBump.add(nextPos);
+		findAnim("bump", dr, dc);
+		// Tell the player a key is required, then repeat the player's current location info.
+		const currentDesc = describeCurrentLocation();
+		if(level.keyCount == 1){
+			announce("Key required. ");
 		}
 		else{
-		myPhrase = ("A " + wallName + " blocks your way. ");}
-		
-	}
-	let bumpEffect = "wall";
-	//level.items[0].meta.effectBump
-
-	if(wall && wall.meta && wall.meta.effectBump){
-		bumpEffect = wall.meta.effectBump;
-	}
-	
-	//check for wall hazard
-	//type meta.rKind
-	//value (always positive rn)
-	if (wall && wall.meta && wall.meta.value && wall.meta.value > 0){
-		
-		statChange = "life"
-		if (wall.meta.rKind && wall.meta.rKind != ""){
-			statChange = wall.meta.rKind;
+			announce(level.keyCount + " keys required. ");
 		}
-		stats[statChange] -= wall.meta.value;
-		myPhrase = [myPhrase, "you lose", wall.meta.value, statChange].join(" ");
-		updateStatsUI();
-		considerDeath();
-		ouchPause();
+		//renderMap();
+		return;
 	}
 	
+	// Wall bump
+	if (hasWall(nextPos)) {
+		wallName = "wall"
+		revealedByBump.add(nextPos);
+		findAnim("bump", dr, dc);
+		wall = itemsAt(nextPos)[0]
+		wallCount += 1;
+		//level.items[0].meta.descriptions
+		if(wall.meta && wall.meta.name && wall.meta.name.length > 0){ wallName = wall.meta.name}
+		let myPhrases = wallPhrases;
+		var myPhrase
+		if(wall.meta && wall.meta.descriptions && wall.meta.descriptions.length > 0){
+			if(wall.meta.special = true){
+				myPhrases = wall.meta.descriptions;
+			}
+			else{
+				for(desc of wall.meta.descriptions){
+					myPhrases.push(desc);
+				}
+			}
+			myPhrase = myPhrases[Math.floor(Math.random()* myPhrases.length	)].replace("wall", wallName).replace("Wall", wallName);
+			//announce(myPhrase);
+		} else if(wallName.substr(wallName.length - 1) == "s"){
+			myPhrase = "Some " + wallName + " blocks your way. ";
+		}
+		else{
+			if(wallCount > 10){
+				max = wallPhrases.length
+				var i = Math.floor(Math.random() * max);
+				myPhrase = wallPhrases[i].replace("wall", wallName).replace("Wall", wallName);
+				myPhrase = myPhrase[0].toUpperCase() + myPhrase.substring(1);
+				//announce(myPhrase)+;
+			}
+			else{
+				myPhrase = ("A " + wallName + " blocks your way. ");}
+		}
+		let bumpEffect = "wall";
+		//level.items[0].meta.effectBump
+		if(wall && wall.meta && wall.meta.effectBump){
+			bumpEffect = wall.meta.effectBump;
+		}
+		//check for wall hazard
+		//type meta.rKind
+		//value (always positive rn)
+		if (wall && wall.meta && wall.meta.value && wall.meta.value > 0){
+			statChange = "life"
+			if (wall.meta.rKind && wall.meta.rKind != ""){
+				statChange = wall.meta.rKind;
+			}
+			stats[statChange] -= wall.meta.value;
+			if(wall.meta  && wall.meta.anim && wall.meta.anim != ""){
+				findAnim(wall.meta.anim, -1 * dr, -1 * dc, document.getElementById("cell_" + nextPos).firstElementChild);
+			}
+			myPhrase = [myPhrase, "you lose", wall.meta.value, statChange].join(" ");
+			updateStatsUI();
+			considerDeath();
+			ouchPause();
+		}
+		announce(myPhrase);
+		playSound(bumpEffect);
+		//renderMap();
+		return;
+	}	
 	
-	announce(myPhrase);
-	
-	playSound(bumpEffect);
-    //renderMap();
-    return;
-  }	
-
-  // Monster encounter: acts like a blocked path until defeated.
-  if (hasMonster(nextPos)) {
-	  wallBump(dr, dc)
-	  monVect = document.getElementById("cell_" + nextPos).firstElementChild
-	  playAnim(monVect, "monReact")
-    // Reveal monster icon as soon as the player first engages it.
-    // Also mark the monster square as "known" (visited) so it renders as discovered.
-    revealedSpecial.set(nextPos, "monster");
-    visited.add(nextPos);
-    // Re-render immediately so the icon appears even though the player hasn't moved.
-    //renderMap();
-    const m = getMonster(nextPos);
-    if (!m) {
-      // Safety fallback: if item exists but monster state is missing, re-init.
-      initMonsters();
-    }
-    const monster = getMonster(nextPos);
-	let msg = '';
-    // Player attacks first. Account for monster.def and include the monster's name.
-    const monsterDef = monster.def || 0;
-    const monsterName = monster.name || 'the monster';
-	
-	if (!m.met){
-		m.met = true;
-		if(m.intro){msg += m.intro + "\n" }
-		
-	}
-    // Cycle and read a description for this attack if available
-    var attackDesc = null;
-    if (monster.descriptions && monster.descriptions.length) {
-      var idx = typeof monster.nextDescIndex === 'number' ? monster.nextDescIndex : 0;
-	  if(monster.random == true || monster.random == "true"){
-		  idx = Math.floor(Math.random() * monster.descriptions.length);	
-	  }
-      attackDesc = monster.descriptions[idx];
-      monster.nextDescIndex = (idx + 1) % monster.descriptions.length;
-    }
-
-    let playerDamage = Math.max(0, stats.strength - monsterDef);
-    
-    // Track whether this attack was a critical (player-only)
-    let isCrit = false;
-    // Miss chance: 5% for both player and monster.
-    const playerMiss = Math.random() < playerMissChance;
-    if (playerMiss) {
-      msg += `Your attack misses. `;
-    } else {	
-      if (playerDamage <= 0) {
-        msg += `Your attack couldn't penetrate ${monsterName}'s defense. `;
-      } else {
-		//successful hit - incriment hit counter
-		hitCount += 1;
-        // Player-only critical hit: 8% chance to deal 50% more damage
-        isCrit = Math.random() < critChance;
-        let appliedDamage = playerDamage;
-        if (isCrit) appliedDamage = Math.round(playerDamage * 1.5);
-		
-		//TODO - magic effect point
-		mySpells = magicScripts.pcatk;
-		if(mySpells && mySpells.length > 0){
-			for (spell of mySpells){
-				appliedDamage = spell(appliedDamage);
+	// Monster encounter: acts like a blocked path until defeated.
+	if (hasMonster(nextPos)) {
+		findAnim("bump", dr, dc);
+		monVect = document.getElementById("cell_" + nextPos).firstElementChild
+		playAnim(monVect, "monReact")
+		// Reveal monster icon as soon as the player first engages it.
+		// Also mark the monster square as "known" (visited) so it renders as discovered.
+		revealedSpecial.set(nextPos, "monster");
+		visited.add(nextPos);
+		// Re-render immediately so the icon appears even though the player hasn't moved.
+		//renderMap();
+		const m = getMonster(nextPos);
+		if (!m) {
+			// Safety fallback: if item exists but monster state is missing, re-init.
+			initMonsters();
+		}
+		const monster = getMonster(nextPos);
+		let msg = '';
+		// Player attacks first. Account for monster.def and include the monster's name.
+		const monsterDef = monster.def || 0;
+		const monsterName = monster.name || 'the monster';
+		if (!m.met){
+			m.met = true;
+			if(m.intro){msg += m.intro + "\n" }
+		}
+		// Cycle and read a description for this attack if available
+		var attackDesc = null;
+		if (monster.descriptions && monster.descriptions.length) {
+			var idx = typeof monster.nextDescIndex === 'number' ? monster.nextDescIndex : 0;
+			if(monster.random == true || monster.random == "true"){
+				idx = Math.floor(Math.random() * monster.descriptions.length);	
+			}
+			attackDesc = monster.descriptions[idx];
+			monster.nextDescIndex = (idx + 1) % monster.descriptions.length;
+		}
+		let playerDamage = Math.max(0, stats.strength - monsterDef);
+		// Track whether this attack was a critical (player-only)
+		let isCrit = false;
+		// Miss chance: 5% for both player and monster.
+		const playerMiss = Math.random() < playerMissChance;
+		if (playerMiss) {
+			msg += `Your attack misses. `;
+		} else {	
+			if (playerDamage <= 0) {
+				msg += `Your attack couldn't penetrate ${monsterName}'s defense. `;
+			} else {
+				//successful hit - incriment hit counter
+				hitCount += 1;
+				// Player-only critical hit: 8% chance to deal 50% more damage
+				isCrit = Math.random() < critChance;
+				let appliedDamage = playerDamage;
+				if (isCrit) appliedDamage = Math.round(playerDamage * 1.5);
+				//TODO - magic effect point
+				mySpells = magicScripts.pcatk;
+				if(mySpells && mySpells.length > 0){
+					for (spell of mySpells){
+						appliedDamage = spell(appliedDamage);
+					}
+				}
+				monster.hp -= appliedDamage;
+				msg += `You attack for ${appliedDamage}. `;
 			}
 		}
-        monster.hp -= appliedDamage;
-        msg += `You attack for ${appliedDamage}. `;
-      }
-    }
-
-    if (monster.hp > 0) {
-      // monster.atks back.
-      const raw = monster.atk || 0;
-      // Miss chance: 5% for both player and monster.
-      const monsterMiss = Math.random() < monMissChance;
-      if (monsterMiss) {
-        msg += `${monsterName} misses. `;
-      } else {
-		monHitCount += 1;
-        let monsterDamage = Math.max(0, raw - stats.defense);
-		//TODO - magic effect point
-		mySpells = magicScripts.monatk;
-		if(mySpells && mySpells.length > 0){
-			for (spell of mySpells){
-				monsterDamage = spell(monsterDamage);
+		if (monster.hp > 0) {
+			// monster.atks back.
+			const raw = monster.atk || 0;
+			// Miss chance: 5% for both player and monster.
+			const monsterMiss = Math.random() < monMissChance;
+			if (monsterMiss) {
+				msg += `${monsterName} misses. `;
+			} else {
+				monHitCount += 1;
+				let monsterDamage = Math.max(0, raw - stats.defense);
+				//TODO - magic effect point
+				mySpells = magicScripts.monatk;
+				if(mySpells && mySpells.length > 0){
+					for (spell of mySpells){
+						monsterDamage = spell(monsterDamage);
+					}
+				}
+				stats.life -= monsterDamage;
+				msg += `${monsterName} attacks for ${monsterDamage}. `;
 			}
+			msg += `\nYour life: ${Math.max(0, stats.life)}. ${monsterName} life: ${Math.max(0, monster.hp)}. \n`;
+
+			// If player dies, reset level.
+			considerDeath()
+			
+			// After combat, when the monster survives, report the combat
+			// results and also include surrounding-tile information so the
+			// player can decide whether to move. Do NOT include the full
+			// room description or explicit "You are in ... " text to reduce
+			// clutter; only the surroundings cue is appended.
+			const full = msg; // combat message only
+			const surroundings = groupedSurroundingsText();
+			// Build spoken sequence with the monster description first (if available).
+			const spokenSeq = [];
+			if (attackDesc) spokenSeq.push(attackDesc);
+			if (isCrit) spokenSeq.push("Critical hit!");
+			// Append the combat message and then the surroundings cue (if any).
+			spokenSeq.push(full);
+			if (surroundings) spokenSeq.push(surroundings);
+
+			const curPos = toPos(player.row, player.col);
+			// Ensure the monster description and surroundings also appear in the
+			// Current location text so it is available to screenreader and
+			// deaf-blind users.
+			let displayFull = (attackDesc ? attackDesc + ' ' : '') + full + (surroundings ? ' ' + surroundings : '');
+			displayFull = trimText(displayFull)
+			currentText.innerHTML = displayFull;
+			if (speechOn){speechSay(currentText.textContent)}
+
+			updateUI();
+			ouchPause();
+			//announceSequence(spokenSeq);
+			return;
 		}
-        stats.life -= monsterDamage;
-        msg += `${monsterName} attacks for ${monsterDamage}. `;
-      }
-      msg += `\nYour life: ${Math.max(0, stats.life)}. ${monsterName} life: ${Math.max(0, monster.hp)}. \n`;
 
-      // If player dies, reset level.
-		considerDeath()
+		// Monster defeated
+		let slaySound = monster.effectSlay || "slay";
+		playSound(slaySound);
+		//get rewards
+		removeMonster(nextPos);
+		// Once defeated, the monster icon should disappear from the map.
+		revealedSpecial.delete(nextPos);
+		// Append concise defeat notice immediately after the attack message.
+		msg += `${monsterName} is defeated. `;
+		//get rewardsmonster.rDesc && 
 
-      // After combat, when the monster survives, report the combat
-      // results and also include surrounding-tile information so the
-      // player can decide whether to move. Do NOT include the full
-      // room description or explicit "You are in ... " text to reduce
-      // clutter; only the surroundings cue is appended.
-      const full = msg; // combat message only
-      const surroundings = groupedSurroundingsText();
-      // Build spoken sequence with the monster description first (if available).
-      const spokenSeq = [];
-      if (attackDesc) spokenSeq.push(attackDesc);
-      if (isCrit) spokenSeq.push("Critical hit!");
-      // Append the combat message and then the surroundings cue (if any).
-      spokenSeq.push(full);
-      if (surroundings) spokenSeq.push(surroundings);
-
-      const curPos = toPos(player.row, player.col);
-      // Ensure the monster description and surroundings also appear in the
-      // Current location text so it is available to screenreader and
-      // deaf-blind users.
-      let displayFull = (attackDesc ? attackDesc + ' ' : '') + full + (surroundings ? ' ' + surroundings : '');
-      displayFull = trimText(displayFull)
-	  currentText.innerHTML = displayFull;
-	  if (speechOn){speechSay(currentText.textContent)}
-      
-      updateUI();
-	  ouchPause();
-      //announceSequence(spokenSeq);
-      return;
-    }
-
-    // Monster defeated
-	let slaySound = monster.effectSlay || "slay";
-	playSound(slaySound);
-	//get rewards
-    removeMonster(nextPos);
-    // Once defeated, the monster icon should disappear from the map.
-    revealedSpecial.delete(nextPos);
-    // Append concise defeat notice immediately after the attack message.
-    msg += `${monsterName} is defeated. `;
-	//get rewardsmonster.rDesc && 
-	
-	if (monster.rDesc && monster.rDesc != "") {
-		
-		msg += monster.rDesc 
+		if (monster.rDesc && monster.rDesc != "") {
+			msg += monster.rDesc 
+		}
+		if (monster.rVal > 0){
+			msg += " You gain " + monster.rVal + " " + monster.rKind + ". "
+			stats[monster.rKind] += parseInt(monster.rVal);
+		}
+		// Do NOT move the player — they remain in their current square after
+		// defeating the monster. Include the player's current position in the
+		// defeat message so they stay oriented.
+		const posNow = toPos(player.row, player.col);
+		// Compose a prefix that ensures the monster description (if any)
+		// is spoken first, followed by a critical notice when appropriate.
+		const prefix = (attackDesc ? attackDesc + ' ' : '') + (isCrit ? 'Critical hit! ' : '') + msg + ` You are in ${posNow}. `;
+		enterCell(prefix);
+		if(monster.boss){
+			//FINAL boss
+			msg += "CONGRATULATIONS"
+			finishGame()
+		}
+		return;
 	}
-	if (monster.rVal > 0){
-		
-		msg += " You gain " + monster.rVal + " " + monster.rKind + ". "
-		stats[monster.rKind] += parseInt(monster.rVal);
-	}
-	
-    // Do NOT move the player — they remain in their current square after
-    // defeating the monster. Include the player's current position in the
-    // defeat message so they stay oriented.
-    const posNow = toPos(player.row, player.col);
-    // Compose a prefix that ensures the monster description (if any)
-    // is spoken first, followed by a critical notice when appropriate.
-    const prefix = (attackDesc ? attackDesc + ' ' : '') + (isCrit ? 'Critical hit! ' : '') + msg + ` You are in ${posNow}. `;
-    
-	enterCell(prefix);
-	
-	if(monster.boss){
-		//FINAL boss
-		msg += "CONGRATULATIONS"
-		finishGame()
-	}
-	
-    return;
-  }
 
-//hasKey(pos)
+	//hasKey(pos)
 	if(hasKey(nextPos)){playSound("key");}
 	else if(hasDoor(nextPos)){playSound("door");}
 	else if(hasWeaponShop(nextPos)){playSound("door");}
@@ -2331,20 +2280,19 @@ function tryMove(dr, dc) {
 	else if(hasTreasure(nextPos)){playSound("get")}
 	else if(hasVillager(nextPos)){playSound("get")}
 	else{playSound("step");}
-  // Normal movement
-  player.row = nr;
-  player.col = nc;
-  updateUI();
-  //renderMap();
-  enterCell();
+	// Normal movement
+	player.row = nr;
+	player.col = nc;
+	updateUI();
+	//renderMap();
+	enterCell();
 }
 
 
 var gameFinished = false;
 function finishGame(){
 	announce("You have beaten " + myGame.title + "!. Press <kbd>enter</kbd> to return to the game selection screen.");
-	gameFinished = true;
-	
+	gameFinished = true;	
 }
 
 
@@ -2358,10 +2306,10 @@ function speakStatus() {
   }
   announce(myStuff)
 }
+
 function speakLoc() {
 	speechSynthesis.cancel();
-	announce(toPos(player.row, player.col) + " " + currentLevelId  );	
-	
+	announce(toPos(player.row, player.col) + " " + currentLevelId  );
 }
 
 var tookStairs = {bool: false, level: null, cell: null, trigger: false}
