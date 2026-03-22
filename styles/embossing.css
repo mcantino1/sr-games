@@ -68,9 +68,9 @@ p {margin: 0; padding: 0;}
 
 .page table th{width: 1em; text-align: left; height: 1em; font-weight: normal; padding: 0 0.3em 0 0}
 .page table thead th {padding: 0 0 0.3em 0}
-.page table td{width: 1.6em; text-align: left; height: 1.5em; font-weight: normal;}
-.page table td{border: 1px solid; margin: 0; padding:0.15em 0em 0em 0.25em;}
-.page table td svg{width: 1.37em; height: 1.37em; margin-bottom: -0.1em}
+.page table td{width: 1.6em; text-align: left; height: 1.7em; font-weight: normal;}
+.page table td{border: 1px solid; margin: 0; padding:0.15em 0em 0em 0.25em; position: relative;}
+.page table td svg{width: 1.37em; height: 1.37em; margin-bottom: -0.1em; position: absolute; top: 0.2em;}
 #bookContent .page .header, #keyContent .page .header{text-align: center; margin: auto; width: fit-content;}
 
 .iconGrid svg{width: 525px; height: 525px; margin-left: 1em;}
