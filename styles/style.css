@@ -125,10 +125,10 @@ svg.bumpd{
 
 @keyframes flopl {
     0% { transform: translate(0px, 0px) scaleX(1) }
-   
+   10%{z-index: 300;}
    40% { transform: translate(-100%, 0px) scaleX(-1) }
    60% { transform: translate(-100%, 0px) scaleX(-1) }
-   
+   90%{z-index: 1;}
    100% { transform: translate(0px, 0px) scaleX(1) };
 }
 svg.flopl{
@@ -137,10 +137,10 @@ svg.flopl{
 
 @keyframes flopr {
     0% { transform: translate(0px, 0px) scaleX(1) }
-   
+   10%{z-index: 300;}
    40% { transform: translate(100%, 0px) scaleX(-1) }
    60% { transform: translate(100%, 0px) scaleX(-1) }
-   
+   90%{z-index: 1;}
    100% { transform: translate(0px, 0px) scaleX(1) };
 }
 svg.flopr{
@@ -149,10 +149,10 @@ svg.flopr{
 
 @keyframes flopd {
     0% { transform: translate(0px, 0px) scaleY(1) }
-   
+   10%{z-index: 300;}
    40% { transform: translate(0px, 100%) scaleY(-1) }
    60% { transform: translate(0px, 100%) scaleY(-1) }
-   
+   90%{z-index: 1;}
    100% { transform: translate(0px, 0px) scaleY(1) };
 }
 svg.flopd{
@@ -161,10 +161,10 @@ svg.flopd{
 
 @keyframes flopu {
     0% { transform: translate(0px, 0px) scaleY(1) }
-   
+   10%{z-index: 300;}
    40% { transform: translate(0px, -100%) scaleY(-1) }
    60% { transform: translate(0px, -100%) scaleY(-1) }
-   
+   90%{z-index: 1;}
    100% { transform: translate(0px, 0px) scaleY(1) };
 }
 svg.flopu{
