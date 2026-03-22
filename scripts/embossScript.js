@@ -147,6 +147,9 @@ function toggleType(elem){
 		for (item of myItems){
 			item.cell.innerHTML = icons[getIcon[myObj]];
 			reduceBlack(item.cell);
+			//check for rowspan
+			
+			
 		}
 	}
 	else if(myValue == "customIcon"){
@@ -443,6 +446,16 @@ function makeTable(level){
 						if(myCell.firstElementChild.getAttribute("colspan")){
 							myCell.setAttribute("cols", myCell.firstElementChild.getAttribute("colspan"))
 							myCell.setAttribute("rows", myCell.firstElementChild.getAttribute("rowspan"))
+							exclusions = myCell.firstElementChild.getAttribute("exclusions").split(",");
+							overlaps = [];
+							for(oR = 0; oR < myCell.firstElementChild.getAttribute("rowspan"); oR++){
+								for(oC = 0; oC < myCell.firstElementChild.getAttribute("colspan"); oC++){
+									if(!exclusions.includes(getPOS(oR, oC))){
+										overlaps.push(getPOS(r + oR, c + oC))
+									}
+								}
+							}
+							myCell.setAttribute("overlaps", overlaps);
 							myCell.firstElementChild.style.width = 1.85 * myCell.firstElementChild.getAttribute("colspan") + "em";
 							myCell.firstElementChild.style.height = 1.85 * myCell.firstElementChild.getAttribute("rowspan") + "em";
 						}
