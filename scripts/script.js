@@ -2596,12 +2596,12 @@ function simonsTurn(beeps){
 	for(b = 0; b < beeps; b++){
 		setTimeout(() => {
 		simonPicks();
-			}, 500 * b);
+			}, (toneLength * 1000) * b);
 	}
 	simonTurns += 1;
 	setTimeout(() => {
 	simonMode = "yourTurn";
-	}, 500 * b + 100);
+	}, (toneLength * 1000) * b + 100);
 }
 
 function simonGuess(dir){
