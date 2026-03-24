@@ -2606,7 +2606,7 @@ function simonsTurn(beeps){
 
 function simonGuess(dir){
 	playAnim(document.getElementById("key" + simonIndex[dir]), "pressed");
-
+	
 	if(simonSaid[youSaid.length] == dir) {
 		youSaid.push(dir);
 		simonTone(dir);
@@ -2615,6 +2615,7 @@ function simonGuess(dir){
 			simonSays("Correct")
 			setTimeout(() => {
 				simonsTurn(Math.floor(simonTurns/4) + 1);
+				simonMsg.innerHTML = "";
 			}, 1000);
 		}
 	}
