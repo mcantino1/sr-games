@@ -2601,7 +2601,7 @@ function simonsTurn(beeps){
 	simonTurns += 1;
 	setTimeout(() => {
 	simonMode = "yourTurn";
-	}, (toneLength * 1000) * b + 100);
+	}, (toneLength * 1000) * b );
 }
 
 function simonGuess(dir){
