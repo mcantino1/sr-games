@@ -147,6 +147,7 @@ startDiv = document.getElementById("menuStart");
 
 settingsDiv = document.getElementById("settings");
 welcomeSettingsDiv = document.getElementById("otherSettingsBox");
+simonDiv = document.getElementById("simon");
 swapSettingElements(settingsDiv, welcomeSettingsDiv);
 
 function swapSettingElements(from, to){
@@ -162,6 +163,7 @@ function swapSettingElements(from, to){
 
 var gameShow = [headerDiv, gameDiv, footDiv]
 var menuShow = [welcomeDiv, startDiv]
+var simonShow = [headerDiv, simonDiv]
 
 //onclick="menuChange(this)" myScreen="menuStart" tarScreen="gameGuide" 
 function menuChange(btn){
@@ -170,6 +172,29 @@ function menuChange(btn){
 }
 
 var gameMode = [gameDiv, footDiv, ]
+var simonMsg = document.getElementById("simonMsg")
+var simonMode;
+
+function initPathTrainer(){
+	swapSettingElements(welcomeSettingsDiv, settingsDiv)
+    selectDiv.classList.add("hideMe");
+	for (myDiv of menuShow){
+		myDiv.classList.add("hideMe");
+	}
+	for (myDiv of simonShow){
+		myDiv.classList.remove("hideMe");
+	}
+	simonSays("Press <kbd>space</kbd> to begin.");
+	simonMode = "practice";
+	simonDiv.focus();
+}
+
+
+
+function simonSays(msg){
+	simonMsg.innerHTML = msg;
+	if (speechOn){speechSay(simonMsg.textContent)}
+}
 
 function initGame(myButton){
 	 swapSettingElements(welcomeSettingsDiv, settingsDiv)
@@ -260,11 +285,14 @@ s			 }
 		myDiv.classList.add("hideMe");
 		
 	}
+	for (myDiv of simonShow){
+		myDiv.classList.add("hideMe");
+	}
 	for (myDiv of menuShow){
 		myDiv.classList.remove("hideMe");
 	}
-	swapSettingElements(settingsDiv, welcomeSettingsDiv)
- }
+	swapSettingElements(settingsDiv, welcomeSettingsDiv);
+}
  
 var wallPhrases = ["The wall is gross. Your hands are sticky. ", "The wall tastes delicious! ", "Wall, my old friend! ", "A wall blocks your way. ", "The wall sneaks up on you.", "The wall squeaks when you touch it. Strange.", "The wall smells wet and soupy."]
 var wallCount = 0;
@@ -2500,6 +2528,148 @@ function toggleSettings(){
 
 // Re-read location description
 // List visible objects
+simonDiv.addEventListener("keydown", (e) => {
+
+if (simonMode == "practice"){
+	if (e.key === 'Escape'){
+		e.preventDefault();
+		mainMenu();
+	}
+
+	if (e.key.startsWith("Arrow")) e.preventDefault();
+
+	if (e.key === "ArrowUp") {
+		simonTone(0);
+		playAnim(document.getElementById("keyUp"), "pressed");
+	}
+	if (e.key === "ArrowDown") {
+		simonTone(1);
+		playAnim(document.getElementById("keyDown"), "pressed");
+	}
+	if (e.key === "ArrowLeft") {
+		simonTone(2);
+		playAnim(document.getElementById("keyLeft"), "pressed");
+	}
+	if (e.key === "ArrowRight") {
+		simonTone(3);
+		playAnim(document.getElementById("keyRight"), "pressed");
+	}
+	if (e.key === ' ' || e.key === 'Spacebar' || e.code === 'Space' || e.code == "Enter" || e.key == "Enter" || e.code == "NumpadEnter"){	
+		simonStart();
+	}
+}
+
+if (simonMode == "yourTurn"){
+	if (e.key.startsWith("Arrow")) e.preventDefault();
+
+	if (e.key === "ArrowUp") {
+		simonGuess(0);
+	}
+	if (e.key === "ArrowDown") {
+		simonGuess(1);
+	}
+	if (e.key === "ArrowLeft") {
+		simonGuess(2);
+	}
+	if (e.key === "ArrowRight") {
+		simonGuess(3);
+	}	
+}
+
+})
+
+var simonIndex = ["Up", "Down", "Left", "Right"]
+var simonSaid = [];
+var youSaid = [];
+
+function simonStart(){
+	simonTurns = 0;
+	simonsTurn(1);
+}
+
+var simonTurns = 0;
+
+function simonsTurn(beeps){
+	simonMode = "simonsTurn";
+	simonSaid = [];
+	youSaid = [];
+	for(b = 0; b < beeps; b++){
+		setTimeout(() => {
+		simonPicks();
+			}, 500 * b);
+	}
+	simonTurns += 1;
+	simonMode = "yourTurn";
+}
+
+function simonGuess(dir){
+	playAnim(document.getElementById("key" + simonIndex[dir]), "pressed");
+
+	if(simonSaid[youSaid.length] == dir) {
+		youSaid.push(dir);
+		simonTone(dir);
+		if(simonSaid.length == youSaid.length){
+			//you got it right!;
+			simonSays("Correct")
+			setTimeout(() => {
+				simonsTurn(Math.floor(simonTurns/4) + 1);
+			}, 1000);
+		}
+	}
+	else{
+		playSound("fall");
+		simonSays("Wrong. Game over. Press <kbd>space</kbd> to start again.")
+		simonMode = "practice";
+	}
+}
+
+
+function simonPicks(){
+	myDex = Math.floor(Math.random()*4);
+	if(simonTurns < 4){
+		simonSays(simonIndex[myDex]);}
+	simonTone(myDex);
+	playAnim(document.getElementById("key" + simonIndex[myDex]), "pressed");
+	simonSaid.push(myDex);
+}
+
+function simonTone(dir){
+
+	
+	const now = Math.max(audioContext.currentTime, soundEnd);
+	
+	try{toneOscillator.stop(audioContext.currentTime);}
+	catch(e){}	
+
+	toneOscillator = audioContext.createOscillator();
+	const gainNode = audioContext.createGain();
+	toneOscillator.connect(gainNode);
+	gainNode.connect(audioContext.destination);
+	toneOscillator.type = 'sine';	
+	
+	let dur = toneLength;
+
+	let toneSel = [];
+	noteNames = Object.keys(notes);
+	startPitch = Math.floor(noteNames.length * (tonePitch / 10));
+	
+	toneSel.push(Math.floor(notes[noteNames[startPitch + (2 * dir)]]));
+	console.log(toneSel);
+	console.log("Simon Tone " + dir + " " + startPitch + " " + noteNames[startPitch + (2 * dir)] + " " + toneSel[0])
+
+	for (let i = 0; i < toneSel.length; i++){	
+		toneOscillator.frequency.setValueAtTime(toneSel[i], now + (toneLength * i));
+		gainNode.gain.setValueAtTime(toneVol,  now + (toneLength * i));
+	}
+	
+	
+	toneOscillator.start(now);
+	toneOscillator.stop(now + dur);	
+
+	
+	
+}
+
 gameEl.addEventListener("keydown", (e) => {
   // Press S to hear current location + full stats.
   if(controlLock){return};

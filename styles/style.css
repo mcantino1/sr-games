@@ -16,6 +16,41 @@
 	--gridAlpha: 1;	
   }
 
+#simon{
+	display: flex;
+	flex-direction: column;
+	margin: auto;
+}
+
+#simon div{
+	margin: auto;
+}
+
+
+.keyVis {
+	border: 1px solid currentColor;
+    border-radius: 0.25em;
+	font-size: 3em;
+    width: 2em;
+    height: 2em;
+    text-align: center;
+    line-height: 2em;
+	-webkit-transition: .25s;
+	transition: .25s;
+}
+
+.keyVis.pressed{
+	background:  light-dark(var(--colEmLight), var(--colEmDark));	
+}
+
+
+.divRow{
+	display: flex;
+	flex-direction: row;
+}
+
+
+
 .main-menu ul{margin: 0; padding: 0;}
 .main-menu li{
 	padding: 0;
@@ -24,11 +59,11 @@
 	text-align: center;
 }
 
-.main-menu button:hover, .main-menu li a:hover{
+.main-menu button:hover, .main-menu li a:hover,  #simon button:hover{
 	color:  light-dark(var(--colEmDark), var(--colEmLight));
 	
 }
-.main-menu button, .main-menu li a{
+.main-menu button, .main-menu li a,  #simon button{
 	font-size: 2em;
 	font-family: "gloridot", sans-serif;
 	 color:  light-dark(var(--colDark), var(--colLight));
@@ -41,7 +76,7 @@
 	margin: auto;
 	background-color: light-dark(var(--colLight), var(--colDark));
 }
-.main-menu button.back{
+.main-menu button.back,  #simon button.back{
 	position: sticky;
 	bottom: 0;
 	z-index: 10;
@@ -50,7 +85,7 @@
 
   html, body { height: 100%; margin: 0; }
   
-  .hideMe, .hideMe *{display: none; !important}
+  .hideMe, #simon.hideMe, .hideMe *{display: none; !important}
   
 
 .columnStyle{

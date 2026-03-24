@@ -162,7 +162,7 @@
 			<li><button type="button" onclick="menuChange(this)" myScreen="menuStart" tarScreen="gameSelect"  id="btnPlay" >PLAY</button></li>
 			<li><button type="button" onclick="menuChange(this)" myScreen="menuStart" tarScreen="gameGuide"  id="btnGameGuide" >GAME GUIDE</button></li>
 			<li><button type="button" onclick="menuChange(this)" myScreen="menuStart" tarScreen="welcomeSettings" id="btnWelcomeSettings" >SETTINGS</button></li>
-			<!--<li><button type="button" onclick="" id="" >PATH TRAINER</button></li>-->
+			<li><button type="button" onclick="initPathTrainer()" id="btnPathTrainer" >PATH TRAINER</button></li>
 			<li><button type="button" onclick="menuChange(this)" myScreen="menuStart" tarScreen="credits" id="btnCredits" >CREDITS</button></li>
 		</ul>
 		</div>
@@ -230,6 +230,14 @@
 	</div>
 </div>
 </div>
+
+<div id="simon" role="application" tabindex="0"  class="hideMe">
+	<div class="keyVis" id="keyUp">⇑</div>
+	<div class="divRow"><div class="keyVis" id="keyLeft">⇐</div><div class="keyVis" id="keyDown">⇓</div><div class="keyVis" id="keyRight">⇒</div>	</div>
+	<div><p id="simonMsg" aria-live="polite"></p></div>
+	<button type="button" onclick="mainMenu()" class="back" id="btnSimonBack" >back</button>
+</div>
+
 <main class="hideMe" id="game" tabindex="0" role="application" ">
   <section class="leftPane" aria-label="Grid panel">
     <div class="mapShell" aria-hidden="true">
