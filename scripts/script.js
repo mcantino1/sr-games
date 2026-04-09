@@ -2820,14 +2820,15 @@ function speechSay(message) {
 	hushedPause.volume = 0.001;
 	hushedPause.voice = myVoice
 	hushedPause.rate = 10;
-	
+	hushTime -= 0.1875;
 	if(hushTime > 0.1){
-	for(let i = 0; i < hushTime; i++){
-			
-			speechSynthesis.speak(hushedPause);
+		 setTimeout(() => {
+	
+			speechSynthesis.speak(utterance)
+			}, hushTime * 1000);
+		
 	}
-	}
-	speechSynthesis.speak(utterance);
+	else{speechSynthesis.speak(utterance)};
 }
 
 function updateVoice(){
