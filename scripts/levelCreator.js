@@ -1934,8 +1934,8 @@ function renderLibraries(){
 	avoid =  {"name": "Void", type: "trigger", "meta": { "name": "Void", "hint": "Mysterious fog", "text": "You  have fallen into a void.", "void": true, "icon": "void" } };
 	armor =  { "name": "armor shop", type: "shop", "meta": { "name": "armor shop", "value": 1, "kind": "defense", "cost": 14, "currency": "gold", "icon": "armor" } }
 	weapon 	=  { "name": "weapon shop", type: "shop", "meta": { "name": "weapon shop", "value": 1, "kind": "strength", "cost": 18, "currency": "gold", "icon": "weapon" } }
-	inn = { "name": "inn", type: "shop", "meta": { "name": "inn", "value": 8, "kind": "life", "cost": 10, "currency": "gold", "icon": "inn" } } 
-	defaults = [grunt, avoid, armor, weapon, inn]
+	inn = { "name": "inn", type: "shop", "meta": { "name": "inn", "value": 8, "kind": "life", "cost": 10, "currency": "gold", "icon": "inn" } }
+	defaults = [grunt, avoid, armor, weapon, inn];
 	for (item of defaults){
 		myLibrary = libraries[item.type].lib;
 		itemName = item.name;
@@ -1996,7 +1996,6 @@ function renderLibraries(){
 					cell.appendChild(list)
 				}
 				else{
-					
 					cell.innerHTML = "<p>" +  entries[itemName].meta[key] + "</p>";
 				}
 					row.appendChild(cell);
@@ -2124,7 +2123,6 @@ function findObj(level, pos, objectType){
 
 
 function libraryFromFields(m, myFields, type){
-	console.log(m);
 	for(field of myFields){
 		fieldMeta = field.getAttribute("meta");
 	
@@ -2185,15 +2183,12 @@ function libraryFromFields(m, myFields, type){
 
 function getMetas(myFields){
 	meta = {};
-	console.log(myFields);
 	for(field of myFields){
 		fieldMeta = field.getAttribute("meta");
-		console.log(field);
 		//<input object="monster" meta="name" id="monsterName" placeholder="Name" onchange="updateSelected(this);">
 		if(fieldMeta == "name" && field.value == "" && libraries[field.getAttribute("object")]){
 			field.value = field.getAttribute("object");	
 			}
-		console.log(field.value);
 		if(field.getAttribute("type") == "checkbox"){
 			//checkbox field
 			meta[fieldMeta] = field.checked;
@@ -2407,34 +2402,20 @@ function CSVToLibrary(file, objectType){
 		}
 		console.log(myRows);
 		
-		for(row of myRows){1
+		for(row of myRows){
 			if(row.join().length > 1){
-			console.log(row);
+				console.log(row);
 			if(!myLibrary[row[0]]){myLibrary[row[0]] = {name: row[0], meta: {}, refs: {}}}
 			arrayIndex = {};
 			name = row[0]
-			
 			libMeta = myLibrary[name].meta;
 			
 			for(i in myMetas){
-				
 				if(arrayMetas.includes(myMetas[i])){
-				//array Element
-					if(!libMeta[myMetas[i]]){libMeta[myMetas[i]] = [];}
-					if(!arrayIndex[myMetas[i]]){
-						arrayIndex[myMetas[i]] = 0;
+					libMeta[myMetas[i]] = row[i].split("\n")
 					}
-					if(libMeta[myMetas[i]][arrayIndex[myMetas[i]]]){
-						libMeta[myMetas[i]][arrayIndex[myMetas[i]]] = row[i];
-					}
-					else{
-						//
-						libMeta[myMetas[i]].push(row[i]);
-					}
-					arrayIndex[myMetas[i]] += 1;
-				}
 				else{
-				//non-array element
+					//non-array element
 					libMeta[myMetas[i]] = row[i];					
 				}
 				
@@ -2492,9 +2473,10 @@ function libraryToCSV(objectType){
 		arrayIndex = {};
 		for(meta of metaKeys){
 			if(arrayMetas.includes(meta)){
+				console.log(myItems[item].meta[meta])
 				if(!arrayIndex[meta]){arrayIndex[meta] = 0;}
-				if(myItems[item].meta[meta] && myItems[item].meta[meta].length > arrayIndex[meta]){
-				csvrow.push(myItems[item].meta[meta][arrayIndex[meta]]);}
+				 if(myItems[item].meta[meta] && myItems[item].meta[meta].length > arrayIndex[meta]){
+					csvrow.push(myItems[item].meta[meta].join("\n"));}
 				else{csvrow.push("");}
 				arrayIndex[meta] += 1;
 			}
