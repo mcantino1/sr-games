@@ -2403,6 +2403,7 @@ function CSVToLibrary(file, objectType){
 		console.log(myRows);
 		
 		for(row of myRows){
+			console.log(row)
 			if(row.join().length > 1){
 				console.log(row);
 			if(!myLibrary[row[0]]){myLibrary[row[0]] = {name: row[0], meta: {}, refs: {}}}
@@ -2416,7 +2417,12 @@ function CSVToLibrary(file, objectType){
 					}
 				else{
 					//non-array element
-					libMeta[myMetas[i]] = row[i];					
+					myValue = row[i];
+					if (myValue == "FALSE"){myValue = false}
+					if (myValue == "TRUE"){myValue = true}
+					
+					libMeta[myMetas[i]] = myValue;					
+					
 				}
 				
 			}
