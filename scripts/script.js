@@ -1421,9 +1421,14 @@ function trimText(myMessage){
 	if(myMessage && myMessage.length > 4){
    while(myMessage.substring(0,4) == "<br>")
    { myMessage = myMessage.substring(4)}
+	console.log(myMessage.substring(0,2))
+   while(myMessage.substring(0,1) == "\n")
+   { myMessage = myMessage.substring(1)}
    //remove double line breaks
 	while(myMessage.includes("<br><br>"))
    {myMessage = myMessage.replace("<br><br>", "<br>")}
+	while(myMessage.includes("\n\n"))
+   {myMessage = myMessage.replace("\n\n", "\n")}
 	while(myMessage.includes(".<br>"))
    {myMessage = myMessage.replace(".<br>", ". <br>")}
 }
@@ -2162,12 +2167,13 @@ function tryMove(dr, dc) {
 		// Track whether this attack was a critical (player-only)
 		let isCrit = false;
 		// Miss chance: 5% for both player and monster.
+		atkResult = "";
 		const playerMiss = Math.random() < playerMissChance;
 		if (playerMiss) {
-			msg += `Your attack misses. `;
+			atkResult += `Your attack misses. `;
 		} else {	
 			if (playerDamage <= 0) {
-				msg += `Your attack couldn't penetrate ${monsterName}'s defense. `;
+				atkResult += `Your attack couldn't penetrate ${monsterName}'s defense. `;
 			} else {
 				//successful hit - incriment hit counter
 				hitCount += 1;
@@ -2183,7 +2189,7 @@ function tryMove(dr, dc) {
 					}
 				}
 				monster.hp -= appliedDamage;
-				msg += `You attack for ${appliedDamage}. `;
+				atkResult += `You attack for ${appliedDamage}. `;
 			}
 		}
 		if (monster.hp > 0) {
@@ -2192,7 +2198,7 @@ function tryMove(dr, dc) {
 			// Miss chance: 5% for both player and monster.
 			const monsterMiss = Math.random() < monMissChance;
 			if (monsterMiss) {
-				msg += `${monsterName} misses. `;
+				atkResult += `${monsterName} misses. `;
 			} else {
 				monHitCount += 1;
 				let monsterDamage = Math.max(0, raw - stats.defense);
@@ -2204,9 +2210,9 @@ function tryMove(dr, dc) {
 					}
 				}
 				stats.life -= monsterDamage;
-				msg += `${monsterName} attacks for ${monsterDamage}. `;
+				atkResult += `${monsterName} attacks for ${monsterDamage}. `;
 			}
-			msg += `\nYour life: ${Math.max(0, stats.life)}. ${monsterName} life: ${Math.max(0, monster.hp)}. \n`;
+			atkResult += `\nYour life: ${Math.max(0, stats.life)}. ${monsterName} life: ${Math.max(0, monster.hp)}. \n`;
 
 			// If player dies, reset level.
 			considerDeath()
@@ -2220,17 +2226,19 @@ function tryMove(dr, dc) {
 			const surroundings = groupedSurroundingsText();
 			// Build spoken sequence with the monster description first (if available).
 			const spokenSeq = [];
+			spokenSeq.push(msg);
 			if (attackDesc) spokenSeq.push(attackDesc);
 			if (isCrit) spokenSeq.push("Critical hit!");
+			spokenSeq.push(atkResult);
+			console.log(spokenSeq);
 			// Append the combat message and then the surroundings cue (if any).
-			spokenSeq.push(full);
 			if (surroundings) spokenSeq.push(surroundings);
 
 			const curPos = toPos(player.row, player.col);
 			// Ensure the monster description and surroundings also appear in the
 			// Current location text so it is available to screenreader and
 			// deaf-blind users.
-			let displayFull = (attackDesc ? attackDesc + ' ' : '') + full + (surroundings ? ' ' + surroundings : '');
+			let displayFull = spokenSeq.join("\n");
 			displayFull = trimText(displayFull)
 			currentText.innerHTML = displayFull;
 			if (speechOn){speechSay(currentText.textContent)}
